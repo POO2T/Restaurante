@@ -1,0 +1,34 @@
+{
+  "hash": "0663b17b",
+  "configHash": "b15a54af",
+  "lockfileHash": "73164011",
+  "browserHash": "cfd0e56b",
+  "optimized": {
+    "@angular/core": {
+      "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
+      "file": "@angular_core.js",
+      "fileHash": "b7406594",
+      "needsInterop": false
+    },
+    "@angular/platform-browser": {
+      "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
+      "file": "@angular_platform-browser.js",
+      "fileHash": "47d0e54c",
+      "needsInterop": false
+    },
+    "@angular/router": {
+      "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
+      "file": "@angular_router.js",
+      "fileHash": "ae5fda46",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-TGQSJNFZ": {
+      "file": "chunk-TGQSJNFZ.js"
+    },
+    "chunk-BC2TAULS": {
+      "file": "chunk-BC2TAULS.js"
+    }
+  }
+}

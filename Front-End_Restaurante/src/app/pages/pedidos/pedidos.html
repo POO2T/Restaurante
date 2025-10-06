@@ -1,0 +1,13 @@
+<div class="pedidos-container">
+    <h1>Gerenciamento de Pedidos</h1>
+    <div class="filtros">
+    </div>
+    <div class="grid-pedidos">
+        <div *ngFor="let pedido of pedidos" class="card-pedido">
+            <h3>{{ pedido.id }}</h3>
+            <p>Abertura: {{ pedido.dataAbertura }}</p>
+            <p>Status: {{ pedido.status }}</p>
+            <button>Abrir</button>
+        </div>
+    </div>
+</div>
