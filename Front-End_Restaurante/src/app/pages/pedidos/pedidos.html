@@ -1,13 +1,100 @@
 <div class="pedidos-container">
-    <h1>Gerenciamento de Pedidos</h1>
-    <div class="filtros">
-    </div>
-    <div class="grid-pedidos">
-        <div *ngFor="let pedido of pedidos" class="card-pedido">
-            <h3>{{ pedido.id }}</h3>
-            <p>Abertura: {{ pedido.dataAbertura }}</p>
-            <p>Status: {{ pedido.status }}</p>
-            <button>Abrir</button>
+  <!-- Header Dashboard -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="header-info">
+        <h1>🏪 Painel Administrativo</h1>
+        <p>Gerenciamento de Pedidos - Bella Piatto</p>
+      </div>
+      
+      <div class="header-actions">
+        <button class="btn-nav" (click)="voltarInicio()">🏠 Início</button>
+        <div class="stats-cards">
+          <div class="stat-card">
+            <div class="stat-number">{{ getTotalPedidosHoje() }}</div>
+            <div class="stat-label">Pedidos Hoje</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">R$ {{ getReceitaHoje().toFixed(2) }}</div>
+            <div class="stat-label">Receita Hoje</div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros-section">
+    <h3>Filtrar por Status:</h3>
+    <div class="filtros-buttons">
+      <button 
+        *ngFor="let status of statusOptions" 
+        [class.active]="status === statusFiltro"
+        (click)="statusFiltro = status"
+        class="btn-filtro">
+        {{ status }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Lista de Pedidos -->
+  <div class="pedidos-list">
+    <div *ngFor="let pedido of pedidosFiltrados" class="card-pedido">
+      
+      <!-- Header do Pedido -->
+      <div class="pedido-header">
+        <div class="pedido-info">
+          <h3>{{ pedido.id }}</h3>
+          <p class="cliente">👤 {{ pedido.cliente }}</p>
+          <p class="data-hora">🕒 {{ pedido.dataHora | date:'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+        
+        <div class="pedido-status">
+          <span class="status-badge" [ngClass]="getStatusClass(pedido.status)">
+            {{ pedido.status }}
+          </span>
+          <div class="total">R$ {{ pedido.total.toFixed(2) }}</div>
+        </div>
+      </div>
+
+      <!-- Itens do Pedido -->
+      <div class="pedido-itens">
+        <h4>Itens do Pedido:</h4>
+        <div class="itens-list">
+          <div *ngFor="let item of pedido.itens" class="item">
+            <span class="item-nome">{{ item.nome }}</span>
+            <span class="item-qtd">{{ item.quantidade }}x</span>
+            <span class="item-preco">R$ {{ (item.preco * item.quantidade).toFixed(2) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Observações -->
+      <div class="pedido-observacoes" *ngIf="pedido.observacoes">
+        <strong>📝 Observações:</strong> {{ pedido.observacoes }}
+      </div>
+
+      <!-- Ações -->
+      <div class="pedido-acoes">
+        <select 
+          [value]="pedido.status" 
+          (change)="onStatusChange(pedido, $event)"
+          class="select-status">
+          <option value="Pendente">Pendente</option>
+          <option value="Preparando">Preparando</option>
+          <option value="Pronto">Pronto</option>
+          <option value="Entregue">Entregue</option>
+          <option value="Cancelado">Cancelado</option>
+        </select>
+        
+        <button class="btn-detalhes">Ver Detalhes</button>
+      </div>
+    </div>
+
+    <!-- Mensagem quando não há pedidos -->
+    <div *ngIf="pedidosFiltrados.length === 0" class="no-pedidos">
+      <h3>🔍 Nenhum pedido encontrado</h3>
+      <p>Não há pedidos com o status "{{ statusFiltro }}" no momento.</p>
+    </div>
+  </div>
 </div>

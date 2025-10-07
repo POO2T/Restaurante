@@ -1,0 +1,69 @@
+<div class="login-funcionario-container">
+  <div class="header">
+    <img src="/assets/imgs/logo.png" alt="Logo Bella Piatto">
+    <h2>Login Funcionário</h2>
+    <p>Acesso restrito para funcionários</p>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" class="login-form">
+    <div class="form-group">
+      <label for="codigoFuncionario">
+        <i class="icon-badge"></i>
+        Código do Funcionário
+      </label>
+      <input 
+        type="text" 
+        id="codigoFuncionario" 
+        name="codigoFuncionario" 
+        [(ngModel)]="codigoFuncionario" 
+        placeholder="Digite seu código de funcionário" 
+        required>
+    </div>
+
+    <div class="form-group">
+      <label for="email">
+        <i class="icon-email"></i>
+        E-mail Corporativo
+      </label>
+      <input 
+        type="email" 
+        id="email" 
+        name="email" 
+        [(ngModel)]="email" 
+        placeholder="Digite seu e-mail corporativo" 
+        required>
+    </div>
+
+    <div class="form-group">
+      <label for="senha">
+        <i class="icon-lock"></i>
+        Senha
+      </label>
+      <input 
+        type="password" 
+        id="senha" 
+        name="senha" 
+        [(ngModel)]="senha" 
+        placeholder="Digite sua senha" 
+        required>
+    </div>
+
+    <div class="error-message" *ngIf="erro">
+      {{ erro }}
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-voltar" (click)="voltarSelecao()">
+        ← Voltar
+      </button>
+      <button type="submit" class="btn-entrar">
+        Entrar no Sistema
+      </button>
+    </div>
+
+    <div class="links">
+      <a href="javascript:void(0)" (click)="recuperarSenha()">Esqueci minha senha</a>
+      <a href="javascript:void(0)" (click)="suporteTecnico()">Suporte Técnico</a>
+    </div>
+  </form>
+</div>

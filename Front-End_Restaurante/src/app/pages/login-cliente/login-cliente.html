@@ -1,0 +1,80 @@
+<div class="login-cliente-container">
+  <div class="header">
+    <img src="/assets/imgs/logo.png" alt="Logo Bella Piatto">
+    <h2>{{ isRegistro ? 'Criar Conta' : 'Login Cliente' }}</h2>
+    <p>{{ isRegistro ? 'Cadastre-se e faça seus pedidos' : 'Acesse sua conta e faça seus pedidos' }}</p>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" class="login-form">
+    <div class="form-group">
+      <label for="email">
+        <i class="icon-email"></i>
+        E-mail
+      </label>
+      <input 
+        type="email" 
+        id="email" 
+        name="email" 
+        [(ngModel)]="email" 
+        placeholder="Digite seu e-mail" 
+        required>
+    </div>
+
+    <div class="form-group" *ngIf="isRegistro">
+      <label for="telefone">
+        <i class="icon-phone"></i>
+        Telefone
+      </label>
+      <input 
+        type="tel" 
+        id="telefone" 
+        name="telefone" 
+        [(ngModel)]="telefone" 
+        placeholder="(00) 00000-0000" 
+        required>
+    </div>
+
+    <div class="form-group">
+      <label for="senha">
+        <i class="icon-lock"></i>
+        Senha
+      </label>
+      <input 
+        type="password" 
+        id="senha" 
+        name="senha" 
+        [(ngModel)]="senha" 
+        placeholder="Digite sua senha" 
+        required>
+    </div>
+
+    <div class="error-message" *ngIf="erro">
+      {{ erro }}
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-voltar" (click)="voltarSelecao()">
+        ← Voltar
+      </button>
+      <button type="submit" class="btn-entrar">
+        {{ isRegistro ? 'Cadastrar' : 'Entrar' }}
+      </button>
+    </div>
+
+    <div class="toggle-section">
+      <p *ngIf="!isRegistro">
+        Ainda não tem conta? 
+        <a href="javascript:void(0)" (click)="toggleRegistro(); $event.preventDefault()">Cadastre-se aqui</a>
+      </p>
+      <p *ngIf="isRegistro">
+        Já tem conta? 
+        <a href="javascript:void(0)" (click)="toggleRegistro(); $event.preventDefault()">Faça login</a>
+      </p>
+    </div>
+
+    <div class="links" *ngIf="!isRegistro">
+      <a href="javascript:void(0)" (click)="recuperarSenha()">Esqueci minha senha</a>
+      <a href="javascript:void(0)" (click)="toggleRegistro(); $event.preventDefault()">Cadastrar</a>
+    </div>
+  </form>
+</div>

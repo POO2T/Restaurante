@@ -1,11 +1,15 @@
 import { Routes } from '@angular/router';
-import { Login } from './pages/login/login';
+import { LoginFuncionario } from './pages/login-funcionario/login-funcionario';
+import { LoginCliente } from './pages/login-cliente/login-cliente';
+import { SeletorLogin } from './pages/seletor-login/seletor-login';
 import { Cardapio } from './pages/cardapio/cardapio';
 import { Pedidos } from './pages/pedidos/pedidos';
 
 export const routes: Routes = [
-    { path: "", redirectTo: "/login", pathMatch: "full" },
-    { path: "login", component: Login },
+    { path: "", component: SeletorLogin },
+    { path: "login-funcionario", component: LoginFuncionario },
+    { path: "login-cliente", component: LoginCliente },
     { path: "cardapio", component: Cardapio },
-    { path: "pedidos", component: Pedidos }
+    { path: "pedidos", component: Pedidos },
+    { path: "**", redirectTo: "", pathMatch: "full" } // Rota coringa para páginas não encontradas
 ];

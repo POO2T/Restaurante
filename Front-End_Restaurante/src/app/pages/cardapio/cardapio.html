@@ -1,12 +1,75 @@
 <div class="cardapio-container">
-  <h1>Cardápio Bella Piatto</h1>
-
-  <div class="grid-cardapio">
-    <div *ngFor="let produto of produtos" class="card-produto">
-      <img [src]="produto.imagemUrl" [alt]="produto.nome">
-      <h3>{{ produto.nome }}</h3>
-      <p>{{ produto.descricao }}</p>
-      <button>Adicionar ao carrinho</button>
+  <!-- Header do Cardápio -->
+  <div class="header-cardapio">
+    <div class="header-content">
+      <img src="/assets/imgs/logo.png" alt="Logo Bella Piatto" class="logo">
+      <div class="header-text">
+        <h1>Cardápio Bella Piatto</h1>
+        <p>Sabores autênticos da Itália</p>
+      </div>
+      <div class="header-nav">
+        <button class="btn-nav" (click)="voltarInicio()">🏠 Início</button>
+        <div class="carrinho-info" *ngIf="quantidadeItensCarrinho > 0">
+          🛒 {{ quantidadeItensCarrinho }} itens - R$ {{ totalCarrinho.toFixed(2) }}
+        </div>
+      </div>
     </div>
+  </div>
+
+  <!-- Filtros por Categoria -->
+  <div class="categorias-filter">
+    <button 
+      *ngFor="let categoria of categorias" 
+      [class.active]="categoria === categoriaSelecionada"
+      (click)="filtrarPorCategoria(categoria)"
+      class="btn-categoria">
+      {{ categoria }}
+    </button>
+  </div>
+
+  <!-- Grid de Produtos -->
+  <div class="grid-cardapio">
+    <div *ngFor="let produto of produtosFiltrados" 
+         class="card-produto" 
+         [class.indisponivel]="!produto.disponivel">
+      
+      <div class="produto-imagem">
+        <img [src]="produto.imagemUrl" [alt]="produto.nome">
+        <div class="categoria-badge">{{ produto.categoria }}</div>
+        <div class="status-badge" *ngIf="!produto.disponivel">Indisponível</div>
+      </div>
+
+      <div class="produto-info">
+        <h3>{{ produto.nome }}</h3>
+        <p class="descricao">{{ produto.descricao }}</p>
+        
+        <div class="produto-footer">
+          <span class="preco">R$ {{ produto.preco.toFixed(2) }}</span>
+          <button 
+            class="btn-adicionar" 
+            [disabled]="!produto.disponivel"
+            (click)="adicionarAoCarrinho(produto)">
+            <span *ngIf="produto.disponivel">🛒 Adicionar</span>
+            <span *ngIf="!produto.disponivel">Indisponível</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Carrinho Resumo -->
+  <div class="carrinho-resumo" *ngIf="carrinho.length > 0">
+    <h3>Seu Pedido</h3>
+    <div class="carrinho-items">
+      <div *ngFor="let item of carrinho" class="carrinho-item">
+        <span>{{ item.produto.nome }}</span>
+        <span>{{ item.quantidade }}x</span>
+        <span>R$ {{ (item.produto.preco * item.quantidade).toFixed(2) }}</span>
+      </div>
+    </div>
+    <div class="carrinho-total">
+      <strong>Total: R$ {{ totalCarrinho.toFixed(2) }}</strong>
+    </div>
+    <button class="btn-finalizar" (click)="finalizarPedido()">Finalizar Pedido</button>
   </div>
 </div>
