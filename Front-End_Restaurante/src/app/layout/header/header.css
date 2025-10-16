@@ -1,0 +1,151 @@
+/* 
+*   Estilos para o cabeçalho 
+*/
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ccc;
+}
+
+/* 
+*   Estilos de logo (Início) 
+*/
+.logo {
+    width: 150px;
+    height: 150px;
+    flex-shrink: 0;
+}
+
+.logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+/* 
+*   Estilos de logo (Fim)  
+*/
+
+/*
+*   Estilos de navegação principal (Início)
+*/
+.main-nav {
+    flex-grow: 1;
+    margin: 30px;
+    text-align: center;
+}
+
+.main-nav ul {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 50px;
+    list-style-type: none;
+}
+
+.main-nav a {
+    font-size: 1.5em;
+}
+
+.main-nav a:hover {
+    font-size: 1.6em;
+}
+/*
+*   Estilos de navegação principal (Fim)
+*/
+
+/*
+*   Estilos de botão de login (Início)
+*/
+.login-button {
+    flex-shrink: 0;
+    margin-right: 20px;
+}
+
+.btn-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 24px;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text-link-color);
+    font-weight: 600;
+    font-size: 1rem;
+    font-family: var(--font-family);
+    
+    background: linear-gradient(135deg, var(--background-color) 0%, #e9ecef 100%);
+    border: 2px solid var(--secondary-color);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: var(--btn-shadow);
+}
+
+.btn-login:hover {
+    background: linear-gradient(135deg, #ffffff 0%, var(--background-color) 100%);
+    border-color: var(--primary-color);
+    box-shadow: var(--btn-shadow-hover);
+    transform: translateY(-2px);
+    color: var(--primary-color);
+}
+
+.btn-login:active {
+    transform: translateY(0);
+    box-shadow: var(--btn-shadow);
+    background: linear-gradient(135deg, var(--background-color) 0%, #dee2e6 100%);
+    border-color: var(--primary-color);
+}
+
+.btn-login .user-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    border-radius: 50%;
+    background-color: #fff;
+    padding: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.btn-login:hover .user-icon {
+    transform: scale(1.2);
+}
+
+.btn-login span {
+    letter-spacing: .5px;
+}
+/*
+*   Estilos de botão de login (Início)
+*/
+
+/*
+*   Responsividade para telas menores
+*/
+@media (max-width: 768px) {
+    .login-button {
+        margin-right: 10px;
+    }
+    
+    .btn-login {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .btn-login .user-icon {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .btn-login span {
+        display: none; /* Oculta o texto em telas muito pequenas */
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-login {
+        padding: 8px 12px;
+        min-width: 44px; /* Tamanho mínimo para touch targets */
+    }
+}
