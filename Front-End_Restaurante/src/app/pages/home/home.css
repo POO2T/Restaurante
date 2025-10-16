@@ -52,29 +52,29 @@
 }
 
 .home-text .btn-primary {
-    background-color: var(--primary-color);
-    color: #ffffff;
-    border: 2px solid var(--primary-color);
+    background-color: var(--btn-primary-background);
+    color: var(--btn-primary-color);
+    border: 2px solid var(--btn-primary-background);
 }
 
 .home-text .btn-primary:hover {
     background-color: transparent;
     color: var(--primary-color);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(64, 24, 32, 0.2);
+    box-shadow: var(--btn-shadow-hover);
 }
 
 .home-text .btn-secondary {
     background-color: transparent;
-    color: var(--secondary-color);
-    border: 2px solid var(--secondary-color);
+    color: var(--btn-secondary-color);
+    border: 2px solid var(--btn-secondary-color);
 }
 
 .home-text .btn-secondary:hover {
-    background-color: var(--secondary-color);
+    background-color: var(--btn-secondary-color);
     color: var(--primary-color);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(223, 175, 104, 0.2);
+    box-shadow: var(--btn-shadow-hover);
 }
 
 .home-image {

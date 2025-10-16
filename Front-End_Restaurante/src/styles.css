@@ -16,7 +16,12 @@
     --text-link-color: #333333; 
     --font-family: 'Inter', 'Roboto', sans-serif;
 
-    --btn-background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    --btn-primary-background: #401820;
+    --btn-primary-color: #FFFFFF;
+    
+    --btn-secondary-background: transparent; /*  BACKGROUND NORMALMENTE TRANSPARENTE */
+    --btn-secondary-color: #dfaf68;
+
     --btn-shadow: 0 2px 8px rgba(64, 24, 32, 0.1);
     --btn-shadow-hover: 0 4px 16px rgba(64, 24, 32, 0.2);
     --btn-text-color: #f4f4f4;
