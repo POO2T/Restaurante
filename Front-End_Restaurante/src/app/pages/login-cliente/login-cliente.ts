@@ -14,7 +14,7 @@ export class LoginCliente {
   protected senha: string = '';
   protected telefone: string = '';
   protected erro: string = '';
-  protected isRegistro: boolean = false;
+  protected isRegistrado: boolean = false;
 
   constructor(private router: Router) { }
 
@@ -28,18 +28,18 @@ export class LoginCliente {
       return;
     }
 
-    if (this.isRegistro && !this.telefone) {
+    if (this.isRegistrado && !this.telefone) {
       this.erro = 'Telefone é obrigatório para cadastro';
       return;
     }
 
-    if (this.isRegistro) {
+    if (this.isRegistrado) {
       console.log("Cadastro Cliente:");
       console.log("Email:", this.email);
       console.log("Telefone:", this.telefone);
       // Aqui implementaria o cadastro
       alert('Cadastro realizado com sucesso!');
-      this.isRegistro = false;
+      this.isRegistrado = false;
     } else {
       console.log("Login Cliente:");
       console.log("Email:", this.email);
@@ -49,7 +49,7 @@ export class LoginCliente {
   }
 
   toggleRegistro() {
-    this.isRegistro = !this.isRegistro;
+    this.isRegistrado = !this.isRegistrado;
     this.erro = '';
     this.limparCampos();
   }
