@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-login-cliente',
@@ -10,64 +11,143 @@ import { CommonModule } from '@angular/common';
   styleUrl: './login-cliente.css'
 })
 export class LoginCliente {
-  protected email: string = '';
-  protected senha: string = '';
-  protected telefone: string = '';
-  protected erro: string = '';
-  protected isRegistrado: boolean = false;
+  // Propriedades do formulário
+  email = '';
+  telefone = '';
+  senha = '';
+  
+  // Estados da página
+  isRegistrado = false;
+  isLoading = false;
+  erro = '';
 
-  constructor(private router: Router) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
-  onSubmit() {
-    // Reset erro
-    this.erro = '';
+  onSubmit(): void {
+    if (this.isValidForm()) {
+      this.isLoading = true;
+      this.erro = '';
 
-    // Validações básicas
-    if (!this.email || !this.senha) {
-      this.erro = 'Email e senha são obrigatórios';
-      return;
-    }
+      if (this.isRegistrado) {
+        // Registro de cliente
+        const registerData = {
+          nome: this.email.split('@')[0], // Nome temporário baseado no email
+          email: this.email,
+          senha: this.senha,
+          telefone: this.telefone,
+          cpf: '' // Será necessário adicionar campo CPF depois
+        };
 
-    if (this.isRegistrado && !this.telefone) {
-      this.erro = 'Telefone é obrigatório para cadastro';
-      return;
-    }
+        this.authService.registerCliente(registerData).subscribe({
+          next: () => {
+            // Após registrar, fazer login automático
+            this.loginAfterRegister();
+          },
+          error: (error) => {
+            this.erro = 'Erro ao criar conta. Tente novamente.';
+            this.isLoading = false;
+          }
+        });
+      } else {
+        // Login de cliente (só telefone e senha)
+        const loginData = {
+          telefone: this.telefone,
+          senha: this.senha
+        };
 
-    if (this.isRegistrado) {
-      console.log("Cadastro Cliente:");
-      console.log("Email:", this.email);
-      console.log("Telefone:", this.telefone);
-      // Aqui implementaria o cadastro
-      alert('Cadastro realizado com sucesso!');
-      this.isRegistrado = false;
-    } else {
-      console.log("Login Cliente:");
-      console.log("Email:", this.email);
-      // Aqui implementaria a autenticação
-      this.router.navigate(['/cardapio']); // Redireciona para área do cliente
+        this.authService.loginCliente(loginData).subscribe({
+          next: () => {
+            this.router.navigate(['/']);
+          },
+          error: (error) => {
+            this.erro = 'Credenciais inválidas';
+            this.isLoading = false;
+          },
+          complete: () => {
+            this.isLoading = false;
+          }
+        });
+      }
     }
   }
 
-  toggleRegistro() {
+  private loginAfterRegister(): void {
+    const loginData = {
+      telefone: this.telefone,
+      senha: this.senha
+    };
+
+    this.authService.loginCliente(loginData).subscribe({
+      next: () => {
+        this.router.navigate(['/']);
+      },
+      error: (error) => {
+        this.erro = 'Conta criada! Faça login agora.';
+        this.isRegistrado = false;
+        this.isLoading = false;
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
+    });
+  }
+
+  private isValidForm(): boolean {
+    // Validações básicas sempre necessárias
+    if (!this.telefone || !this.senha) {
+      this.erro = 'Preencha todos os campos obrigatórios';
+      return false;
+    }
+
+    if (this.senha.length < 6) {
+      this.erro = 'A senha deve ter pelo menos 6 caracteres';
+      return false;
+    }
+
+    // Validações específicas para REGISTRO
+    if (this.isRegistrado) {
+      if (!this.email) {
+        this.erro = 'E-mail é obrigatório para cadastro';
+        return false;
+      }
+      
+      if (!this.isValidEmail(this.email)) {
+        this.erro = 'Digite um e-mail válido';
+        return false;
+      }
+    }
+
+    // Para LOGIN: só valida telefone e senha (já validados acima)
+    return true;
+  }
+
+  private isValidEmail(email: string): boolean {
+    if (!email) return false; // Se email estiver vazio
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  toggleRegistro(): void {
     this.isRegistrado = !this.isRegistrado;
     this.erro = '';
-    this.limparCampos();
+    this.clearForm();
   }
 
-  limparCampos() {
+  voltarSelecao(): void {
+    this.router.navigate(['/seletor-login']);
+  }
+
+  recuperarSenha(): void {
+    // Implementar recuperação de senha
+    alert('Funcionalidade em desenvolvimento');
+  }
+
+  private clearForm(): void {
     this.email = '';
-    this.senha = '';
     this.telefone = '';
-  }
-
-  voltarSelecao() {
-    this.router.navigate(['/']);
-  }
-
-  recuperarSenha() {
-    const email = prompt('Digite seu email para recuperação de senha:');
-    if (email) {
-      alert(`Link de recuperação enviado para: ${email}\nVerifique sua caixa de entrada e spam.`);
-    }
+    this.senha = '';
   }
 }

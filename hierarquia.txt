@@ -1,0 +1,17 @@
+src/
+  app/
+    services/
+      auth/
+        auth.service.ts           # Service principal de autenticação
+        auth-interceptor.service.ts # Interceptor para JWT
+        auth-guard.service.ts     # Guard para rotas protegidas
+      user/
+        funcionario.service.ts    # CRUD de funcionários
+        cliente.service.ts        # CRUD de clientes
+        user.service.ts          # Service base para usuários
+      api.ts                     # Service base para HTTP (já existe)
+    models/
+      user.model.ts              # Interfaces dos usuários
+      auth.model.ts              # Interfaces de auth (login, token, etc)
+    guards/
+      auth.guard.ts              # Guard para proteção de rotas

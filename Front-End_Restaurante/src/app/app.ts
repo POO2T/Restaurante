@@ -11,5 +11,5 @@ import { Footer } from "./layout/footer/footer";
 })
 
 export class App {
-  
+  protected baseUrl = 'http://localhost:8000';
 }
