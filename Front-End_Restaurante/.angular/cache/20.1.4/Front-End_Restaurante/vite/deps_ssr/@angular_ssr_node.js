@@ -5,11 +5,13 @@ import {
   SERVER_CONTEXT,
   renderApplication,
   renderModule
-} from "./chunk-NKZJVBUI.js";
-import "./chunk-62SFWMT6.js";
-import "./chunk-67X35BCK.js";
-import "./chunk-GB4MTCGN.js";
-import "./chunk-T5HYUF7W.js";
+} from "./chunk-ITZSPIL7.js";
+import "./chunk-DUQV3D3I.js";
+import "./chunk-TR43VTOW.js";
+import "./chunk-54IP7ZKH.js";
+import "./chunk-CE52NDZY.js";
+import "./chunk-PPO2RDEN.js";
+import "./chunk-ENFEL5BM.js";
 import {
   __spreadValues
 } from "./chunk-6DU2HRTW.js";
@@ -229,7 +231,7 @@ function createRequestUrl(nodeRequest) {
       hostnameWithPort += `:${port}`;
     }
   }
-  return new URL(originalUrl ?? url, `${protocol}://${hostnameWithPort}`);
+  return new URL(`${protocol}://${hostnameWithPort}${originalUrl ?? url}`);
 }
 function getFirstHeaderValue(value) {
   return value?.toString().split(",", 1)[0]?.trim();
