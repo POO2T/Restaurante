@@ -1,6 +1,10 @@
 # Back-end directories
 Back-End_Restaurante/
 
+## NODE
+node_modules/
+npm-debug.log*
+
 # Maven
 target/
 !.mvn/wrapper/maven-wrapper.jar
