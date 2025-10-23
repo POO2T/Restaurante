@@ -10,31 +10,75 @@
   
     <form (ngSubmit)="onSubmit()" class="login-form">
       
-  
-      <div class="form-group">
-        <label for="telefone">
-          <i class="icon-phone"></i>
-          Telefone
-        </label>
-        <input type="tel" id="telefone" name="telefone" [(ngModel)]="telefone" placeholder="(00) 00000-0000" required>
-      </div>
-  
       @if (isRegistrado) {
         <div class="form-group">
+          <label for="nome">
+            <i class="icon-user"></i>
+            Nome Completo
+          </label>
+          <input 
+            type="text" 
+            id="nome" 
+            name="nome" 
+            [(ngModel)]="nome" 
+            placeholder="Nome completo" 
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="telefone">
+            <i class="icon-phone"></i>
+            Telefone
+          </label>
+          <input 
+            type="tel" 
+            id="telefone" 
+            name="telefone" 
+            [(ngModel)]="telefone" 
+            placeholder="(00) 00000-0000" 
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="endereco">
+            <i class="icon-location"></i>
+            Endereço (opcional)
+          </label>
+          <input 
+            type="text" 
+            id="endereco" 
+            name="endereco" 
+            [(ngModel)]="endereco" 
+            placeholder="Endereço (opcional)">
+        </div>
+      }
+
+      <div class="form-group">
         <label for="email">
           <i class="icon-email"></i>
           E-mail
         </label>
-        <input type="email" id="email" name="email" [(ngModel)]="email" placeholder="Digite seu e-mail" required>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          [(ngModel)]="email" 
+          placeholder="Digite seu e-mail" 
+          required>
       </div>
-      }
 
       <div class="form-group">
         <label for="senha">
           <i class="icon-lock"></i>
           Senha
         </label>
-        <input type="password" id="senha" name="senha" [(ngModel)]="senha" placeholder="Digite sua senha" required>
+        <input 
+          type="password" 
+          id="senha" 
+          name="senha" 
+          [(ngModel)]="senha" 
+          placeholder="Digite sua senha" 
+          required>
       </div>
   
       @if (erro) {
@@ -47,13 +91,12 @@
         <button type="button" class="btn-voltar" (click)="voltarSelecao()">
           ← Voltar
         </button>
-        <button type="submit" class="btn-entrar">
-          {{ isRegistrado ? 'Cadastrar' : 'Entrar' }}
+        <button type="submit" class="btn-entrar" [disabled]="isLoading">
+          {{ isLoading ? 'Processando...' : (isRegistrado ? 'Cadastrar' : 'Entrar') }}
         </button>
       </div>
   
       <div class="toggle-section">
-
         @if (!isRegistrado) {
           <p>
             Ainda não tem conta?
@@ -67,8 +110,6 @@
             <a href="javascript:void(0)" (click)="toggleRegistro(); $event.preventDefault()">Faça login</a>
           </p>
         }
-        
-        
       </div>
 
       @if (!isRegistrado) {
