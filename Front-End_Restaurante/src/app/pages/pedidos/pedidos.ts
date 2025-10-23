@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -24,7 +24,8 @@ interface Pedido {
   selector: 'app-pedidos',
   imports: [CommonModule, FormsModule],
   templateUrl: './pedidos.html',
-  styleUrl: './pedidos.css'
+  styleUrls: ['./pedidos.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Pedidos implements OnInit {
 
@@ -32,7 +33,7 @@ export class Pedidos implements OnInit {
   statusFiltro: string = 'Todos';
   statusOptions = ['Todos', 'Pendente', 'Preparando', 'Pronto', 'Entregue', 'Cancelado'];
 
-  constructor(private router: Router) { }
+  private router = inject(Router);
 
   ngOnInit(): void {
     this.pedidos = [
@@ -95,8 +96,9 @@ export class Pedidos implements OnInit {
   }
 
   atualizarStatus(pedido: Pedido, novoStatus: string) {
-    if (novoStatus && ['Pendente', 'Preparando', 'Pronto', 'Entregue', 'Cancelado'].includes(novoStatus)) {
-      pedido.status = novoStatus as any;
+    const allowed = ['Pendente', 'Preparando', 'Pronto', 'Entregue', 'Cancelado'] as const;
+    if (novoStatus && (allowed as readonly string[]).includes(novoStatus)) {
+      pedido.status = novoStatus as Pedido['status'];
       console.log(`Pedido ${pedido.id} atualizado para: ${novoStatus}`);
     }
   }

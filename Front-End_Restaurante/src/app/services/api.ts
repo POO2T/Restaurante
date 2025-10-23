@@ -1,20 +1,21 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
   private baseUrl = 'http://localhost:8080'; // Ajuste conforme seu backend
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
+  private storage = new StorageService();
 
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('auth_token');
+    const token = this.storage.getItem('auth_token');
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` })
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
     });
   }
 
@@ -24,15 +25,15 @@ export class ApiService {
     });
   }
 
-  post<T>(endpoint: string, data: any): Observable<T> {
-    return this.http.post<T>(`${this.baseUrl}${endpoint}`, data, { 
-      headers: this.getHeaders() 
+  post<T, B = unknown>(endpoint: string, data: B): Observable<T> {
+    return this.http.post<T>(`${this.baseUrl}${endpoint}`, data, {
+      headers: this.getHeaders()
     });
   }
 
-  put<T>(endpoint: string, data: any): Observable<T> {
-    return this.http.put<T>(`${this.baseUrl}${endpoint}`, data, { 
-      headers: this.getHeaders() 
+  put<T, B = unknown>(endpoint: string, data: B): Observable<T> {
+    return this.http.put<T>(`${this.baseUrl}${endpoint}`, data, {
+      headers: this.getHeaders()
     });
   }
 

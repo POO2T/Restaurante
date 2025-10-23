@@ -5,7 +5,7 @@
     <p>Acesso restrito para funcionários</p>
   </div>
 
-  <form (ngSubmit)="onSubmit()" class="login-form">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
     <div class="form-group">
       <label for="codigoFuncionario">
         <i class="icon-badge"></i>
@@ -14,8 +14,7 @@
       <input 
         type="text" 
         id="codigoFuncionario" 
-        name="codigoFuncionario" 
-        [(ngModel)]="codigoFuncionario" 
+        formControlName="codigoFuncionario"
         placeholder="Digite seu código de funcionário" 
         required>
     </div>
@@ -28,8 +27,7 @@
       <input 
         type="email" 
         id="email" 
-        name="email" 
-        [(ngModel)]="email" 
+        formControlName="email"
         placeholder="Digite seu e-mail corporativo" 
         required>
     </div>
@@ -42,8 +40,7 @@
       <input 
         type="password" 
         id="senha" 
-        name="senha" 
-        [(ngModel)]="senha" 
+        formControlName="senha"
         placeholder="Digite sua senha" 
         required>
     </div>

@@ -1,6 +1,8 @@
-import { Injectable, signal } from '@angular/core';
-import { Observable, BehaviorSubject, tap, catchError, throwError } from 'rxjs'; // Importe throwError
+import { Injectable, signal, inject, effect } from '@angular/core';
+import { Observable, tap, catchError, throwError } from 'rxjs'; // Importe throwError
+import { signalToObservable } from '../../utils/signal-observable';
 import { ApiService } from '../api'; // Seu serviço base para chamadas HTTP
+import { StorageService } from '../storage.service';
 import { LoginRequest, LoginResponse, RegisterClienteRequest, RegisterFuncionarioRequest } from '../../models/auth.model'; // Seus modelos
 import { Usuario } from '../../models/user.model'; // Seu modelo base de usuário
 
@@ -8,25 +10,34 @@ import { Usuario } from '../../models/user.model'; // Seu modelo base de usuári
   providedIn: 'root'
 })
 export class AuthService {
-  // Mantém os Subjects para quem usa RxJS tradicionalmente
-  private currentUserSubject = new BehaviorSubject<Usuario | null>(null);
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
-
   // Signals para uma abordagem mais moderna e reativa no Angular
   currentUser = signal<Usuario | null>(null);
   isAuthenticated = signal<boolean>(false);
   userType = signal<'CLIENTE' | 'FUNCIONARIO' | null>(null);
 
-  constructor(private apiService: ApiService) {
-    // Tenta carregar o estado de autenticação ao iniciar o serviço
-    this.checkAuthStatus();
+  private apiService = inject(ApiService);
+  private storage = new StorageService();
+
+  // Effects can run side effects as signals change; keep a noop effect to retain reactivity
+  private _noopSync = effect(() => {
+    void this.currentUser();
+    void this.isAuthenticated();
+  });
+
+  // Tenta carregar o estado de autenticação ao iniciar o serviço
+  // Usa StorageService.isBrowser() para verificar se estamos no navegador
+  // (StorageService já injeta PLATFORM_ID internamente)
+  init() {
+    if (this.storage.isBrowser()) {
+      this.checkAuthStatus();
+    }
   }
 
   // --- LOGIN UNIFICADO ---
   // Ambas as lógicas (cliente e funcionário) agora usam o mesmo endpoint de autenticação
-  login(credentials: { email: string; senha: string }): Observable<any> { // Renomeado de loginCliente
-    const loginEndpoint = '/api/auth/login'; // Endpoint correto no backend
-    return this.apiService.post<any>(loginEndpoint, credentials) // Envia JSON
+  login(credentials: LoginRequest): Observable<LoginResponse> {
+    const loginEndpoint = '/api/login'; // Endpoint correto no backend
+    return this.apiService.post<LoginResponse>(loginEndpoint, credentials) // Envia JSON
       .pipe(
         tap(response => {
           // --- PONTO CRÍTICO PARA JWT ---
@@ -52,53 +63,47 @@ export class AuthService {
   }
 
   // --- MÉTODOS DE REGISTRO ---
-  registerCliente(userData: {
-    nome: string; email: string; senha: string; telefone: string; endereco?: string;
-  }): Observable<any> {
+  registerCliente(userData: RegisterClienteRequest): Observable<Usuario> {
     // Endpoint CORRETO para cadastro de cliente
-    return this.apiService.post('/api/clientes', userData)
+    return this.apiService.post<Usuario>('/api/clientes', userData)
       .pipe(catchError(this.handleError));
   }
 
-  registerFuncionario(userData: RegisterFuncionarioRequest): Observable<any> {
+  registerFuncionario(userData: RegisterFuncionarioRequest): Observable<Usuario> {
     // Endpoint para cadastro de funcionário (VERIFICAR SE EXISTE NO BACKEND)
     // Se for o mesmo POST /api/funcionarios, ajuste aqui.
-    return this.apiService.post('/api/funcionarios', userData) // Ajustei para /api/funcionarios, verifique seu backend
+    return this.apiService.post<Usuario>('/api/funcionarios', userData) // Ajustei para /api/funcionarios, verifique seu backend
       .pipe(catchError(this.handleError));
   }
 
   // --- LOGOUT ---
   logout(): void {
     // Remove os itens temporários do localStorage
-    localStorage.removeItem('user_data');
-    localStorage.removeItem('user_type');
-    localStorage.removeItem('isLoggedIn');
+    this.storage.removeItem('user_data');
+    this.storage.removeItem('user_type');
+    this.storage.removeItem('isLoggedIn');
     // localStorage.removeItem('auth_token'); // Removerá o token JWT futuramente
 
     // Reseta o estado nos signals e subjects
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
     this.userType.set(null);
-    this.currentUserSubject.next(null);
-    this.isAuthenticatedSubject.next(false);
   }
 
   // --- VERIFICAR STATUS (LÓGICA TEMPORÁRIA) ---
   private checkAuthStatus(): void {
     // ATENÇÃO: Esta lógica é TEMPORÁRIA e funciona sem token JWT.
     // PRECISARÁ SER REFEITA para validar um token JWT armazenado.
-    const userData = localStorage.getItem('user_data');
-    const userType = localStorage.getItem('user_type') as 'CLIENTE' | 'FUNCIONARIO' | null;
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; // Verifica a flag
+    const userData = this.storage.getItem('user_data');
+    const userType = (this.storage.getItem('user_type') as 'CLIENTE' | 'FUNCIONARIO' | null) || null;
+    const isLoggedIn = this.storage.getItem('isLoggedIn') === 'true'; // Verifica a flag
 
-    if (isLoggedIn && userData && userType) {
+        if (isLoggedIn && userData && userType) {
       try {
         const user = JSON.parse(userData);
         this.currentUser.set(user);
         this.isAuthenticated.set(true);
         this.userType.set(userType);
-        this.currentUserSubject.next(user);
-        this.isAuthenticatedSubject.next(true);
       } catch (e) {
         console.error("Falha ao parsear dados do usuário do localStorage", e);
         this.logout(); // Limpa dados inválidos se o parse falhar
@@ -112,38 +117,39 @@ export class AuthService {
   }
 
   // --- TRATAR SUCESSO DO LOGIN (LÓGICA TEMPORÁRIA) ---
-  private handleLoginSuccess(response: any, type: 'CLIENTE' | 'FUNCIONARIO'): void {
+  private handleLoginSuccess(response: LoginResponse, type: 'CLIENTE' | 'FUNCIONARIO'): void {
     // ATENÇÃO: Lógica TEMPORÁRIA! Salva a resposta direta do backend e uma flag.
     // SUBSTITUA quando o backend retornar um token JWT.
     console.warn("handleLoginSuccess chamado - Implementação JWT necessária!");
 
-    // Salva a resposta do backend (que PODE conter dados do usuário, mas NÃO o token ainda)
-    localStorage.setItem('user_data', JSON.stringify(response));
-    localStorage.setItem('user_type', type);
-    localStorage.setItem('isLoggedIn', 'true'); // Marca como logado
+    // Salva a resposta do backend (que inclui dados do usuário)
+    const user = (response as LoginResponse).usuario;
+    this.storage.setItem('user_data', JSON.stringify(user));
+    this.storage.setItem('user_type', type);
+    this.storage.setItem('isLoggedIn', 'true'); // Marca como logado
 
-    // Atualiza o estado da aplicação
-    this.currentUser.set(response);
-    this.isAuthenticated.set(true);
-    this.userType.set(type);
-    this.currentUserSubject.next(response);
-    this.isAuthenticatedSubject.next(true);
+  // Atualiza o estado da aplicação (signals)
+  this.currentUser.set(user);
+  this.isAuthenticated.set(true);
+  this.userType.set(type);
   }
 
   // --- TRATAR ERROS ---
-  private handleError(error: any): Observable<never> {
+  private handleError(error: unknown): Observable<never> {
     console.error('Auth error:', error);
     // Propaga o erro para o componente poder tratar (ex: mostrar mensagem na tela)
-    return throwError(() => error);
+    const err = error instanceof Error ? error : new Error(typeof error === 'string' ? error : 'Erro desconhecido');
+    return throwError(() => err);
   }
 
   // --- GETTERS (mantidos para compatibilidade) ---
   get currentUser$(): Observable<Usuario | null> {
-    return this.currentUserSubject.asObservable();
+    // Live Observable that emits whenever the signal changes.
+    return signalToObservable(this.currentUser);
   }
 
   get isAuthenticated$(): Observable<boolean> {
-    return this.isAuthenticatedSubject.asObservable();
+    return signalToObservable(this.isAuthenticated);
   }
 
   // --- VERIFICAÇÕES DE TIPO (mantidas) ---
@@ -151,7 +157,7 @@ export class AuthService {
     const user = this.currentUser();
     // Ajuste a lógica conforme a estrutura real do seu objeto Funcionario na resposta
     return this.userType() === 'FUNCIONARIO' &&
-           (user as any)?.cargo === 'GERENTE'; // Exemplo, verifique o nome exato do campo/enum
+      ((user as unknown as { cargo?: string })?.cargo === 'GERENTE'); // Exemplo, verifique o nome exato do campo/enum
   }
 
   isFuncionario(): boolean {

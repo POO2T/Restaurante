@@ -4,25 +4,19 @@
 
     <div class="header">
       <img src="./svg/bem_vindo.svg" alt="Bem Vindos">
-      <h2>{{ isRegistrado ? "Criar Conta" :  "Login Cliente"}}</h2>
+      <h2>{{ isRegistrado ? 'Criar Conta' : 'Login Cliente' }}</h2>
       <p>{{ isRegistrado ? 'Cadastre-se e faça seus pedidos' : 'Acesse sua conta e faça seus pedidos' }}</p>
     </div>
-  
-    <form (ngSubmit)="onSubmit()" class="login-form">
-      
-      @if (isRegistrado) {
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
+
+      <ng-container *ngIf="isRegistrado">
         <div class="form-group">
           <label for="nome">
             <i class="icon-user"></i>
             Nome Completo
           </label>
-          <input 
-            type="text" 
-            id="nome" 
-            name="nome" 
-            [(ngModel)]="nome" 
-            placeholder="Nome completo" 
-            required>
+          <input type="text" id="nome" formControlName="nome" placeholder="Nome completo">
         </div>
 
         <div class="form-group">
@@ -30,13 +24,7 @@
             <i class="icon-phone"></i>
             Telefone
           </label>
-          <input 
-            type="tel" 
-            id="telefone" 
-            name="telefone" 
-            [(ngModel)]="telefone" 
-            placeholder="(00) 00000-0000" 
-            required>
+          <input type="tel" id="telefone" formControlName="telefone" placeholder="(00) 00000-0000">
         </div>
 
         <div class="form-group">
@@ -44,27 +32,16 @@
             <i class="icon-location"></i>
             Endereço (opcional)
           </label>
-          <input 
-            type="text" 
-            id="endereco" 
-            name="endereco" 
-            [(ngModel)]="endereco" 
-            placeholder="Endereço (opcional)">
+          <input type="text" id="endereco" formControlName="endereco" placeholder="Endereço (opcional)">
         </div>
-      }
+      </ng-container>
 
       <div class="form-group">
         <label for="email">
           <i class="icon-email"></i>
           E-mail
         </label>
-        <input 
-          type="email" 
-          id="email" 
-          name="email" 
-          [(ngModel)]="email" 
-          placeholder="Digite seu e-mail" 
-          required>
+        <input type="email" id="email" formControlName="email" placeholder="Digite seu e-mail">
       </div>
 
       <div class="form-group">
@@ -72,21 +49,13 @@
           <i class="icon-lock"></i>
           Senha
         </label>
-        <input 
-          type="password" 
-          id="senha" 
-          name="senha" 
-          [(ngModel)]="senha" 
-          placeholder="Digite sua senha" 
-          required>
+        <input type="password" id="senha" formControlName="senha" placeholder="Digite sua senha">
       </div>
-  
-      @if (erro) {
-        <div class="error-message">
-          {{ erro }}
-        </div>
-      }
-  
+
+      <div class="error-message" *ngIf="erro">
+        {{ erro }}
+      </div>
+
       <div class="form-actions">
         <button type="button" class="btn-voltar" (click)="voltarSelecao()">
           ← Voltar
@@ -95,34 +64,40 @@
           {{ isLoading ? 'Processando...' : (isRegistrado ? 'Cadastrar' : 'Entrar') }}
         </button>
       </div>
-  
+
       <div class="toggle-section">
+        <p *ngIf="!isRegistrado">
+          Ainda não tem conta?
+          <a href="javascript:void(0)" (click)="toggleRegistro(); $event.preventDefault()">Cadastre-se aqui</a>
+        </p>
+
+        
+
         @if (!isRegistrado) {
           <p>
             Ainda não tem conta?
             <a href="javascript:void(0)" (click)="toggleRegistro(); $event.preventDefault()">Cadastre-se aqui</a>
           </p>
         }
-
-        @if (isRegistrado) {
+        @else {
           <p>
             Já tem conta?
             <a href="javascript:void(0)" (click)="toggleRegistro(); $event.preventDefault()">Faça login</a>
           </p>
         }
+
       </div>
 
-      @if (!isRegistrado) {
-        <div class="links">
-          <a href="javascript:void(0)" (click)="recuperarSenha()">Esqueci minha senha</a>
-          <a href="javascript:void(0)" (click)="toggleRegistro(); $event.preventDefault()">Cadastrar</a>
-        </div>
-      }
-      
+      <div class="links" *ngIf="!isRegistrado">
+        <a href="javascript:void(0)" (click)="recuperarSenha()">Esqueci minha senha</a>
+        <a href="javascript:void(0)" (click)="toggleRegistro(); $event.preventDefault()">Cadastrar</a>
+      </div>
+
     </form>
   </article>
 
   <aside class="login-cliente-img">
     <img src="" alt="Pratos de login">
   </aside>
+
 </section>

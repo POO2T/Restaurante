@@ -1,168 +1,110 @@
-import { Component } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../services/auth/auth.service'; // Verifique o caminho
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-login-cliente',
-  standalone: true, // Adicione standalone: true se for um componente standalone
-  imports: [FormsModule, CommonModule],
+  standalone: true,
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './login-cliente.html',
-  styleUrl: './login-cliente.css'
+  styleUrls: ['./login-cliente.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginCliente {
-  // Propriedades do formulário
-  nome = '';
-  email = '';
-  telefone = '';
-  senha = '';
-  endereco = '';
+  form: FormGroup;
 
-  // Estados da página
   isRegistrado = false;
   isLoading = false;
   erro = '';
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
+
+  private formatError(err: unknown, fallback = 'Ocorreu um erro'): string {
+    if (!err) return fallback;
+    if (typeof err === 'string') return err;
+    if (err instanceof Error) return err.message || fallback;
+    const anyErr = err as { error?: unknown; message?: string };
+    if (anyErr.error) return typeof anyErr.error === 'string' ? anyErr.error : JSON.stringify(anyErr.error);
+    if (anyErr.message) return anyErr.message;
+    try { return JSON.stringify(err); } catch { return fallback; }
+  }
+
+  constructor() {
+    this.form = this.fb.group({
+      nome: [''],
+      email: ['', [Validators.required, Validators.email]],
+      telefone: [''],
+      senha: ['', Validators.required],
+      endereco: ['']
+    });
+  }
 
   onSubmit(): void {
-    console.log('Form submitted with data:', {
-      isRegistrado: this.isRegistrado,
-      // Remova dados sensíveis como senha do log se for para produção
-      email: this.email,
-      // senha: this.senha
-    });
+    console.log('Form submitted', { isRegistrado: this.isRegistrado, values: this.form.value });
 
-    if (this.isValidForm()) {
-      this.isLoading = true;
-      this.erro = '';
+    if (!this.form.valid) {
+      this.erro = 'Formulário inválido. Preencha os campos obrigatórios.';
+      return;
+    }
 
-      if (this.isRegistrado) {
-        // --- Registro de Cliente ---
-        const registerData = {
-          nome: this.nome.trim(),
-          email: this.email.trim(),
-          senha: this.senha, // A senha será hasheada no backend
-          telefone: this.telefone.trim(),
-          endereco: this.endereco.trim() || undefined // Envia undefined se vazio
-        };
+    this.isLoading = true;
+    this.erro = '';
 
-        console.log('Sending registration data:', registerData);
+    if (this.isRegistrado) {
+      const v = this.form.value;
+      const registerData = {
+        nome: (v.nome || '').trim(),
+        email: (v.email || '').trim(),
+        senha: v.senha,
+        cpf: (v['cpf'] || '').trim() || undefined,
+        telefone: (v.telefone || '').trim()
+      };
 
-        this.authService.registerCliente(registerData).subscribe({
-          next: (response) => {
-            console.log('Registration response:', response);
-            // Idealmente, o backend retornaria uma mensagem clara de sucesso ou o usuário criado
-            // Adaptando à resposta que você viu antes:
-            if (response && response.email === registerData.email) {
-               // Mudança: Ao invés de logar direto, apenas informa e muda para a tela de login
-               this.erro = 'Conta criada com sucesso! Faça login agora.';
-               this.isRegistrado = false; // Muda para a visão de login
-               this.clearForm(); // Limpa o formulário
-               this.isLoading = false;
-              // this.loginAfterRegister(); // REMOVIDO - Melhor o usuário logar explicitamente
-            } else {
-              this.erro = response?.message || 'Erro ao criar conta. Verifique os dados.';
-              this.isLoading = false;
-            }
-          },
-          error: (error) => {
-            console.error('Registration error:', error);
-            // Tenta pegar a mensagem de erro específica do backend, se houver
-            this.erro = error?.error?.message || error?.message || 'Erro ao criar conta. Verifique os dados e tente novamente.';
-            this.isLoading = false;
+      this.authService.registerCliente(registerData).subscribe({
+        next: (usuario) => {
+          if (usuario && usuario.email === registerData.email) {
+            this.erro = 'Conta criada com sucesso! Faça login agora.';
+            this.isRegistrado = false;
+            this.clearForm();
+          } else {
+            this.erro = 'Erro ao criar conta. Verifique os dados.';
           }
-        });
-      } else {
-        // --- Login de Cliente ---
-        const loginData = {
-          email: this.email.trim(),
-          senha: this.senha
-        };
-
-        console.log('Sending login data:', loginData);
-
-        // 👇 USA A FUNÇÃO DE LOGIN UNIFICADA 👇
-        this.authService.login(loginData).subscribe({
-          next: (response) => {
-            console.log('Login response:', response);
-            // --- LÓGICA TEMPORÁRIA (PRÉ-JWT) ---
-            // Verifica se o login foi marcado como sucesso no AuthService
-            if (this.authService.isAuthenticated()) {
-              // Verifica se o tipo de usuário logado é CLIENTE
-              // ATENÇÃO: O backend SÓ AUTENTICA FUNCIONÁRIO AINDA!
-              // Esta verificação falhará se o backend não retornar dados que permitam identificar o tipo,
-              // ou se apenas funcionários podem logar via /api/auth/login.
-              if (this.authService.isCliente()) {
-                 console.log("Login de CLIENTE bem-sucedido (temporário). Navegando...");
-                 this.router.navigate(['/']); // Navega para a página principal
-              } else {
-                 console.warn("Login bem-sucedido, mas usuário não é CLIENTE. Verifique o backend/lógica.");
-                 this.erro = 'Login bem-sucedido, mas tipo de usuário inesperado.';
-                 this.authService.logout(); // Desloga se o tipo não for cliente
-              }
-
-            } else {
-              // Se isAuthenticated ainda for false, algo deu errado
-              this.erro = response?.message || 'Falha no login. Verifique suas credenciais.';
-            }
-            this.isLoading = false;
-          },
-          error: (error) => {
-            console.error('Login error:', error);
-             // Tenta pegar a mensagem de erro específica (ex: "Credenciais inválidas" do AuthController)
-            this.erro = error?.error || error?.message || 'Falha no login. Verifique suas credenciais.';
-            this.isLoading = false;
-          }
-        });
-      }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.erro = this.formatError(error, 'Erro ao criar conta. Verifique os dados e tente novamente.');
+          this.isLoading = false;
+        }
+      });
     } else {
-       // Se o formulário não for válido, isValidForm já define a mensagem de erro
-       console.log("Formulário inválido.");
+      const v = this.form.value;
+      const loginData = { email: (v.email || '').trim(), senha: v.senha };
+
+      this.authService.login(loginData).subscribe({
+        next: (response) => {
+          // AuthService will set signals; check isAuthenticated
+          if (this.authService.isAuthenticated()) {
+            if (this.authService.isCliente()) {
+              this.router.navigate(['/']);
+            } else {
+              this.erro = 'Login bem-sucedido, mas tipo de usuário inesperado.';
+              this.authService.logout();
+            }
+          } else {
+            this.erro = 'Falha no login. Verifique suas credenciais.';
+          }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.erro = this.formatError(error, 'Falha no login. Verifique suas credenciais.');
+          this.isLoading = false;
+        }
+      });
     }
-  }
-
-  // REMOVIDO - O usuário fará login manualmente após o registro
-  // private loginAfterRegister(): void { ... }
-
-
-  // --- Funções de validação e UI (mantidas como estavam) ---
-
-  private isValidForm(): boolean {
-    // ... (código de validação mantido) ...
-    console.log('Validating form...', { /* ... */ });
-    if (!this.isRegistrado) { // LOGIN
-      if (!this.email?.trim() || !this.senha) { // Senha não precisa de trim
-        this.erro = 'Preencha email e senha'; return false;
-      }
-      if (!this.isValidEmail(this.email.trim())) {
-        this.erro = 'Digite um e-mail válido'; return false;
-      }
-      // Removido validação de tamanho mínimo no frontend (backend deve validar)
-      // if (this.senha.length < 6) { this.erro = 'Senha muito curta'; return false; }
-      return true;
-    } else { // CADASTRO
-      if (!this.nome?.trim() || !this.email?.trim() || !this.telefone?.trim() || !this.senha) {
-        this.erro = 'Preencha Nome, Email, Telefone e Senha'; return false;
-      }
-       if (!this.isValidEmail(this.email.trim())) {
-        this.erro = 'Digite um e-mail válido'; return false;
-      }
-      // Removido validação de tamanho mínimo no frontend
-      // if (this.senha.length < 6) { this.erro = 'Senha muito curta'; return false; }
-      console.log('Form validation passed');
-      return true;
-    }
-  }
-
-  private isValidEmail(email: string): boolean {
-    if (!email) return false;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
   }
 
   toggleRegistro(): void {
@@ -176,15 +118,10 @@ export class LoginCliente {
   }
 
   recuperarSenha(): void {
-    // Mantenha o alert ou implemente a funcionalidade
     alert('Funcionalidade em desenvolvimento');
   }
 
   private clearForm(): void {
-    this.nome = '';
-    this.email = '';
-    this.telefone = '';
-    this.senha = '';
-    this.endereco = '';
+    this.form.reset();
   }
 }

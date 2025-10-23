@@ -2,7 +2,8 @@ import { Usuario } from "./user.model";
 import { TipoFuncionario } from "./user.model";
 
 export interface LoginRequest {
-  telefone: string;
+  telefone?: string;
+  email?: string;
   senha: string;
 }
 
@@ -17,7 +18,7 @@ export interface RegisterClienteRequest {
   nome: string;
   email?: string;
   senha: string;
-  cpf: string;
+  cpf?: string;
   telefone: string;
 }
 

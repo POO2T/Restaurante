@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -6,11 +6,11 @@ import { CommonModule } from '@angular/common';
   selector: 'app-seletor-login',
   imports: [CommonModule],
   templateUrl: './seletor-login.html',
-  styleUrl: './seletor-login.css'
+  styleUrls: ['./seletor-login.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SeletorLogin {
-
-  constructor(private router: Router) { }
+  private router = inject(Router);
 
   navegarParaFuncionario() {
     this.router.navigate(['/login-funcionario']);

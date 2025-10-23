@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -17,7 +17,8 @@ interface Produto {
   selector: 'app-cardapio',
   imports: [CommonModule, FormsModule],
   templateUrl: './cardapio.html',
-  styleUrl: './cardapio.css'
+  styleUrls: ['./cardapio.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Cardapio implements OnInit {
 
@@ -26,7 +27,7 @@ export class Cardapio implements OnInit {
   categoriaSelecionada: string = 'Todos';
   carrinho: { produto: Produto, quantidade: number }[] = [];
 
-  constructor(private router: Router) { }
+  private router = inject(Router);
 
   ngOnInit(): void {
     this.produtos = [

@@ -1,45 +1,46 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login-funcionario',
-  imports: [FormsModule, CommonModule],
+  standalone: true,
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './login-funcionario.html',
-  styleUrl: './login-funcionario.css'
+  styleUrls: ['./login-funcionario.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginFuncionario {
-  protected email: string = '';
-  protected senha: string = '';
-  protected codigoFuncionario: string = '';
-  protected erro: string = '';
+  form: FormGroup;
+  erro = '';
 
-  constructor(private router: Router) { }
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
+
+  constructor() {
+    this.form = this.fb.group({
+      codigoFuncionario: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      senha: ['', Validators.required]
+    });
+  }
 
   onSubmit() {
-    // Reset erro
     this.erro = '';
-
-    // Validações específicas para funcionários
-    if (!this.email || !this.senha || !this.codigoFuncionario) {
-      this.erro = 'Todos os campos são obrigatórios';
+    if (!this.form.valid) {
+      this.erro = 'Todos os campos são obrigatórios e devem ser válidos.';
       return;
     }
 
-    // Validação simples do código de funcionário (exemplo)
-    if (this.codigoFuncionario.length < 4) {
+    const v = this.form.value;
+    if (v.codigoFuncionario.length < 4) {
       this.erro = 'Código do funcionário deve ter pelo menos 4 caracteres';
       return;
     }
 
-    console.log("Login Funcionário:");
-    console.log("Email:", this.email);
-    console.log("Código:", this.codigoFuncionario);
-    
-    // Aqui você implementaria a autenticação real
-    // Por enquanto, simula sucesso
-    this.router.navigate(['/pedidos']); // Redireciona para área administrativa
+    console.log('Login Funcionário:', { email: v.email, codigo: v.codigoFuncionario });
+    this.router.navigate(['/pedidos']);
   }
 
   voltarSelecao() {
