@@ -1,0 +1,10 @@
+{
+  "routes": {
+    "/": {},
+    "/cardapio": {},
+    "/login-cliente": {},
+    "/login-funcionario": {},
+    "/pedidos": {},
+    "/seletor-login": {}
+  }
+}

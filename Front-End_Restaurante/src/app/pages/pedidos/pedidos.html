@@ -70,9 +70,11 @@
       </div>
 
       <!-- Observações -->
-      <div class="pedido-observacoes" *ngIf="pedido.observacoes">
-        <strong>📝 Observações:</strong> {{ pedido.observacoes }}
-      </div>
+      @if (pedido.observacoes) {
+        <div class="pedido-observacoes">
+          <strong>📝 Observações:</strong> {{ pedido.observacoes }}
+        </div>
+      }
 
       <!-- Ações -->
       <div class="pedido-acoes">
@@ -92,9 +94,12 @@
     </div>
 
     <!-- Mensagem quando não há pedidos -->
-    <div *ngIf="pedidosFiltrados.length === 0" class="no-pedidos">
-      <h3>🔍 Nenhum pedido encontrado</h3>
-      <p>Não há pedidos com o status "{{ statusFiltro }}" no momento.</p>
-    </div>
+    @if (pedidosFiltrados.length == 0) {
+      <div class="no-pedidos">
+        <h3>🔍 Nenhum pedido encontrado</h3>
+        <p>Não há pedidos com o status "{{ statusFiltro }}" no momento.</p>
+      </div>
+    }
+
   </div>
 </div>

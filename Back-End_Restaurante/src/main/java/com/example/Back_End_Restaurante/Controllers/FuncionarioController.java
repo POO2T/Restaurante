@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("api/funcionarios")
+@RequestMapping("/funcionarios")
 @CrossOrigin(origins = "*")
 public class FuncionarioController {
 

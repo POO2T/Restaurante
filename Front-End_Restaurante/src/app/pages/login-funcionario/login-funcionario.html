@@ -45,9 +45,11 @@
         required>
     </div>
 
-    <div class="error-message" *ngIf="erro">
-      {{ erro }}
-    </div>
+    @if (erro) {
+      <div class="error-message">
+        {{ erro }}
+      </div>
+    }
 
     <div class="form-actions">
       <button type="button" class="btn-voltar" (click)="voltarSelecao()">
