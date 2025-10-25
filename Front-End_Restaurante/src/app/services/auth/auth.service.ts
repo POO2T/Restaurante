@@ -137,9 +137,9 @@ export class AuthService {
   // --- TRATAR ERROS ---
   private handleError(error: unknown): Observable<never> {
     console.error('Auth error:', error);
-    // Propaga o erro para o componente poder tratar (ex: mostrar mensagem na tela)
-    const err = error instanceof Error ? error : new Error(typeof error === 'string' ? error : 'Erro desconhecido');
-    return throwError(() => err);
+    // Propaga o erro original (ex: HttpErrorResponse) para o componente poder tratar
+    // Dessa forma o componente pode acessar error.error.message vindo do backend
+    return throwError(() => error);
   }
 
   // --- GETTERS (mantidos para compatibilidade) ---
