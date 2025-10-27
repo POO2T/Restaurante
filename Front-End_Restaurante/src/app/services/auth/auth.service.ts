@@ -36,7 +36,7 @@ export class AuthService {
   // --- LOGIN UNIFICADO ---
   // Ambas as lógicas (cliente e funcionário) agora usam o mesmo endpoint de autenticação
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    const loginEndpoint = '/login'; // Endpoint correto no backend
+  const loginEndpoint = '/auth/login'; // Endpoint REST de login no backend (/api/auth/login)
     return this.apiService.post<LoginResponse>(loginEndpoint, credentials) // Envia JSON
       .pipe(
         tap(response => {

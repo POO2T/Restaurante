@@ -2,6 +2,7 @@ import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-login-funcionario',
@@ -17,6 +18,7 @@ export class LoginFuncionario {
 
   private router = inject(Router);
   private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
 
   constructor() {
     this.form = this.fb.group({

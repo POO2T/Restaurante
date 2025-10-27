@@ -91,10 +91,11 @@ export class LoginCliente {
           // AuthService will set signals; check isAuthenticated
           if (this.authService.isAuthenticated()) {
             if (this.authService.isCliente()) {
-              this.router.navigate(['/']);
+              this.router.navigate(['/cardapio']);
             } else {
               this.erro = 'Login bem-sucedido, mas tipo de usuário inesperado.';
               this.authService.logout();
+              this.router.navigate(['/login-funcionario']);
             }
           } else {
             this.erro = 'Falha no login. Verifique suas credenciais.';

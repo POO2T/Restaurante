@@ -1,5 +1,4 @@
-import { Usuario } from "./user.model";
-import { TipoFuncionario } from "./user.model";
+import { TipoFuncionario, Usuario } from "./user.model";
 
 export interface LoginRequest {
   telefone?: string;
