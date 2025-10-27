@@ -6,6 +6,7 @@ import com.example.Back_End_Restaurante.Model.Cliente;
 import com.example.Back_End_Restaurante.Repositorio.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
@@ -15,6 +16,9 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public List<Cliente> ListarTodosClientes() {
         return clienteRepository.findAll();
     }
@@ -23,7 +27,8 @@ public class ClienteService {
         Cliente cliente = new Cliente();
         cliente.setNome(clienteDTO.getNome());
         cliente.setTelefone(clienteDTO.getTelefone());
-        cliente.setSenha(clienteDTO.getSenha());
+        // Hashear a senha do cliente antes de salvar para compatibilidade com Spring Security
+        cliente.setSenha(passwordEncoder.encode(clienteDTO.getSenha()));
 
         try {
             if(clienteRepository.existsByEmail(clienteDTO.getEmail())) {

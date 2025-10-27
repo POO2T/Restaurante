@@ -40,8 +40,8 @@ public class SecurityConfig {
                 // Habilita o login via formulário (que também cria o endpoint POST /login)
                 .formLogin(form -> form
                         .loginProcessingUrl("/login") // will be prefixed by context-path -> effective /api/login
-                        .usernameParameter("email")    // username field
-                        .passwordParameter("senha")    // password field
+                        .usernameParameter("username")    // username field
+                        .passwordParameter("password")    // password field
                         // Return JSON on success/failure instead of redirecting to HTML pages
                         .successHandler((request, response, authentication) -> {
                             Objects.requireNonNull(request);

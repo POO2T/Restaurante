@@ -1,7 +1,9 @@
 package com.example.Back_End_Restaurante.Security;
 
 import com.example.Back_End_Restaurante.Model.Funcionario;
+import com.example.Back_End_Restaurante.Model.Cliente;
 import com.example.Back_End_Restaurante.Repositorio.FuncionarioRepository;
+import com.example.Back_End_Restaurante.Repositorio.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,23 +22,30 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private FuncionarioRepository funcionarioRepository;
 
+    @Autowired
+    private ClienteRepository clienteRepository;
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // Busca o funcionário pelo email no banco
-        Funcionario funcionario = funcionarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + email));
-
-        // Cria uma coleção de "authorities" (roles/permissões)
-        // Por enquanto, vamos dar uma role simples baseada no cargo, prefixada com ROLE_
-        // Ex: Se o cargo for GERENTE, a role será ROLE_GERENTE
-        // Você pode customizar isso depois
+    // Primeiro tenta buscar um funcionário (prioriza funcionários)
+    var maybeFunc = funcionarioRepository.findByEmail(email);
+    if (maybeFunc.isPresent()) {
+        Funcionario funcionario = maybeFunc.get();
         Collection<? extends GrantedAuthority> authorities =
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + funcionario.getCargo().name()));
-
-
-        // Retorna um objeto UserDetails que o Spring Security entende
-        // O username aqui é o email, a senha é a senha HASHEADA do banco,
-        // e as authorities são as roles.
+            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + funcionario.getCargo().name()));
         return new User(funcionario.getEmail(), funcionario.getSenha(), authorities);
+    }
+
+    // Se não for funcionário, tenta buscar como cliente
+    var maybeCliente = clienteRepository.findByEmail(email);
+    if (maybeCliente.isPresent()) {
+        Cliente cliente = maybeCliente.get();
+        Collection<? extends GrantedAuthority> authorities =
+            Collections.singletonList(new SimpleGrantedAuthority("ROLE_CLIENTE"));
+        return new User(cliente.getEmail(), cliente.getSenha(), authorities);
+    }
+
+    // Não encontrado em nenhum dos repositórios
+    throw new UsernameNotFoundException("Usuário não encontrado com o email: " + email);
     }
 }
