@@ -1,5 +1,7 @@
 package com.example.Back_End_Restaurante.Config;
 
+
+
 import com.example.Back_End_Restaurante.Security.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +15,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import jakarta.servlet.http.HttpServletResponse;
-import java.util.Objects;
 
 @Configuration
 @EnableWebSecurity
@@ -22,47 +22,38 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .csrf(csrf -> csrf.disable()) // Desabilita CSRF para APIs REST
-        .cors(Customizer.withDefaults()) // Habilita suporte a CORS usando CorsConfigurationSource/CorsFilter
-         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // REMOVA ou COMENTE esta linha por enquanto para usar o login padrão
-        .authorizeHttpRequests(authorize -> authorize
-                        // Permite acesso PÚBLICO ao endpoint de cadastro de funcionários (POST) - Ajuste se necessário
-                        .requestMatchers(HttpMethod.POST, "/api/funcionarios").permitAll()
-                        // Permite acesso PÚBLICO ao endpoint de cadastro de clientes (POST) - Ajuste se necessário
-                        .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
-                        // Você pode adicionar outras rotas públicas aqui (ex: GET /cardapio)
-                        // .requestMatchers(HttpMethod.GET, "/api/produtos").permitAll()
+        http
+            // Habilita CORS usando a CorsConfigurationSource/CorsFilter definidos na aplicação
+            .cors(Customizer.withDefaults())
+            .csrf(csrf -> csrf.disable()) // Desabilita CSRF para APIs REST
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // REMOVA ou COMENTE esta linha por enquanto para usar o login padrão
+            .authorizeHttpRequests(authorize -> authorize
+                    // Permite preflight CORS (OPTIONS) para todas as rotas
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    // Permite acesso PÚBLICO ao endpoint de cadastro de funcionários (POST) - Ajuste se necessário
+                    .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/funcionarios").permitAll()
+                    // Permite acesso PÚBLICO ao endpoint de cadastro de clientes (POST) - Ajuste se necessário
+                    .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/h2-console").permitAll()
+                    // Você pode adicionar outras rotas públicas aqui (ex: GET /cardapio)
+                    // .requestMatchers(HttpMethod.GET, "/api/produtos").permitAll()
 
-                        // Qualquer outra requisição PRECISA estar autenticada
-                        .anyRequest().authenticated()
-                )
-                // Habilita o login via formulário (que também cria o endpoint POST /login)
-                .formLogin(form -> form
-                        .loginProcessingUrl("/login") // will be prefixed by context-path -> effective /api/login
-                        .usernameParameter("username")    // username field
-                        .passwordParameter("password")    // password field
-                        // Return JSON on success/failure instead of redirecting to HTML pages
-                        .successHandler((request, response, authentication) -> {
-                            Objects.requireNonNull(request);
-                            Objects.requireNonNull(authentication);
-                            response.setStatus(HttpServletResponse.SC_OK);
-                            response.setContentType("application/json;charset=UTF-8");
-                            // Minimal success payload; you can expand to include token/user info
-                            response.getWriter().write("{\"status\":\"ok\"}");
-                        })
-                        .failureHandler((request, response, exception) -> {
-                            Objects.requireNonNull(request);
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.setContentType("application/json;charset=UTF-8");
-                            response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"" + (exception != null ? exception.getMessage() : "Auth failed") + "\"}");
-                        })
-                        .permitAll()
-                )
-                // Habilita o logout (cria o endpoint /logout)
-                .logout(logout -> logout.permitAll())
-                .httpBasic(Customizer.withDefaults()); // Habilita autenticação HTTP Basic também (útil para testes)
-
+                    // Qualquer outra requisição PRECISA estar autenticada
+                    .anyRequest().authenticated()
+            )
+            // Habilita o login via formulário (que também cria o endpoint POST /login)
+            .formLogin(form -> form
+                            .loginProcessingUrl("/login") // URL onde o POST de login será enviado
+                            .usernameParameter("email")    // Diz ao Spring que o campo de usuário se chama 'email'
+                            .passwordParameter("senha")    // Diz ao Spring que o campo de senha se chama 'senha' (ou deixe 'password' se preferir)
+                            .permitAll() // Permite acesso à URL de login
+                    // Você pode adicionar .defaultSuccessUrl("/alguma-url-apos-login") ou handlers de sucesso/falha
+            )
+            // Habilita o logout (cria o endpoint /logout)
+            .logout(logout -> logout.permitAll())
+            .httpBasic(Customizer.withDefaults()); // Habilita autenticação HTTP Basic também (útil para testes)
+            
         return http.build();
     }
     private final UserDetailsServiceImpl userDetailsService;

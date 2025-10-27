@@ -61,8 +61,11 @@ public class FuncionarioController {
                 .buildAndExpand(funcionarioSalvo.getId())
                 .toUri();
 
-        // 3. Converte a entidade salva para DTO e retorna 201 CREATED
-        return ResponseEntity.created(location).body(converterParaDTO(funcionarioSalvo));
+    // 3. Converte a entidade salva para DTO e retorna 201 CREATED
+    // Inclui header X-H2-Console para facilitar abertura do console H2 em ambiente de desenvolvimento
+    return ResponseEntity.created(location)
+        .header("X-H2-Console", "/api/h2-console")
+        .body(converterParaDTO(funcionarioSalvo));
     }
 
     /**
