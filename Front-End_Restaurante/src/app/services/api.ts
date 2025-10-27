@@ -7,7 +7,7 @@ import { StorageService } from './storage.service';
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:8080'; // Ajuste conforme seu backend
+  private baseUrl = 'http://localhost:8080/api'; // Ajuste conforme seu backend
   private http = inject(HttpClient);
   private storage = new StorageService();
 

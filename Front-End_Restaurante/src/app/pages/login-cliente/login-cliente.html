@@ -6,6 +6,7 @@
       <img src="./svg/bem_vindo.svg" alt="Bem Vindos">
       <h2>{{ isRegistrado ? 'Criar Conta' : 'Login Cliente' }}</h2>
       <p>{{ isRegistrado ? 'Cadastre-se e faça seus pedidos' : 'Acesse sua conta e faça seus pedidos' }}</p>
+      <p>{{"isRegistrado: " + this.isRegistrado}}</p>
     </div>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">

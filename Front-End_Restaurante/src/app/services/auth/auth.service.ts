@@ -36,27 +36,36 @@ export class AuthService {
   // --- LOGIN UNIFICADO ---
   // Ambas as lógicas (cliente e funcionário) agora usam o mesmo endpoint de autenticação
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    const loginEndpoint = '/api/login'; // Endpoint correto no backend
+    const loginEndpoint = '/login'; // Endpoint correto no backend
     return this.apiService.post<LoginResponse>(loginEndpoint, credentials) // Envia JSON
       .pipe(
         tap(response => {
           // --- PONTO CRÍTICO PARA JWT ---
-          // QUANDO O BACKEND RETORNAR UM TOKEN, ESTA LÓGICA VAI MUDAR COMPLETAMENTE
+          // Quando o backend retornar um token, a lógica vai evoluir.
           console.log("Login success response:", response);
 
-          // Lógica TEMPORÁRIA (pré-JWT): Determina o tipo baseado na resposta ou contexto
-          // ATENÇÃO: O backend SÓ AUTENTICA FUNCIONÁRIO por enquanto!
-          // Você precisará de uma forma de saber se é cliente ou funcionário
-          // Talvez a resposta do backend inclua o tipo/role?
-          // Se não, essa lógica aqui está INCORRETA para diferenciar.
-          // Assumindo temporariamente que o login é sempre de Funcionário:
-          if (response) { // Verifica se houve alguma resposta válida
-             this.handleLoginSuccess(response, 'FUNCIONARIO'); // <<<<<<<< PRECISA SER AJUSTADO PARA CLIENTE
-          } else {
-             // Se a resposta for vazia ou inesperada, trate como erro
-             throw new Error("Resposta de login inválida do servidor.");
+          if (!response) {
+            throw new Error("Resposta de login inválida do servidor.");
           }
 
+          // Preferência: o backend pode retornar explícito `tipoUsuario`.
+          // Caso não retorne, usamos heurística com base nos campos do usuário.
+          let tipo: 'CLIENTE' | 'FUNCIONARIO' = (response as any).tipoUsuario ?? null;
+          if (!tipo) {
+            const u = (response as LoginResponse).usuario as any;
+            if (u) {
+              if (u.cpf) tipo = 'CLIENTE';
+              else if (u.tipoFuncionario || u.salario || u.dataAdmissao) tipo = 'FUNCIONARIO';
+            }
+          }
+
+          // Fallback seguro: se não for possível determinar, assume FUNCIONARIO
+          if (!tipo) {
+            console.warn('Não foi possível determinar tipo de usuário no login; assumindo FUNCIONARIO por compatibilidade.');
+            tipo = 'FUNCIONARIO';
+          }
+
+          this.handleLoginSuccess(response, tipo);
         }),
         catchError(this.handleError) // Propaga o erro
       );
@@ -65,14 +74,14 @@ export class AuthService {
   // --- MÉTODOS DE REGISTRO ---
   registerCliente(userData: RegisterClienteRequest): Observable<Usuario> {
     // Endpoint CORRETO para cadastro de cliente
-    return this.apiService.post<Usuario>('/api/clientes', userData)
+    return this.apiService.post<Usuario>('/clientes', userData)
       .pipe(catchError(this.handleError));
   }
 
   registerFuncionario(userData: RegisterFuncionarioRequest): Observable<Usuario> {
     // Endpoint para cadastro de funcionário (VERIFICAR SE EXISTE NO BACKEND)
     // Se for o mesmo POST /api/funcionarios, ajuste aqui.
-    return this.apiService.post<Usuario>('/api/funcionarios', userData) // Ajustei para /api/funcionarios, verifique seu backend
+    return this.apiService.post<Usuario>('/funcionarios', userData) // Ajustei para /api/funcionarios, verifique seu backend
       .pipe(catchError(this.handleError));
   }
 
@@ -124,14 +133,22 @@ export class AuthService {
 
     // Salva a resposta do backend (que inclui dados do usuário)
     const user = (response as LoginResponse).usuario;
+    // Se o backend já retornou um token, armazene-o para uso futuro (JWT)
+    if ((response as LoginResponse).token) {
+      try {
+        this.storage.setItem('auth_token', (response as LoginResponse).token);
+      } catch (e) {
+        console.warn('Não foi possível salvar token no storage:', e);
+      }
+    }
     this.storage.setItem('user_data', JSON.stringify(user));
     this.storage.setItem('user_type', type);
     this.storage.setItem('isLoggedIn', 'true'); // Marca como logado
 
-  // Atualiza o estado da aplicação (signals)
-  this.currentUser.set(user);
-  this.isAuthenticated.set(true);
-  this.userType.set(type);
+    // Atualiza o estado da aplicação (signals)
+    this.currentUser.set(user);
+    this.isAuthenticated.set(true);
+    this.userType.set(type);
   }
 
   // --- TRATAR ERROS ---
