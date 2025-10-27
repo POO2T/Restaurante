@@ -49,13 +49,13 @@ java -jar target\Back-End_Restaurante-0.0.1-SNAPSHOT.jar --spring.profiles.activ
 O perfil `h2` utiliza um banco em memória — bom para testes rápidos.
 
 ```powershell
-.\mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=h2
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=h2"
 ```
 
 Executando os testes com H2:
 
 ```powershell
-.\mvnw.cmd test -Dspring.profiles.active=h2
+.\mvnw.cmd test "-Dspring.profiles.active=h2"
 ```
 
 ### Console do H2
