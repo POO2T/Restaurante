@@ -10,4 +10,13 @@ import { RouterModule } from '@angular/router';
 })
 export class Header {
 
+  isNavOpen = false;
+
+  toggleNav() {
+    this.isNavOpen = !this.isNavOpen;
+  }
+  closeNav() {
+    this.isNavOpen = false;
+  }
+
 }

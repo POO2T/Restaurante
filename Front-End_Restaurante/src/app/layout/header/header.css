@@ -31,6 +31,23 @@
 /*
 *   Estilos de navegação principal (Início)
 */
+
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    margin-left: 20px;
+}
+.nav-toggle span {
+    height: 3px;
+    width: 30px;
+    background-color: var(--text-link-color);
+    margin: 4px 0;
+    border-radius: 10px;
+
+    transition: all 0.3s ease;
+}
+
 .main-nav {
     flex-grow: 1;
     margin: 30px;
@@ -121,9 +138,38 @@
 */
 
 /*
+*   Estilos do overlay quando o menu está aberto
+*/
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 900; /* Fixa o overlay acima do conteúdo */
+    opacity: 0;
+    transition: opacity 200ms ease-in-out;
+}
+.overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+
+/*
 *   Responsividade para telas menores
 */
 @media (max-width: 768px) {
+    .logo {
+        display: none;
+    }
+
+    .main-nav {
+        margin: 0px 10px;
+    }
+
     .login-button {
         margin-right: 10px;
     }
@@ -144,8 +190,66 @@
 }
 
 @media (max-width: 480px) {
+
+    .nav-toggle {
+        display: flex;
+    }
+
+    .nav-toggle.active span:nth-child(1) {
+        height: 5px;
+        transform: rotate(-45deg) translateY(17px);
+    }
+    .nav-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+    .nav-toggle.active span:nth-child(3) {
+        height: 5px;
+        transform: rotate(45deg) translateY(-17px);
+    }
+
+    .nav-toggle.active + .main-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        position: absolute;
+        top: 7vh;
+        left: 10vw;
+        background-color: #f0f0f0;
+        padding: 10px 10px;
+
+        z-index: 1000;
+
+        border: 2px solid var(--secondary-color);
+        border-radius: 12px;
+        box-shadow: var(--btn-shadow);
+    }
+
+    .main-nav {
+        display: none; /* Esconde a navegação principal em telas menores */
+    }
+    .main-nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .main-nav li {
+        width: 100%;
+        text-align: center;
+        padding: 2px 0;
+        border-bottom: 10px solid var(--border-color);
+    }
+    .main-nav a {
+        font-size: 1.2em;
+        color: var(--text-link-color);
+    }
+
+
     .btn-login {
         padding: 8px 12px;
         min-width: 44px; /* Tamanho mínimo para touch targets */
+    }
+
+    .btn-login span {
+        display: block;
     }
 }

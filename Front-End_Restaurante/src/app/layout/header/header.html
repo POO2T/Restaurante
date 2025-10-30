@@ -2,11 +2,18 @@
   <div class="logo">
     <img src="assets/imgs/logo.png" alt="Logo Bella Piatto" />
   </div>
+
+  <div class="nav-toggle" (click)="toggleNav()" [class.active]="isNavOpen">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
   <nav class="main-nav">
     <ul>
-      <li><a routerLink="/home">Início</a></li>
-      <li><a routerLink="/pedidos">Pedidos</a></li>
-      <li><a routerLink="/cardapio">Cardápio</a></li>
+      <li><a routerLink="/home" (click)="toggleNav()">Início</a></li>
+      <li><a routerLink="/pedidos" (click)="toggleNav()">Pedidos</a></li>
+      <li><a routerLink="/cardapio" (click)="toggleNav()">Cardápio</a></li>
     </ul>
   </nav>
 
@@ -16,4 +23,6 @@
       <span>Login</span>
     </a>
   </div>
+
+  <div class="overlay" [class.active]="isNavOpen" (click)="closeNav()"></div>
 </header>
