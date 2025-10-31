@@ -68,6 +68,7 @@
 
 .main-nav a:hover {
     font-size: 1.6em;
+    color: var(--secondary-color);
 }
 /*
 *   Estilos de navegação principal (Fim)
@@ -151,10 +152,6 @@
     z-index: 900; /* Fixa o overlay acima do conteúdo */
     opacity: 0;
     transition: opacity 200ms ease-in-out;
-}
-.overlay.active {
-    display: block;
-    opacity: 1;
 }
 
 
@@ -251,5 +248,10 @@
 
     .btn-login span {
         display: block;
+    }
+
+    .overlay.active {
+        display: block;
+        opacity: 1;
     }
 }

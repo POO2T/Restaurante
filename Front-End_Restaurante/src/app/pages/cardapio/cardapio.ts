@@ -137,8 +137,4 @@ export class Cardapio implements OnInit {
     // Limpa o carrinho
     this.carrinho = [];
   }
-
-  voltarInicio() {
-    this.router.navigate(['/']);
-  }
 }

@@ -123,4 +123,20 @@
         max-width: 300px;
         margin: 0 auto;
     }
+
+    .home-image {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-text h1 {
+        font-size: 1.5em;
+    }
+    
+    .home-text p {
+        font-size: 1em;
+    }
+
+
 }
