@@ -142,8 +142,4 @@ export class Pedidos implements OnInit {
       })
       .reduce((total, pedido) => total + pedido.total, 0);
   }
-
-  voltarInicio() {
-    this.router.navigate(['/']);
-  }
 }

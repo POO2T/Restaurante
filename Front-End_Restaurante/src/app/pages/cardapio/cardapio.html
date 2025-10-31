@@ -79,11 +79,13 @@
     <div class="carrinho-resumo">
       <h3>Seu Pedido</h3>
       <div class="carrinho-items">
-        <div *ngFor="let item of carrinho" class="carrinho-item">
-          <span>{{ item.produto.nome }}</span>
-          <span>{{ item.quantidade }}x</span>
-          <span>R$ {{ (item.produto.preco * item.quantidade).toFixed(2) }}</span>
-        </div>
+        @for (item of carrinho; track item) {
+          <div class="carrinho-item">
+            <span>{{ item.produto.nome }}</span>
+            <span>{{ item.quantidade }}x</span>
+            <span>R$ {{ (item.produto.preco * item.quantidade).toFixed(2) }}</span>
+          </div>
+        }
       </div>
       <div class="carrinho-total">
         <strong>Total: R$ {{ totalCarrinho.toFixed(2) }}</strong>

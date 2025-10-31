@@ -106,11 +106,11 @@
     }
     
     .home-text h1 {
-        font-size: 2em;
+        font-size: 3em;
     }
     
     .home-text p {
-        font-size: 1.1em;
+        font-size: 1.3em;
     }
     
     .home-buttons {
@@ -131,11 +131,11 @@
 
 @media (max-width: 480px) {
     .home-text h1 {
-        font-size: 1.5em;
+        font-size: 2.5em;
     }
     
     .home-text p {
-        font-size: 1em;
+        font-size: 1.5em;
     }
 
 
