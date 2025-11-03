@@ -1,9 +1,9 @@
 package com.example.Back_End_Restaurante.Security;
 
-import com.example.Back_End_Restaurante.Model.Funcionario;
 import com.example.Back_End_Restaurante.Model.Cliente;
-import com.example.Back_End_Restaurante.Repositorio.FuncionarioRepository;
+import com.example.Back_End_Restaurante.Model.Funcionario;
 import com.example.Back_End_Restaurante.Repositorio.ClienteRepository;
+import com.example.Back_End_Restaurante.Repositorio.FuncionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Collections; // Para criar a lista de roles
+import java.util.Optional;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -27,25 +28,23 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    // Primeiro tenta buscar um funcionário (prioriza funcionários)
-    var maybeFunc = funcionarioRepository.findByEmail(email);
-    if (maybeFunc.isPresent()) {
-        Funcionario funcionario = maybeFunc.get();
-        Collection<? extends GrantedAuthority> authorities =
-            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + funcionario.getCargo().name()));
-        return new User(funcionario.getEmail(), funcionario.getSenha(), authorities);
-    }
+        Optional<Funcionario> funcionarioOpt = funcionarioRepository.findByEmail(email);
+        if (funcionarioOpt.isPresent()) {
+            Funcionario funcionario = funcionarioOpt.get();
+            Collection<? extends GrantedAuthority> authorities =
+                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + funcionario.getCargo().name()));
+            return new User(funcionario.getEmail(), funcionario.getSenha(), authorities);
+        }
 
-    // Se não for funcionário, tenta buscar como cliente
-    var maybeCliente = clienteRepository.findByEmail(email);
-    if (maybeCliente.isPresent()) {
-        Cliente cliente = maybeCliente.get();
-        Collection<? extends GrantedAuthority> authorities =
-            Collections.singletonList(new SimpleGrantedAuthority("ROLE_CLIENTE"));
-        return new User(cliente.getEmail(), cliente.getSenha(), authorities);
-    }
-
-    // Não encontrado em nenhum dos repositórios
-    throw new UsernameNotFoundException("Usuário não encontrado com o email: " + email);
+        Optional<Cliente> clienteOpt = clienteRepository.findByEmail(email);
+        if (clienteOpt.isPresent())
+        {
+            Cliente cliente = clienteOpt.get();
+            Collection<? extends GrantedAuthority> authorities =
+                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_CLIENTE"));
+            return new User(cliente.getEmail(), cliente.getSenha(), authorities);
+        } else {
+            throw new UsernameNotFoundException("Usuário não encontrado com o email: " + email);
+        }
     }
 }

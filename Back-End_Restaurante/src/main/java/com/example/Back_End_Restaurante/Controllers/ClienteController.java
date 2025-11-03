@@ -54,10 +54,8 @@ public class ClienteController {
                 .buildAndExpand(clienteSalvo.getId())
                 .toUri();
 
-    // 4. Retorna status 201 CREATED com a URI no header 'Location', um header com link para H2 (dev) e o DTO no corpo
-    return ResponseEntity.created(location)
-        .header("X-H2-Console", "/api/h2-console")
-        .body(dtoResposta);
+        // 4. Retorna status 201 CREATED com a URI no header 'Location' e o DTO no corpo
+        return ResponseEntity.created(location).body(dtoResposta);
     }
 
     /**

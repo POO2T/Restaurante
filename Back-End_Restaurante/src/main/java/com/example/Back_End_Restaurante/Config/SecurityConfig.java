@@ -1,7 +1,10 @@
 package com.example.Back_End_Restaurante.Config;
 
 
-
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.Arrays;
 import com.example.Back_End_Restaurante.Security.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,38 +26,34 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Habilita CORS usando a CorsConfigurationSource/CorsFilter definidos na aplicação
-            .cors(Customizer.withDefaults())
-            .csrf(csrf -> csrf.disable()) // Desabilita CSRF para APIs REST
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // REMOVA ou COMENTE esta linha por enquanto para usar o login padrão
-            .authorizeHttpRequests(authorize -> authorize
-                    // Permite preflight CORS (OPTIONS) para todas as rotas
-                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    // Permite acesso PÚBLICO ao endpoint de cadastro de funcionários (POST) - Ajuste se necessário
-                    .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/funcionarios").permitAll()
-                    // Permite acesso PÚBLICO ao endpoint de cadastro de clientes (POST) - Ajuste se necessário
-                    .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/h2-console").permitAll()
-                    // Você pode adicionar outras rotas públicas aqui (ex: GET /cardapio)
-                    // .requestMatchers(HttpMethod.GET, "/api/produtos").permitAll()
+                // 👇 Garanta que esta linha está presente e chama o método do bean abaixo 👇
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorize -> authorize
+                        // ... suas regras .requestMatchers ...
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/funcionarios").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
+                        .anyRequest().authenticated()
+                );
+        // ... (Filtro JWT será adicionado aqui depois) ...
 
-                    // Qualquer outra requisição PRECISA estar autenticada
-                    .anyRequest().authenticated()
-            )
-            // Habilita o login via formulário (que também cria o endpoint POST /login)
-            .formLogin(form -> form
-                            .loginProcessingUrl("/login") // URL onde o POST de login será enviado
-                            .usernameParameter("email")    // Diz ao Spring que o campo de usuário se chama 'email'
-                            .passwordParameter("senha")    // Diz ao Spring que o campo de senha se chama 'senha' (ou deixe 'password' se preferir)
-                            .permitAll() // Permite acesso à URL de login
-                    // Você pode adicionar .defaultSuccessUrl("/alguma-url-apos-login") ou handlers de sucesso/falha
-            )
-            // Habilita o logout (cria o endpoint /logout)
-            .logout(logout -> logout.permitAll())
-            .httpBasic(Customizer.withDefaults()); // Habilita autenticação HTTP Basic também (útil para testes)
-            
         return http.build();
+    }
+
+    // 👇👇👇 GARANTA QUE ESTE BEAN ESTÁ PRESENTE E CORRETO 👇👇👇
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // Verifique esta URL CUIDADOSAMENTE
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // OPTIONS é crucial
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // Aplica a todas as rotas
+        return source;
     }
     private final UserDetailsServiceImpl userDetailsService;
 
