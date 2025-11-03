@@ -57,7 +57,7 @@
       </div>
 
       @if (erro) {
-        <div class="error-message">
+        <div class="error-message" [class.active]="erro.includes('sucesso')">
           {{ erro }}
         </div>
       }

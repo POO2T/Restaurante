@@ -46,7 +46,7 @@ export class LoginCliente {
   }
 
   onSubmit(): void {
-    console.log('Form submitted', { isRegistrado: this.isRegistrado, values: this.form.value });
+    console.log('Formulário enviado', { isRegistrado: this.isRegistrado, values: this.form.value });
 
     if (!this.form.valid) {
       this.erro = 'Formulário inválido. Preencha os campos obrigatórios.';

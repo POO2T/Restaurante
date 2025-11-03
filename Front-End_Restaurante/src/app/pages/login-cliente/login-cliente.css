@@ -101,6 +101,11 @@
   font-size: 14px;
   text-align: center;
 }
+.error-message.active {
+  background-color: #e6ffed;
+  border-color: #b2f5c2;
+  color: #2f855a;
+}
 
 .form-actions {
   display: flex;

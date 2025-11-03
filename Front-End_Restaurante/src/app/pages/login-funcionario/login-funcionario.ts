@@ -10,7 +10,7 @@ import { AuthService } from '../../services/auth/auth.service';
   imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './login-funcionario.html',
   styleUrls: ['./login-funcionario.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginFuncionario {
   form: FormGroup;
@@ -20,29 +20,71 @@ export class LoginFuncionario {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
 
+  private formatError(err: unknown, fallback = 'Ocorreu um erro'): string {
+    if (!err) return fallback;
+    if (typeof err === 'string') return err;
+    if (err instanceof Error) return err.message || fallback;
+    const anyErr = err as { error?: unknown; message?: string };
+    if (anyErr.error)
+      return typeof anyErr.error === 'string'
+        ? anyErr.error
+        : JSON.stringify(anyErr.error);
+    if (anyErr.message) return anyErr.message;
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return fallback;
+    }
+  }
+
   constructor() {
     this.form = this.fb.group({
-      codigoFuncionario: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      senha: ['', Validators.required]
+      senha: ['', Validators.required],
     });
   }
 
   onSubmit() {
     this.erro = '';
+
+    console.log('Formulário enviado', { values: this.form.value });
+
     if (!this.form.valid) {
-      this.erro = 'Todos os campos são obrigatórios e devem ser válidos.';
+      this.erro = 'Formulário inválido. Preencha os campos obrigatórios.';
       return;
     }
 
     const v = this.form.value;
-    if (v.codigoFuncionario.length < 4) {
-      this.erro = 'Código do funcionário deve ter pelo menos 4 caracteres';
-      return;
-    }
+    const loginData = { email: (v.email || '').trim(), senha: v.senha };
 
-    console.log('Login Funcionário:', { email: v.email, codigo: v.codigoFuncionario });
-    this.router.navigate(['/pedidos']);
+    this.authService.login(loginData).subscribe({
+      next: (response) => {
+        // AuthService will set signals; check isAuthenticated
+        if (this.authService.isAuthenticated()) {
+          if (this.authService.isFuncionario()) {
+            this.router.navigate(['/pedidos']);
+          } else {
+            this.erro = 'Login bem-sucedido, mas tipo de usuário inesperado.';
+            this.authService.logout();
+            this.router.navigate(['/login-cliente']);
+          }
+        } else {
+          this.erro = 'Falha no login. Verifique suas credenciais.';
+        }
+      },
+      error: (error) => {
+        this.erro = this.formatError(
+          error,
+          'Falha no login. Verifique suas credenciais.'
+        );
+      },
+    });
+
+    console.log('Login Funcionário:', {
+      email: v.email,
+      codigo: v.codigoFuncionario,
+    });
+    //this.router.navigate(['/pedidos']);
   }
 
   voltarSelecao() {
@@ -50,10 +92,14 @@ export class LoginFuncionario {
   }
 
   recuperarSenha() {
-    alert('Funcionalidade de recuperação de senha será implementada em breve.\nEntre em contato com o administrador do sistema.');
+    alert(
+      'Funcionalidade de recuperação de senha será implementada em breve.\nEntre em contato com o administrador do sistema.'
+    );
   }
 
   suporteTecnico() {
-    alert('Suporte Técnico:\nTelefone: (11) 99999-9999\nEmail: suporte@bellapiatto.com\nHorário: Segunda a Sexta, 8h às 18h');
+    alert(
+      'Suporte Técnico:\nTelefone: (11) 99999-9999\nEmail: suporte@bellapiatto.com\nHorário: Segunda a Sexta, 8h às 18h'
+    );
   }
 }
