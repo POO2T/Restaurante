@@ -2,20 +2,12 @@
 
   <article class="login-funcionario-container">
       <div class="header">
-        <img src="/assets/imgs/logo.png" alt="Logo Bella Piatto">
+        <img src="svg/bem_vindo.svg" alt="Logo Bella Piatto">
         <h2>Login Funcionário</h2>
         <p>Acesso restrito para funcionários</p>
       </div>
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
-        <div class="form-group">
-          <label for="codigoFuncionario">
-            <i class="icon-badge"></i>
-            Código do Funcionário
-          </label>
-          <input type="text" id="codigoFuncionario" formControlName="codigoFuncionario"
-            placeholder="Digite seu código de funcionário" required>
-        </div>
 
         <div class="form-group">
           <label for="email">
@@ -56,7 +48,7 @@
   </article>
 
   <aside class="login-funcionario-img">
-    <img src="" alt="Pratos de login">
+    <img src="svg/login_funcionario.svg" alt="Pratos de login">
   </aside>
 
 </section>
