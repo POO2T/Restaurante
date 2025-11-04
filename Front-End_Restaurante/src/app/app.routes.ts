@@ -1,17 +1,28 @@
 import { Routes } from '@angular/router';
-import { LoginFuncionario } from './pages/login-funcionario/login-funcionario';
-import { LoginCliente } from './pages/login-cliente/login-cliente';
-import { SeletorLogin } from './pages/seletor-login/seletor-login';
-import { Cardapio } from './pages/cardapio/cardapio';
-import { Pedidos } from './pages/pedidos/pedidos';
+
+// ROTAS PRINCIPAIS
 import { Home } from './pages/home/home';
+import { Cardapio } from './pages/cardapio/cardapio';
+import { SeletorLogin } from './pages/seletor-login/seletor-login';
+
+// ROTAS DE CLIENTES
+import { LoginCliente } from './pages/login-cliente/login-cliente';
+
+// ROTAS DE FUNCIONÁRIOS
+import { Pedidos } from './pages/pedidos/pedidos';
+import { LoginFuncionario } from './pages/login-funcionario/login-funcionario';
+import { Mesas } from './pages/funcionarios/mesas/mesas';
 
 export const routes: Routes = [
     { path: "", component: Home },
-    { path: "seletor-login", component: SeletorLogin },
-    { path: "login-funcionario", component: LoginFuncionario },
-    { path: "login-cliente", component: LoginCliente },
     { path: "cardapio", component: Cardapio },
+    { path: "seletor-login", component: SeletorLogin },
+
+    { path: "login-cliente", component: LoginCliente },
+
+    { path: "login-funcionario", component: LoginFuncionario },
     { path: "pedidos", component: Pedidos },
+    { path: "funcionario/mesas", component: Mesas },
+
     { path: "**", redirectTo: "", pathMatch: "full" } // Rota coringa para páginas não encontradas
 ];
