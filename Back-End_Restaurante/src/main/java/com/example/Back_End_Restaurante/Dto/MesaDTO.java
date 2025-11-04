@@ -1,34 +1,60 @@
 package com.example.Back_End_Restaurante.Dto;
 
 
-import com.example.Back_End_Restaurante.Enums.StatusMesa;
 
-public class MesaDTO
-{
+// @Data, @NoArgsConstructor, @AllArgsConstructor REMOVIDOS
+public class MesaDTO {
+
     private Long id;
+    private Integer numero;
     private String nome;
-    private StatusMesa status;
+    private String status; // Usamos String no DTO
 
-    // Construtores
-    public MesaDTO() {}
+    // Construtor vazio (padrão)
+    public MesaDTO() {
+    }
 
-    public MesaDTO(Long id,String nome , StatusMesa status) {
+    // Construtor com todos os argumentos (usado no service)
+    public MesaDTO(Long id, Integer numero, String nome, String status) {
         this.id = id;
+        this.numero = numero;
         this.nome = nome;
         this.status = status;
-}
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    }
+
+    // --- Getters e Setters manuais ---
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getNumero() {
+        return numero;
+    }
+
+    public void setNumero(Integer numero) {
+        this.numero = numero;
+    }
 
     public String getNome() {
         return nome;
     }
+
     public void setNome(String nome) {
         this.nome = nome;
     }
 
-    public StatusMesa getStatus() { return status; }
-    public void setStatus(StatusMesa status) { this.status = status; }
+    public String getStatus() {
+        return status;
+    }
 
-
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
+
+
