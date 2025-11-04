@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { RouterModule, ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/internal/operators/filter';
 
 @Component({
   selector: 'app-header',
@@ -10,8 +11,29 @@ import { RouterModule } from '@angular/router';
 })
 export class Header {
 
-  isNavOpen = false;
+  rotaAtual: string = '';
+  isFuncionarioRoute: boolean = false;
+  isNavOpen: boolean = false;
 
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
+  
+  constructor() {}
+  
+  ngOnInit(): void {
+    //this.rotaAtual = this.activatedRoute.snapshot.url.join('/');
+
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      this.rotaAtual = event.urlAfterRedirects;
+      this.isFuncionarioRoute = this.rotaAtual.includes("/funcionario");
+      console.log(this.rotaAtual);
+      console.log(this.isFuncionarioRoute);
+    });
+  }
+
+  
   toggleNav() {
     this.isNavOpen = !this.isNavOpen;
   }
