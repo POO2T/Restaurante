@@ -4,6 +4,7 @@ export interface LoginRequest {
   telefone?: string;
   email?: string;
   senha: string;
+  tipoUsuario?: 'CLIENTE' | 'FUNCIONARIO';
 }
 
 export interface LoginResponse {

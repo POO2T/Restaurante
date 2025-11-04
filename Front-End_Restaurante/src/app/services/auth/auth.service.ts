@@ -7,7 +7,7 @@ import { LoginRequest, LoginResponse, RegisterClienteRequest, RegisterFuncionari
 import { Usuario } from '../../models/user.model'; // Seu modelo base de usuário
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   // Signals para uma abordagem mais moderna e reativa no Angular
@@ -25,8 +25,6 @@ export class AuthService {
   });
 
   // Tenta carregar o estado de autenticação ao iniciar o serviço
-  // Usa StorageService.isBrowser() para verificar se estamos no navegador
-  // (StorageService já injeta PLATFORM_ID internamente)
   init() {
     if (this.storage.isBrowser()) {
       this.checkAuthStatus();
@@ -34,35 +32,38 @@ export class AuthService {
   }
 
   // --- LOGIN UNIFICADO ---
-  // Ambas as lógicas (cliente e funcionário) agora usam o mesmo endpoint de autenticação
+  // Usado por ambas as páginas (login-cliente e login-funcionario)
   login(credentials: LoginRequest): Observable<LoginResponse> {
-  const loginEndpoint = '/auth/login'; // Endpoint REST de login no backend (/api/auth/login)
-    return this.apiService.post<LoginResponse>(loginEndpoint, credentials) // Envia JSON
+    const loginEndpoint = '/auth/login'; // SEU ENDPOINT UNIFICADO
+    return this.apiService
+      .post<LoginResponse>(loginEndpoint, credentials)
       .pipe(
-        tap(response => {
-          // --- PONTO CRÍTICO PARA JWT ---
-          // Quando o backend retornar um token, a lógica vai evoluir.
-          console.log("Login success response:", response);
+        tap((response) => {
+          console.log('Login success response:', response);
 
           if (!response) {
-            throw new Error("Resposta de login inválida do servidor.");
+            throw new Error('Resposta de login inválida do servidor.');
           }
 
-          // Preferência: o backend pode retornar explícito `tipoUsuario`.
-          // Caso não retorne, usamos heurística com base nos campos do usuário.
+          // Determinar tipo de usuário baseado na resposta
           let tipo: 'CLIENTE' | 'FUNCIONARIO' = (response as any).tipoUsuario ?? null;
+          
           if (!tipo) {
             const u = (response as LoginResponse).usuario as any;
             if (u) {
-              if (u.cpf) tipo = 'CLIENTE';
-              else if (u.tipoFuncionario || u.salario || u.dataAdmissao) tipo = 'FUNCIONARIO';
+              // Verificar campos específicos para determinar tipo
+              if (u.telefone && !u.cargo && !u.salario) {
+                tipo = 'CLIENTE';
+              } else if (u.cargo || u.salario || u.tipoFuncionario) {
+                tipo = 'FUNCIONARIO';
+              }
             }
           }
 
-          // Fallback seguro: se não for possível determinar, assume FUNCIONARIO
+          // Fallback: assumir CLIENTE se não conseguir determinar
           if (!tipo) {
-            console.warn('Não foi possível determinar tipo de usuário no login; assumindo FUNCIONARIO por compatibilidade.');
-            tipo = 'FUNCIONARIO';
+            console.warn('Não foi possível determinar tipo de usuário; assumindo CLIENTE.');
+            tipo = 'CLIENTE';
           }
 
           this.handleLoginSuccess(response, tipo);
@@ -73,79 +74,140 @@ export class AuthService {
 
   // --- MÉTODOS DE REGISTRO ---
   registerCliente(userData: RegisterClienteRequest): Observable<Usuario> {
-    // Endpoint CORRETO para cadastro de cliente
-    return this.apiService.post<Usuario>('/clientes', userData)
+    // ENDPOINT CORRETO: /api/clientes
+    return this.apiService
+      .post<Usuario>('/clientes', userData)
       .pipe(catchError(this.handleError));
   }
 
   registerFuncionario(userData: RegisterFuncionarioRequest): Observable<Usuario> {
-    // Endpoint para cadastro de funcionário (VERIFICAR SE EXISTE NO BACKEND)
-    // Se for o mesmo POST /api/funcionarios, ajuste aqui.
-    return this.apiService.post<Usuario>('/funcionarios', userData) // Ajustei para /api/funcionarios, verifique seu backend
+    // ENDPOINT CORRETO: /api/funcionarios
+    return this.apiService
+      .post<Usuario>('/funcionarios', userData) // Ajustei para /api/funcionarios, verifique seu backend
       .pipe(catchError(this.handleError));
+  }
+
+  // --- MÉTODOS DE LOGIN ESPECÍFICOS (para compatibilidade) ---
+  // Ambos usam o mesmo endpoint /auth/login
+  loginCliente(credentials: { email: string; senha: string }): Observable<LoginResponse> {
+    const loginRequest: LoginRequest = {
+      ...credentials,
+      // Adicione qualquer campo extra que seu backend precise para identificar tipo
+      tipoUsuario: 'CLIENTE' // Se necessário
+    };
+    return this.login(loginRequest);
+  }
+
+  loginFuncionario(credentials: { email: string; senha: string }): Observable<LoginResponse> {
+    const loginRequest: LoginRequest = {
+      ...credentials,
+      // Adicione qualquer campo extra que seu backend precise para identificar tipo
+      tipoUsuario: 'FUNCIONARIO' // Se necessário
+    };
+    return this.login(loginRequest);
   }
 
   // --- LOGOUT ---
   logout(): void {
-    // Remove os itens temporários do localStorage
+    // Remove tokens e dados do localStorage
+    this.storage.removeItem('auth_token');
     this.storage.removeItem('user_data');
     this.storage.removeItem('user_type');
     this.storage.removeItem('isLoggedIn');
-    // localStorage.removeItem('auth_token'); // Removerá o token JWT futuramente
 
-    // Reseta o estado nos signals e subjects
+    // Reseta o estado nos signals
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
     this.userType.set(null);
   }
 
-  // --- VERIFICAR STATUS (LÓGICA TEMPORÁRIA) ---
-  private checkAuthStatus(): void {
-    // ATENÇÃO: Esta lógica é TEMPORÁRIA e funciona sem token JWT.
-    // PRECISARÁ SER REFEITA para validar um token JWT armazenado.
-    const userData = this.storage.getItem('user_data');
-    const userType = (this.storage.getItem('user_type') as 'CLIENTE' | 'FUNCIONARIO' | null) || null;
-    const isLoggedIn = this.storage.getItem('isLoggedIn') === 'true'; // Verifica a flag
+  // Obter token JWT
+  getToken(): string | null {
+    return this.storage.getItem('auth_token');
+  }
 
-        if (isLoggedIn && userData && userType) {
+  // Verificar se token é válido
+  private isTokenValid(token: string): boolean {
+    try {
+      const payload = this.decodeJWT(token);
+      const now = Math.floor(Date.now() / 1000);
+      return payload.exp > now;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // Decodificar JWT
+  private decodeJWT(token: string): any {
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        throw new Error('Token JWT inválido');
+      }
+      
+      const payload = parts[1];
+      const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      return JSON.parse(decoded);
+    } catch (error) {
+      throw new Error('Erro ao decodificar JWT');
+    }
+  }
+
+  // --- VERIFICAR STATUS ---
+  private checkAuthStatus(): void {
+    const token = this.storage.getItem('auth_token');
+    const userData = this.storage.getItem('user_data');
+    const userType = this.storage.getItem('user_type') as 'CLIENTE' | 'FUNCIONARIO' | null;
+    const isLoggedIn = this.storage.getItem('isLoggedIn') === 'true';
+
+    if (token && isLoggedIn && userData && userType) {
+      // Verificar se token ainda é válido
+      if (this.isTokenValid(token)) {
+        try {
+          const user = JSON.parse(userData);
+          this.currentUser.set(user);
+          this.isAuthenticated.set(true);
+          this.userType.set(userType);
+        } catch (e) {
+          console.error('Falha ao parsear dados do usuário:', e);
+          this.logout();
+        }
+      } else {
+        console.warn('Token JWT expirado');
+        this.logout();
+      }
+    } else if (isLoggedIn && userData && userType) {
+      // Caso não tenha token mas tenha dados (compatibilidade)
       try {
         const user = JSON.parse(userData);
         this.currentUser.set(user);
         this.isAuthenticated.set(true);
         this.userType.set(userType);
       } catch (e) {
-        console.error("Falha ao parsear dados do usuário do localStorage", e);
-        this.logout(); // Limpa dados inválidos se o parse falhar
+        console.error('Falha ao parsear dados do usuário:', e);
+        this.logout();
       }
     } else {
-      // Garante que o estado esteja limpo se não houver login salvo válido
-      if (!isLoggedIn) { // Só faz logout se não estiver marcado como logado
-         this.logout();
-      }
+      this.logout();
     }
   }
 
-  // --- TRATAR SUCESSO DO LOGIN (LÓGICA TEMPORÁRIA) ---
+  // --- TRATAR SUCESSO DO LOGIN ---
   private handleLoginSuccess(response: LoginResponse, type: 'CLIENTE' | 'FUNCIONARIO'): void {
-    // ATENÇÃO: Lógica TEMPORÁRIA! Salva a resposta direta do backend e uma flag.
-    // SUBSTITUA quando o backend retornar um token JWT.
-    console.warn("handleLoginSuccess chamado - Implementação JWT necessária!");
+    console.log('Processando login success:', { response, type });
 
-    // Salva a resposta do backend (que inclui dados do usuário)
-    const user = (response as LoginResponse).usuario;
-    // Se o backend já retornou um token, armazene-o para uso futuro (JWT)
-    if ((response as LoginResponse).token) {
-      try {
-        this.storage.setItem('auth_token', (response as LoginResponse).token);
-      } catch (e) {
-        console.warn('Não foi possível salvar token no storage:', e);
-      }
+    // Salvar token JWT se presente
+    if ((response as any).token) {
+      this.storage.setItem('auth_token', (response as any).token);
     }
+
+    // Salvar dados do usuário
+    const user = (response as LoginResponse).usuario;
     this.storage.setItem('user_data', JSON.stringify(user));
     this.storage.setItem('user_type', type);
     this.storage.setItem('isLoggedIn', 'true'); // Marca como logado
 
-    // Atualiza o estado da aplicação (signals)
+    // Atualizar signals
     this.currentUser.set(user);
     this.isAuthenticated.set(true);
     this.userType.set(type);
@@ -154,14 +216,11 @@ export class AuthService {
   // --- TRATAR ERROS ---
   private handleError(error: unknown): Observable<never> {
     console.error('Auth error:', error);
-    // Propaga o erro original (ex: HttpErrorResponse) para o componente poder tratar
-    // Dessa forma o componente pode acessar error.error.message vindo do backend
     return throwError(() => error);
   }
 
   // --- GETTERS (mantidos para compatibilidade) ---
   get currentUser$(): Observable<Usuario | null> {
-    // Live Observable that emits whenever the signal changes.
     return signalToObservable(this.currentUser);
   }
 
@@ -169,12 +228,13 @@ export class AuthService {
     return signalToObservable(this.isAuthenticated);
   }
 
-  // --- VERIFICAÇÕES DE TIPO (mantidas) ---
+  // --- VERIFICAÇÕES DE TIPO ---
   isAdmin(): boolean {
     const user = this.currentUser();
-    // Ajuste a lógica conforme a estrutura real do seu objeto Funcionario na resposta
-    return this.userType() === 'FUNCIONARIO' &&
-      ((user as unknown as { cargo?: string })?.cargo === 'GERENTE'); // Exemplo, verifique o nome exato do campo/enum
+    return (
+      this.userType() === 'FUNCIONARIO' &&
+      (user as any)?.cargo === 'ADMINISTRADOR'
+    );
   }
 
   isFuncionario(): boolean {

@@ -154,6 +154,10 @@
     transition: opacity 200ms ease-in-out;
 }
 
+.sidebar {
+    display: none; /* Escondido por padrão */
+}
+
 
 /*
 *   Responsividade para telas menores

@@ -26,3 +26,10 @@
 
   <div class="overlay" [class.active]="isNavOpen" (click)="closeNav()"></div>
 </header>
+<div class="sidebar">
+  <ul>
+    <li><a routerLink="/home" (click)="toggleNav()">Início</a></li>
+    <li><a routerLink="/pedidos" (click)="toggleNav()">Pedidos</a></li>
+    <li><a routerLink="/cardapio" (click)="toggleNav()">Cardápio</a></li>
+  </ul>
+</div>

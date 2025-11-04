@@ -92,6 +92,7 @@ export class LoginCliente {
           if (this.authService.isAuthenticated()) {
             if (this.authService.isCliente()) {
               this.router.navigate(['/cardapio']);
+              console.log(this.authService.getToken());
             } else {
               this.erro = 'Login bem-sucedido, mas tipo de usuário inesperado.';
               this.authService.logout();
