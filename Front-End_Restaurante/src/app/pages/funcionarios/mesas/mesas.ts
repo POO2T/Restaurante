@@ -22,10 +22,9 @@ export class Mesas {
   mesas: Mesa[] = [];
   statusMesa = Object.values(statusMesa);
 
-
   private fb = inject(FormBuilder);
   private mesaService = inject(MesasService);
-  private authGuard = inject(AuthGuard);
+  //private authGuard = inject(AuthGuard);
 
   constructor() {
 
@@ -35,7 +34,6 @@ export class Mesas {
     // }
 
     this.mesaForm = this.fb.group({
-      id: [null],
       numero: [null, Validators.required],
       nome: [null, Validators.required],
       status: [null, Validators.required]
@@ -68,6 +66,8 @@ export class Mesas {
 
     const mesa: Mesa = this.mesaForm.value;
     
+    mesa.nome = mesa.nome.toUpperCase();
+
     this.mesaService.postMesa(mesa).subscribe((newMesa) => {
       this.mesas.push(newMesa);
       this.mesaForm.reset();
