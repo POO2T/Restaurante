@@ -2,5 +2,10 @@ export interface Mesa {
     id: number;
     numero: number;
     nome: string;
-    status: 'OCUPADA' | 'DISPONIVEL' | 'RESERVADA';
+    status: statusMesa;
+}
+
+export enum statusMesa {
+    OCUPADA = 'OCUPADA',
+    DISPONIVEL = 'DISPONIVEL'
 }
