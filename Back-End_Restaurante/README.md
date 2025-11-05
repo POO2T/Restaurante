@@ -70,6 +70,49 @@ Use a JDBC URL definida em `application-h2.properties` para conectar-se.
 
 ---
 
+## Testes como Admin
+Com o banco de dados configurado, você pode utilizar os comandos a seguir para adicionar um perfil de administrador no sistema para poder realizar as configurações do programa
+
+```powershell
+@'
+{
+  "nome": "Admin Teste",
+  "email": "admin@local.test",
+  "senha": "SenhaSegura123!",
+  "telefone": "+55 11 99999-0000",
+  "dataCriacao": "2025-11-05T00:00:00Z",
+  "tipoFuncionario": "ADMINISTRADOR",
+  "salario": 0,
+  "dataAdmissao": "2025-11-05T00:00:00Z"
+}
+'@ > payload.json
+```
+- Criação do JSON com informações do Admin
+
+```powershell
+@'
+{
+  "email": "existing_admin@local.test",
+  "senha": "SenhaDoAdminExistente123!"
+}
+'@ > login.json
+```
+- Criação do JSON com informações de login para Admin
+
+```powershell
+$login = Invoke-RestMethod -Uri "http://localhost:8080/api/auth/login" -Method Post -ContentType 'application/json' -Body (Get-Content .\login.json -Raw)
+$token = $login.token
+Write-Output "Token obtido: $token"
+```
+- Criando uma requisição para obter um token de autenticação
+
+```powershell
+$headers = @{ Authorization = "Bearer $token" }
+Invoke-RestMethod -Uri "http://localhost:8080/api/funcionarios" -Method Post -ContentType 'application/json' -Headers $headers -Body (Get-Content .\payload.json -Raw)
+```
+- Finalização para cadastro
+
+
 ## 🧭Observações e solução de problemas
 ---
 - Se alterar `server.servlet.context-path` em algum perfil, os endpoints serão prefixados (ex.: `/api`). Atualize as URLs do frontend conforme necessário.
