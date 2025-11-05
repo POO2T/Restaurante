@@ -10,7 +10,7 @@
     --primary-color: #401820;
     --secondary-color: #dfaf68;
     --background-color: #DFDFDF;
-    --background-gradient-color: linear-gradient(135deg, #DFDFDF 0% #401820 50%);
+    --background-gradient-color: linear-gradient(135deg, #DFDFDF 0%, #401820 50%);
 
     --text-color: #000000;
     --text-link-color: #333333; 
