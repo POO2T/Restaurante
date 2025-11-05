@@ -20,6 +20,14 @@ export class LoginFuncionario {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
 
+  constructor() {
+    this.form = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      senha: ['', Validators.required],
+    });
+  }
+
+
   private formatError(err: unknown, fallback = 'Ocorreu um erro'): string {
     if (!err) return fallback;
     if (typeof err === 'string') return err;
@@ -35,13 +43,6 @@ export class LoginFuncionario {
     } catch {
       return fallback;
     }
-  }
-
-  constructor() {
-    this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      senha: ['', Validators.required],
-    });
   }
 
   onSubmit() {
