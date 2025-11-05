@@ -7,7 +7,7 @@ import { Mesa } from '../../models/mesa.model';
 @Injectable({
   providedIn: 'root',
 })
-export class Mesas {
+export class MesasService {
   private apiService = inject(ApiService);
 
   getMesas(): Observable<Mesa[]> {

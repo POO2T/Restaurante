@@ -1,0 +1,108 @@
+/* Mesas page styles — follow global variables from src/styles.css */
+.mesa-section {
+	max-width: 1100px;
+	margin: 24px auto;
+	padding: 20px;
+	background: #fff;
+	border-radius: 10px;
+	box-shadow: 0 6px 18px rgba(64,24,32,0.06);
+}
+
+.mesa-container h1 {
+	font-size: 1.6rem;
+	color: var(--primary-color);
+	margin-bottom: 12px;
+}
+
+.mesa-list {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 12px;
+	margin-bottom: 18px;
+}
+
+.mesa-card {
+	padding: 14px;
+	border: 1px solid rgba(0,0,0,0.06);
+	border-radius: 8px;
+	background: linear-gradient(180deg, #fff, #fbfbfb);
+}
+
+.mesa-card h2 {
+	font-size: 1.05rem;
+	margin-bottom: 6px;
+	color: var(--primary-color);
+}
+
+.mesa-card p {
+	color: #444;
+	font-size: 0.95rem;
+}
+
+.mesa-form {
+	display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-group {
+    width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.mesa-form label { 
+    font-size: 0.9rem; 
+    color: #333; margin-bottom: 6px; 
+}
+
+.mesa-form input[type="text"], .mesa-form select {
+    width: 100%;
+	padding: 10px 12px;
+	border: 1px solid rgba(0,0,0,0.12);
+	border-radius: 6px;
+	background: #fff;
+}
+
+.error-message {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  text-align: center;
+}
+.error-message.active {
+  background-color: #e6ffed;
+  border-color: #b2f5c2;
+  color: #2f855a;
+}
+
+.btn-adicionar {
+    width: 100%;
+	background: var(--btn-primary-background);
+	color: var(--btn-primary-color);
+	border: none;
+	padding: 10px 14px;
+	border-radius: 6px;
+	box-shadow: var(--btn-shadow);
+	cursor: pointer;
+    transition: all 0.3s ease;
+}
+.btn-adicionar:hover { 
+    box-shadow: var(--btn-shadow-hover); 
+    transform: translateY(-1px); 
+}
+
+@media (max-width: 768px) {
+	.mesa-form { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+    .mesa-card h2 { font-size: 1rem; }
+}

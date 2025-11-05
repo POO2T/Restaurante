@@ -13,11 +13,7 @@
         </div>
 
     </div>
-    <!-- <form [formGroup]="mesaForm" (ngSubmit)="onSubmit()" class="mesa-form">
-        <div class="form-group">
-            <label for="numero">Número da Mesa</label>
-            <input type="number" id="numero" formControlName="numero" required>
-        </div>
+    <form [formGroup]="mesaForm" (ngSubmit)="onSubmit()" class="mesa-form">
 
         <div class="form-group">
             <label for="nome">Nome da Mesa</label>
@@ -27,12 +23,23 @@
         <div class="form-group">
             <label for="status">Status</label>
             <select id="status" formControlName="status" required>
-                <option value="DISPONIVEL">Disponível</option>
-                <option value="OCUPADA">Ocupada</option>
-                <option value="RESERVADA">Reservada</option>
+                @for (s of statusMesa.values(); track $index) {
+                    <option [value]="s">{{ s }}</option>
+                }
             </select>
         </div>
 
+        <!-- <div class="form-group">
+            <label for="numero">Número da Mesa</label>
+            <input type="number" id="numero" formControlName="numero" required>
+        </div> -->
+
+        @if (erro && mesaForm.touched) {
+        <div class="error-message" [class.active]="erro.includes('sucesso')">
+          {{ erro }}
+        </div>
+        }
+
         <button type="submit" class="btn-adicionar">Adicionar Mesa</button>
-    </form> -->
+    </form>
 </section>
