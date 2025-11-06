@@ -1,36 +1,44 @@
 package com.example.Back_End_Restaurante.Controllers;
 
-import com.example.Back_End_Restaurante.Dto.LoginRequest; // Importa a classe para receber os dados
-import com.example.Back_End_Restaurante.Dto.LoginResponse; // <<< ADICIONE ESTE IMPORT
+import com.example.Back_End_Restaurante.Dto.ClienteDTO;
+import com.example.Back_End_Restaurante.Dto.FuncionarioDTO;
+import com.example.Back_End_Restaurante.Dto.LoginRequest;
+import com.example.Back_End_Restaurante.Dto.LoginResponse;
+import com.example.Back_End_Restaurante.Model.Cliente;
+import com.example.Back_End_Restaurante.Model.Funcionario;
+import com.example.Back_End_Restaurante.Model.Usuario;
+import com.example.Back_End_Restaurante.Security.CustomUserDetails; // <<< IMPORTAR
 import com.example.Back_End_Restaurante.Security.Jwt.JwtUtil;
+import com.example.Back_End_Restaurante.Services.ClienteService;
+import com.example.Back_End_Restaurante.Services.FuncionarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
+// @CrossOrigin(origins = "*") // Removido - Agora é controlado globalmente pelo SecurityConfig
 public class AuthController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private UserDetailsService userDetailsService; // Injete o UserDetailsService que criamos (UserDetailsServiceImpl)
+    private JwtUtil jwtUtil;
+
+    // Injeta os services para conversão de DTO
+    @Autowired
+    private FuncionarioService funcionarioService;
 
     @Autowired
-    private JwtUtil jwtUtil; // Injete seu utilitário JWT quando o criar
+    private ClienteService clienteService;
 
-    @PostMapping("/login") // Endpoint correto é /api/auth/login
+    @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) {
         try {
             // 1. Tenta autenticar
@@ -38,33 +46,49 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getSenha())
             );
 
-            // Se chegou aqui, a autenticação foi bem-sucedida
+            // 2. Autenticação bem-sucedida. Pega os detalhes do usuário
+            //    que foram carregados pelo UserDetailsServiceImpl
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
-            // 2. Busca os UserDetails (pode pegar do 'authentication' ou buscar novamente)
-            // UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            // OU buscar novamente para garantir que tem o objeto completo:
-            final UserDetails userDetails = userDetailsService
-                    .loadUserByUsername(loginRequest.getEmail());
+            // 3. Pega o objeto Usuário (Cliente ou Funcionario) de dentro dos UserDetails
+            //    (Isso economiza uma busca no banco de dados!)
+            Usuario usuario = customUserDetails.getUsuario();
 
+            String 
+            tipoUsuario;
+            Object dadosUsuarioDTO; // Usará DTO para não vazar a senha
 
-            // --- PONTO PARA GERAR O TOKEN JWT ---
-            final String token = jwtUtil.generateToken(userDetails);
+            // 4. Verifica o tipo e converte para o DTO apropriado
+            if (usuario instanceof Funcionario) {
+                tipoUsuario = "FUNCIONARIO";
+                dadosUsuarioDTO = funcionarioService.converterParaDTO((Funcionario) usuario); // Usa o método do service
+            } else if (usuario instanceof Cliente) {
+                tipoUsuario = "CLIENTE";
+                dadosUsuarioDTO = clienteService.converterParaDTO((Cliente) usuario); // Usa o método do service
+            } else {
+                // Caso de segurança, não deve acontecer
+                throw new IllegalStateException("Tipo de usuário desconhecido após autenticação.");
+            }
 
+            // 5. Gerar token JWT
+            final String token = jwtUtil.generateToken(customUserDetails);
 
-            // 3. Retorna o token na resposta
-            // Certifique-se que LoginResponse tem um construtor que aceita String
-            return ResponseEntity.ok(new LoginResponse(token)); // Passa o token para o construtor
+        // 6. Criar resposta completa com token, tipo e dados do usuário (em DTO)
+        // Agora retornamos o objeto no campo 'usuario' (nome padronizado)
+        LoginResponse response = new LoginResponse(
+            token,
+            tipoUsuario,
+            dadosUsuarioDTO, // Retorna o DTO (sem senha) -> será preenchido em 'usuario'
+            "Login realizado com sucesso!"
+        );
 
-            // <<< PONTOS E VÍRGULAS REMOVIDOS DAQUI >>>
+            return ResponseEntity.ok(response);
 
         } catch (BadCredentialsException e) {
-            // Se a autenticação falhar
             return ResponseEntity.status(401).body("Credenciais inválidas");
         } catch (Exception e) {
-            // Outros erros
-            // Logar o erro aqui é uma boa prática: e.printStackTrace();
+            e.printStackTrace(); // Para debug
             return ResponseEntity.status(500).body("Erro durante a autenticação: " + e.getMessage());
         }
-        // <<< PONTOS E VÍRGULAS REMOVIDOS DAQUI >>>
     }
 }

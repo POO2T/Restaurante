@@ -7,7 +7,7 @@ import com.example.Back_End_Restaurante.Repositorio.FuncionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import com.example.Back_End_Restaurante.Security.CustomUserDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,20 +29,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<Funcionario> funcionarioOpt = funcionarioRepository.findByEmail(email);
-        if (funcionarioOpt.isPresent()) {
-            Funcionario funcionario = funcionarioOpt.get();
-            Collection<? extends GrantedAuthority> authorities =
-                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + funcionario.getCargo().name()));
-            return new User(funcionario.getEmail(), funcionario.getSenha(), authorities);
-        }
+    if (funcionarioOpt.isPresent()) {
+        Funcionario funcionario = funcionarioOpt.get();
+        Collection<? extends GrantedAuthority> authorities =
+            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + funcionario.getCargo().name()));
+        // Retorna CustomUserDetails contendo o objeto Funcionario para uso posterior
+        return new CustomUserDetails(funcionario.getEmail(), funcionario.getSenha(), authorities, funcionario);
+    }
 
         Optional<Cliente> clienteOpt = clienteRepository.findByEmail(email);
-        if (clienteOpt.isPresent())
-        {
+        if (clienteOpt.isPresent()) {
             Cliente cliente = clienteOpt.get();
             Collection<? extends GrantedAuthority> authorities =
                     Collections.singletonList(new SimpleGrantedAuthority("ROLE_CLIENTE"));
-            return new User(cliente.getEmail(), cliente.getSenha(), authorities);
+            return new CustomUserDetails(cliente.getEmail(), cliente.getSenha(), authorities, cliente);
         } else {
             throw new UsernameNotFoundException("Usuário não encontrado com o email: " + email);
         }

@@ -35,6 +35,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/funcionarios").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/mesas").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/mesas").permitAll()
                         .anyRequest().authenticated()
                 );
         // ... (Filtro JWT será adicionado aqui depois) ...

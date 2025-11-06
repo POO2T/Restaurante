@@ -1,49 +1,86 @@
 package com.example.Back_End_Restaurante.Dto;
 
-public class FuncionarioDTO  {
+public  class FuncionarioDTO {
+
+    private Long id; // <<< ADICIONADO PARA RESPOSTAS
     private String nome;
     private String email;
-    private String cargo;
+    private String senha; // <<< PARA REQUISIÇÕES (Cadastro/Atualização)
+    private String cargo; // String para simplificar a entrada (ex: "GERENTE")
     private double salario;
     private boolean ativo;
-    private String senha;
 
-
-    // Adicione um construtor vazio para o Spring (Jackson)
+    // Construtor vazio (necessário para o Spring/Jackson)
     public FuncionarioDTO() {
     }
 
-    // Construtor completo
-    public FuncionarioDTO(String senha ,String nome, String email, String cargo, double salario, boolean ativo) {
+    // Construtor completo (útil para testes ou lógica interna)
+    // ATENÇÃO: A ordem aqui deve corresponder à ordem no 'converterParaDTO' se for usado.
+    public FuncionarioDTO(Long id, String nome, String email, String cargo, double salario, boolean ativo) {
+        this.id = id;
         this.nome = nome;
-        this.senha = senha;
         this.email = email;
         this.cargo = cargo;
         this.salario = salario;
         this.ativo = ativo;
+        // Note: A senha não é incluída no construtor de resposta padrão
     }
 
-    // Getters e Setters...
+    // --- Getters e Setters ---
 
-    public String getCargo() { return cargo; }
-    public void setCargo(String cargo) { this.cargo = cargo; }
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
-    public String getEmail() { return email; }
+    public Long getId() { // <<< ADICIONADO
+        return id;
+    }
 
-    // SEU MÉTODO ESTAVA VAZIO. CORRIGIDO:
-    public void setEmail(String email) { this.email = email; }
+    public void setId(Long id) { // <<< ADICIONADO
+        this.id = id;
+    }
 
-    // GETTERS E SETTERS PARA OS NOVOS CAMPOS
-    public double getSalario() { return salario; }
-    public void setSalario(double salario) { this.salario = salario; }
-    public boolean isAtivo() { return ativo; }
-    public void setAtivo(boolean ativo) { this.ativo = ativo; }
+    public String getNome() {
+        return nome;
+    }
 
-    public String getSenha() {
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSenha() { // <<< ADICIONADO
         return senha;
     }
-    public void setSenha(String senha) {
+
+    public void setSenha(String senha) { // <<< ADICIONADO
         this.senha = senha;
+    }
+
+    public String getCargo() {
+        return cargo;
+    }
+
+    public void setCargo(String cargo) {
+        this.cargo = cargo;
+    }
+
+    public double getSalario() {
+        return salario;
+    }
+
+    public void setSalario(double salario) {
+        this.salario = salario;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 }

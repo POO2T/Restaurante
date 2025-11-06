@@ -50,7 +50,18 @@ public class MesaService {
         Mesa novaMesa = new Mesa();
         novaMesa.setNome(mesaDTO.getNome());
         novaMesa.setNumero(mesaDTO.getNumero());
-        novaMesa.setStatus(StatusMesa.DISPONIVEL); // Define o status padrão
+
+        // Define o status com base no DTO, se fornecido; caso contrário usa padrão
+        String statusStr = mesaDTO.getStatus();
+        if (statusStr == null || statusStr.isBlank()) {
+            novaMesa.setStatus(StatusMesa.DISPONIVEL); // Padrão com DISPONIVEL
+        } else {
+            try {
+                novaMesa.setStatus(StatusMesa.valueOf(statusStr.toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status inválido: " + statusStr);
+            }
+        }
 
         Mesa mesaSalva = mesaRepository.save(novaMesa);
         return convertToDTO(mesaSalva);

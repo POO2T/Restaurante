@@ -1,127 +1,92 @@
 package com.example.Back_End_Restaurante.Controllers;
 
 import com.example.Back_End_Restaurante.Dto.FuncionarioDTO;
-import com.example.Back_End_Restaurante.Enums.TipoFuncionario;
 import com.example.Back_End_Restaurante.Model.Funcionario;
-import com.example.Back_End_Restaurante.Repositorio.FuncionarioRepository;
 import com.example.Back_End_Restaurante.Services.FuncionarioService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize; // Importar
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/funcionarios")
-@CrossOrigin(origins = "*")
+@RequestMapping("/api/funcionarios") // Padronizado para /api/funcionarios
+// @CrossOrigin(origins = "*") // Removido - Controlado globalmente pelo SecurityConfig
 public class FuncionarioController {
 
-    @Autowired
-    private FuncionarioRepository funcionarioRepository;
-
+    // Removemos o FuncionarioRepository, o Controller só fala com o Service
     @Autowired
     private FuncionarioService funcionarioService;
 
     /**
      * Endpoint para LISTAR todos os funcionários.
-     * Mapeado para: GET /funcionarios
+     * Mapeado para: GET /api/funcionarios
+     * Somente Administradores ou Gerentes podem ver.
      */
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'GERENTE')")
     public ResponseEntity<List<FuncionarioDTO>> listarFuncionarios() {
-        // 1. Busca as Entidades
-        List<Funcionario> funcionarios = funcionarioService.ListarFuncionarios();
-
-        // 2. Converte para DTOs
-        List<FuncionarioDTO> dtos = funcionarios.stream()
-                .map(this::converterParaDTO) // Usa um método auxiliar
-                .collect(Collectors.toList());
-
-        // 3. Retorna 200 OK com a lista de DTOs
+        // O Service agora retorna a lista de DTOs pronta
+        List<FuncionarioDTO> dtos = funcionarioService.ListarFuncionarios();
         return ResponseEntity.ok(dtos);
     }
 
     /**
-     * Endpoint para SALVAR um novo funcionário.
-     * Mapeado para: POST /funcionarios
+     * Endpoint para SALVAR um novo funcionário (cadastro).
+     * Mapeado para: POST /api/funcionarios
+     * Somente Administradores ou Gerentes podem criar novos funcionários.
      */
     @PostMapping
-    public ResponseEntity<FuncionarioDTO> salvarFuncionario(@RequestBody FuncionarioDTO funcionarioDTO) {
-
-        // 1. Service salva a entidade
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'GERENTE')")
+    public ResponseEntity<FuncionarioDTO> salvarFuncionario(@RequestBody FuncionarioDTO funcionarioDTO, UriComponentsBuilder uriBuilder) {
+        // 1. Service salva a entidade (e hasheia a senha)
         Funcionario funcionarioSalvo = funcionarioService.SalvarFuncionario(funcionarioDTO);
 
-        // 2. Cria a URI do novo recurso
-        URI location = UriComponentsBuilder.fromPath("/funcionarios/{id}")
+        // 2. Service converte a entidade salva para DTO (sem senha)
+        FuncionarioDTO dtoResposta = funcionarioService.converterParaDTO(funcionarioSalvo);
+
+        // 3. Cria a URI do novo recurso
+        URI location = uriBuilder.path("/api/funcionarios/{id}")
                 .buildAndExpand(funcionarioSalvo.getId())
                 .toUri();
 
-        // 3. Converte a entidade salva para DTO e retorna 201 CREATED
-        return ResponseEntity.created(location).body(converterParaDTO(funcionarioSalvo));
+        // 4. Retorna 201 CREATED com o DTO de resposta
+        return ResponseEntity.created(location).body(dtoResposta);
     }
 
     /**
      * Endpoint para ATUALIZAR um funcionário existente.
-     * Mapeado para: PUT /funcionarios/{id}
+     * Mapeado para: PUT /api/funcionarios/{id}
+     * Somente Administradores ou Gerentes podem atualizar.
      */
     @PutMapping("/{id}")
-    public Funcionario AtualizarFuncionario(Long id, FuncionarioDTO funcionarioDTO) {
-        // 1. Busca o funcionário ou falha
-        Funcionario funcionarioExistente = funcionarioRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário não encontrado"));
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'GERENTE')")
+    public ResponseEntity<FuncionarioDTO> AtualizarFuncionario(@PathVariable Long id, @RequestBody FuncionarioDTO funcionarioDTO) {
+        // 1. Service atualiza a entidade
+        Funcionario funcionarioAtualizado = funcionarioService.AtualizarFuncionario(id, funcionarioDTO);
 
-        // 2. Valida o e-mail (se ele foi alterado e já existe em OUTRA pessoa)
-        if (!funcionarioExistente.getEmail().equals(funcionarioDTO.getEmail()) &&
-                funcionarioRepository.existsByEmail(funcionarioDTO.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Este e-mail já está em uso por outro usuário.");
-        }
+        // 2. Service converte a entidade atualizada para DTO (sem senha)
+        FuncionarioDTO dtoResposta = funcionarioService.converterParaDTO(funcionarioAtualizado);
 
-        // 3. Atualiza os dados da entidade com os dados do DTO
-        funcionarioExistente.setNome(funcionarioDTO.getNome());
-        funcionarioExistente.setEmail(funcionarioDTO.getEmail());
-        funcionarioExistente.setSalario(funcionarioDTO.getSalario());
-        funcionarioExistente.setAtivo(funcionarioDTO.isAtivo());
-
-        // 4. Faz a mesma conversão de String para Enum do método Salvar
-        try {
-            funcionarioExistente.setCargo(TipoFuncionario.valueOf(funcionarioDTO.getCargo().toUpperCase()));
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O cargo '" + funcionarioDTO.getCargo() + "' é inválido.");
-        }
-
-        // 5. Salva a entidade atualizada
-        return funcionarioRepository.save(funcionarioExistente);
+        // 3. Retorna 200 OK com o DTO de resposta
+        return ResponseEntity.ok(dtoResposta);
     }
 
     /**
      * Endpoint para DELETAR um funcionário pelo ID.
-     * Mapeado para: DELETE /funcionarios/{id}
+     * Mapeado para: DELETE /api/funcionarios/{id}
+     * Somente Administradores ou Gerentes podem deletar.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'GERENTE')")
     public ResponseEntity<Void> deletarFuncionario(@PathVariable Long id) {
         funcionarioService.DeletarFuncionario(id);
-
-        // Retorna 204 NO CONTENT
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build(); // 204 NO CONTENT
     }
 
-    /**
-     * Método auxiliar privado para converter Entidade -> DTO.
-     * Ajuda a não repetir código.
-     */
-    private FuncionarioDTO converterParaDTO(Funcionario funcionario) {
-        return new FuncionarioDTO(
-                funcionario.getSenha(),
-                funcionario.getNome(),
-                funcionario.getEmail(),
-                funcionario.getCargo().name(), // Converte Enum para String
-                funcionario.getSalario(),
-                funcionario.isAtivo()
-
-        );
-    }
+    // O método privado converterParaDTO() foi REMOVIDO daqui.
+    // A lógica agora está centralizada no FuncionarioService.
 }

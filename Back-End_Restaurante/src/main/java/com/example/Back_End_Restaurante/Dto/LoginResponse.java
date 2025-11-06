@@ -1,39 +1,57 @@
 package com.example.Back_End_Restaurante.Dto;
 
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-
-
-
 public class LoginResponse {
-    private String token; // Campo para armazenar o token
+    private String token;
+    private String tipoUsuario; // "CLIENTE" ou "FUNCIONARIO"
+    // Armazena os dados do usuário (DTO específico: ClienteDTO ou FuncionarioDTO)
+    // Usamos o nome 'usuario' para ser compatível com o frontend esperado.
+    private Object usuario;
+    private String message;
 
-    // --- CONSTRUTOR PADRÃO (SEM ARGUMENTOS) ---
-    // É uma boa prática ter um construtor padrão,
-    // especialmente se você usar frameworks como Jackson/JPA.
-    public LoginResponse() {
-    }
+    // Construtores
+    public LoginResponse() {}
 
-    // --- CONSTRUTOR QUE ACEITA O TOKEN ---
-    // Este é o construtor que o AuthController está tentando chamar.
-    // Certifique-se de que ele existe e está público.
     public LoginResponse(String token) {
         this.token = token;
     }
 
-    // --- GETTER para o token ---
-    // Necessário para que o Spring/Jackson possa converter
-    // este objeto em JSON na resposta HTTP.
+    public LoginResponse(String token, String tipoUsuario, Object usuario, String message) {
+        this.token = token;
+        this.tipoUsuario = tipoUsuario;
+        this.usuario = usuario;
+        this.message = message;
+    }
+
+    // Getters e Setters
     public String getToken() {
         return token;
     }
 
-    // --- SETTER para o token (Opcional) ---
-    // Pode ser útil em outras situações.
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getTipoUsuario() {
+        return tipoUsuario;
+    }
+
+    public void setTipoUsuario(String tipoUsuario) {
+        this.tipoUsuario = tipoUsuario;
+    }
+
+    public Object getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Object usuario) {
+        this.usuario = usuario;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
