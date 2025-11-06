@@ -46,17 +46,22 @@ export class AuthService {
           }
 
           // Determinar tipo de usuário baseado na resposta
-          let tipo: 'CLIENTE' | 'FUNCIONARIO' = (response as any).tipoUsuario ?? null;
+          let tipo: 'CLIENTE' | 'FUNCIONARIO' = (response as any).tipoUsuario.toUpperCase() ?? null;
           
           if (!tipo) {
-            const u = (response as LoginResponse).usuario as any;
+            const u = (response as any).dadosUsuario ?? (response as LoginResponse).usuario as any;
             if (u) {
               // Verificar campos específicos para determinar tipo
-              if (u.telefone && !u.cargo && !u.salario) {
+              if (u.telefone && !u.cargo && !u.salario && !u.tipoFuncionario) {
                 tipo = 'CLIENTE';
               } else if (u.cargo || u.salario || u.tipoFuncionario) {
                 tipo = 'FUNCIONARIO';
+              } else {
+                console.warn('TIPO DE USUÁRIO NÃO PÔDE SER DETERMINADO.');
               }
+
+              console.warn('TIPO DE USUÁRIO INFERIDO COMO:', tipo);
+
             }
           }
 
@@ -201,8 +206,8 @@ export class AuthService {
       this.storage.setItem('auth_token', (response as any).token);
     }
 
-    // Salvar dados do usuário
-    const user = (response as LoginResponse).usuario;
+  // Salvar dados do usuário (aceita 'dadosUsuario' vindo do backend ou 'usuario' por compatibilidade)
+  const user = (response as any).dadosUsuario ?? (response as LoginResponse).usuario;
     this.storage.setItem('user_data', JSON.stringify(user));
     this.storage.setItem('user_type', type);
     this.storage.setItem('isLoggedIn', 'true'); // Marca como logado

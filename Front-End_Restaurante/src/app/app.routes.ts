@@ -12,6 +12,7 @@ import { LoginCliente } from './pages/login-cliente/login-cliente';
 import { Pedidos } from './pages/pedidos/pedidos';
 import { LoginFuncionario } from './pages/login-funcionario/login-funcionario';
 import { Mesas } from './pages/funcionarios/mesas/mesas';
+import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
     { path: "", component: Home },
@@ -21,8 +22,8 @@ export const routes: Routes = [
     { path: "login-cliente", component: LoginCliente },
 
     { path: "login-funcionario", component: LoginFuncionario },
-    { path: "pedidos", component: Pedidos },
-    { path: "funcionario/mesas", component: Mesas },
+    { path: "funcionario/pedidos", component: Pedidos, canActivate: [AuthGuard], data: { role: 'FUNCIONARIO' } },
+    { path: "funcionario/mesas", component: Mesas, canActivate: [AuthGuard], data: { role: 'FUNCIONARIO' } },
 
     { path: "**", redirectTo: "", pathMatch: "full" } // Rota coringa para páginas não encontradas
 ];
