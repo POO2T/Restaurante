@@ -224,14 +224,12 @@ export class AuthService {
     return throwError(() => error);
   }
 
-  // --- GETTERS (mantidos para compatibilidade) ---
-  get currentUser$(): Observable<Usuario | null> {
-    return signalToObservable(this.currentUser);
-  }
-
-  get isAuthenticated$(): Observable<boolean> {
-    return signalToObservable(this.isAuthenticated);
-  }
+  // --- Observables (created during service construction / field initialization)
+  // Creating these as fields ensures `effect()` inside signalToObservable runs
+  // within an injection context (field initializers are run during DI construction).
+  readonly currentUser$: Observable<Usuario | null> = signalToObservable(this.currentUser);
+  readonly isAuthenticated$: Observable<boolean> = signalToObservable(this.isAuthenticated);
+  readonly userType$: Observable<'CLIENTE' | 'FUNCIONARIO' | null> = signalToObservable(this.userType);
 
   // --- VERIFICAÇÕES DE TIPO ---
   isAdmin(): boolean {

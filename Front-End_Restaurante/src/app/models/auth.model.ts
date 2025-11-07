@@ -8,10 +8,10 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  token: string;
-  usuario: Usuario;
-  tipoUsuario: 'CLIENTE' | 'FUNCIONARIO';
-  expiresIn: number;
+  token?: string;
+  usuario?: Usuario;
+  tipoUsuario?: 'CLIENTE' | 'FUNCIONARIO';
+  expiresIn?: number;
 }
 
 export interface RegisterClienteRequest {

@@ -11,17 +11,44 @@
 
   <nav class="main-nav">
     <ul>
-      <li><a routerLink="/home" (click)="toggleNav()">Início</a></li>
-      <li><a routerLink="/pedidos" (click)="toggleNav()">Pedidos</a></li>
+      @if (rotaAtual != '/') {
+        <li><a routerLink="/" (click)="toggleNav()">Início</a></li>
+      }
+
+      @if (userRole() === 'FUNCIONARIO') {
+        <li><a routerLink="/funcionario/mesas" (click)="toggleNav()">Mesas</a></li>
+      }
+      
+      <li>
+        <!-- Trocar a rota de acordo com o usuário -->
+        <a [routerLink]="[userRole() === 'CLIENTE' ? '/pedidos' : '/funcionario/pedidos']" (click)="toggleNav()">Pedidos</a>
+      </li> 
+
       <li><a routerLink="/cardapio" (click)="toggleNav()">Cardápio</a></li>
     </ul>
   </nav>
 
   <div class="login-button">
-    <a routerLink="/seletor-login" class="btn btn-login">
-      <img class="user-icon" src="./svg/generic_avatar.svg" alt="Ícone do usuário" />
-      <span>Login</span>
-    </a>
+
+    <ng-container>
+
+      @if (isAuthenticated()) {
+        <a (click)="logout()" class="btn btn-logout">
+          <img class="user-icon" src="./svg/logout-icon.svg" alt="Ícone de logout" />
+          <span>Logout</span>
+        </a>
+      }
+      @else {
+        <a routerLink="/seletor-login" class="btn btn-login">
+          <img class="user-icon" src="./svg/generic_avatar.svg" alt="Ícone do usuário" />
+          <span>Login</span>
+        </a>
+      }
+
+    </ng-container>
+    
+    
+
   </div>
 
   <div class="overlay" [class.active]="isNavOpen" (click)="closeNav()"></div>

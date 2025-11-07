@@ -3,8 +3,10 @@
 */
 .main-header {
     display: flex;
+    width: 100%;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
     padding: 5px;
     background-color: #f0f0f0;
     border-bottom: 1px solid #ccc;
@@ -50,13 +52,13 @@
 
 .main-nav {
     flex-grow: 1;
-    margin: 30px;
+    margin: 0px 30px;
     text-align: center;
 }
 
 .main-nav ul {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     gap: 50px;
     list-style-type: none;
@@ -82,7 +84,7 @@
     margin-right: 20px;
 }
 
-.btn-login {
+.btn {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -101,7 +103,7 @@
     box-shadow: var(--btn-shadow);
 }
 
-.btn-login:hover {
+.btn:hover {
     background: linear-gradient(135deg, #ffffff 0%, var(--background-color) 100%);
     border-color: var(--primary-color);
     box-shadow: var(--btn-shadow-hover);
@@ -109,14 +111,14 @@
     color: var(--primary-color);
 }
 
-.btn-login:active {
+.btn:active {
     transform: translateY(0);
     box-shadow: var(--btn-shadow);
     background: linear-gradient(135deg, var(--background-color) 0%, #dee2e6 100%);
     border-color: var(--primary-color);
 }
 
-.btn-login .user-icon {
+.btn .user-icon {
     width: 32px;
     height: 32px;
     object-fit: contain;
@@ -127,11 +129,11 @@
     transition: transform 0.3s ease;
 }
 
-.btn-login:hover .user-icon {
+.btn:hover .user-icon {
     transform: scale(1.2);
 }
 
-.btn-login span {
+.btn span {
     letter-spacing: .5px;
 }
 /*

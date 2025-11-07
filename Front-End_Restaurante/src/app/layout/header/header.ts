@@ -1,6 +1,10 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnDestroy } from '@angular/core';
 import { RouterModule, ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/internal/operators/filter';
+import { Subscription } from 'rxjs';
+
+import { AuthGuard } from '../../guards/auth.guard';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -11,34 +15,64 @@ import { filter } from 'rxjs/internal/operators/filter';
 })
 export class Header {
 
+  isAuthenticated = signal<boolean>(false);
+  userRole = signal<'CLIENTE' | 'FUNCIONARIO' | null>(null);
   rotaAtual: string = '';
   isFuncionarioRoute: boolean = false;
   isNavOpen: boolean = false;
 
+
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
+  private authGuard = inject(AuthGuard);
+  private authService = inject(AuthService);
+  private subs: Subscription[] = [];
   
   constructor() {}
   
   ngOnInit(): void {
-    //this.rotaAtual = this.activatedRoute.snapshot.url.join('/');
 
-    this.router.events.pipe(
-      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
-    ).subscribe((event: NavigationEnd) => {
-      this.rotaAtual = event.urlAfterRedirects;
-      this.isFuncionarioRoute = this.rotaAtual.includes("/funcionario");
-      console.log(this.rotaAtual);
-      console.log(this.isFuncionarioRoute);
-    });
+    // Inicializa com o estado atual
+    this.isAuthenticated.set(this.authService.isAuthenticated());
+    this.userRole.set(this.authService.userType());
+
+    // Assina mudanças reativas do AuthService para atualizar o header sem reload
+    this.subs.push(
+      this.authService.isAuthenticated$.subscribe((v: boolean) => {
+        this.isAuthenticated.set(v);
+      })
+    );
+
+    this.subs.push(
+      this.authService.userType$.subscribe((t: 'CLIENTE' | 'FUNCIONARIO' | null) => {
+        this.userRole.set(t);
+      })
+    );
+
+    this.subs.push(
+      this.router.events.pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+        .subscribe((event: NavigationEnd) => {
+          this.rotaAtual = event.urlAfterRedirects;
+          this.isFuncionarioRoute = this.rotaAtual.includes('/funcionario');
+        })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subs.forEach((s) => s.unsubscribe());
   }
 
   
-  toggleNav() {
+  toggleNav(): void {
     this.isNavOpen = !this.isNavOpen;
   }
-  closeNav() {
+  closeNav(): void {
     this.isNavOpen = false;
   }
 
+  logout(): void {
+    this.authService.logout();
+    this.isAuthenticated.set(false);
+    this.router.navigate(['/']);
+  }
 }
