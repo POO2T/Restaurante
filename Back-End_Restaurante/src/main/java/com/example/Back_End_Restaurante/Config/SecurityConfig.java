@@ -27,18 +27,26 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // 👇 Garanta que esta linha está presente e chama o método do bean abaixo 👇
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize
-                        // ... suas regras .requestMatchers ...
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/funcionarios").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/mesas").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/mesas").permitAll()
-                        .anyRequest().authenticated()
-                );
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(authorize -> authorize
+                    // ... suas regras .requestMatchers ...
+                    // .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                    // .requestMatchers(HttpMethod.POST, "/api/funcionarios").permitAll()
+                    // .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
+                    // .requestMatchers(HttpMethod.POST, "/api/mesas").permitAll()
+                    // .requestMatchers(HttpMethod.GET, "/api/mesas").permitAll()
+                    // .requestMatchers(HttpMethod.PUT, "/api/mesas/**").permitAll()
+                    // .requestMatchers(HttpMethod.DELETE, "/api/mesas/**").permitAll()
+                    // Permitir preflight CORS (OPTIONS) sem autenticação
+                    .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
+                    .requestMatchers(HttpMethod.PUT, "/api/**").permitAll()
+                    .requestMatchers(HttpMethod.DELETE, "/api/**").permitAll()
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                    .anyRequest().authenticated());
         // ... (Filtro JWT será adicionado aqui depois) ...
 
         return http.build();
@@ -49,9 +57,12 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // Verifique esta URL CUIDADOSAMENTE
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // OPTIONS é crucial
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        // Permitir tanto localhost quanto 127.0.0.1 (útil em alguns ambientes)
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200", "http://127.0.0.1:4200"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD")); // OPTIONS é crucial
+        // Permitir todos os cabeçalhos que o cliente enviar (inclui Authorization)
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); // Aplica a todas as rotas
