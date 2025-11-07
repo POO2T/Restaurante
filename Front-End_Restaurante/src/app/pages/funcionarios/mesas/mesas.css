@@ -1,0 +1,249 @@
+/* Mesas page styles — follow global variables from src/styles.css */
+.mesa-section {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 100vw;
+	height: 100vh;
+	margin: 24px auto;
+	padding: 20px;
+	/* background: #fff; */
+	border-radius: 10px;
+	box-shadow: 0 6px 18px rgba(64,24,32,0.06);
+	gap: 15px;
+}
+
+.mesa-container {
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background: #fff;
+	padding: 15px;
+	border-radius: 15px;
+}
+
+.mesa-container h1 {
+	font-size: 1.6rem;
+	color: var(--primary-color);
+	margin-bottom: 12px;
+	text-align: center;
+}
+
+.mesa-list {
+	display: grid;
+	width: 100%;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	justify-items: center;
+	align-items: center;
+	gap: 15px;
+	margin: 18px 0;
+}
+
+.mesa-card {
+	padding: 30px;
+	border: 2px solid rgba(0,0,0,0.06);
+	border-radius: 8px;
+	background: linear-gradient(180deg, #fff, #fbfbfb);
+	cursor: pointer;
+	user-select: none;
+	transition: all 0.3s ease;
+}
+.mesa-card:hover {
+	background: linear-gradient(180deg, #e7e7e7, #fff);
+	box-shadow: 0 8px 20px rgba(64,24,32,0.1);
+	transform: translateY(-2px);
+	transition: all 0.3s ease;
+}
+
+.mesa-card h2 {
+	font-size: 1.05rem;
+	margin-bottom: 6px;
+	color: var(--primary-color);
+}
+
+.mesa-card p {
+	color: #444;
+	font-size: 0.95rem;
+}
+
+.mesa-info {
+	display: none;
+	padding: 15px;
+	border: 1px solid rgba(0,0,0,0.08);
+	border-radius: 10px;
+	background: #fafafa;
+
+	width: 400px;
+	max-width: 50%;
+	padding: 20px;
+	background: #fff;
+	border-radius: 10px;
+	box-shadow: 0 8px 24px rgba(64, 24, 32, 0.2);
+}
+.mesa-info.active {
+	display: block;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 1000;
+}
+
+.mesa-info h3 {
+	font-size: 1.2rem;
+	color: var(--primary-color);
+	margin-bottom: 12px;
+	text-align: center;
+}
+.mesa-info p {
+	font-size: 1rem;
+	color: #333;
+	margin-bottom: 8px;
+	text-align: center;
+}
+
+.mesa-form {
+	display: flex;
+	width: 100%;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-group {
+    width: 100%;
+	display: flex;
+	flex-direction: column;
+	font-weight: bold;
+	gap: 5px;
+}
+
+.mesa-form .form-action {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+.mesa-form .form-action button {
+	margin: 0px 12px;
+}
+
+.mesa-form label { 
+    font-size: 1rem; 
+    color: #333; margin-bottom: 3px; 
+}
+
+.mesa-form input, .mesa-form select {
+    width: 100%;
+	padding: 10px 12px;
+	border: 1px solid rgba(0,0,0,0.12);
+	border-radius: 6px;
+	background: #fff;
+}
+.mesa-form input:focus, .mesa-form select:focus {
+	border-color: var(--primary-color);
+	box-shadow: 0 0 6px rgba(100, 50, 150, 0.1);
+	outline: none;
+}
+.mesa-form option {
+	width: 100%;
+	padding: 5px;
+	font-size: 0.75rem;
+}
+
+.error-message {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 12px;
+  border-radius: 5px;
+  margin: 10px 0;
+  font-size: 16px;
+  text-align: center;
+}
+.error-message.active {
+  background-color: #e6ffed;
+  border-color: #b2f5c2;
+  color: #2f855a;
+}
+
+.btn-adicionar {
+    width: 100%;
+	background: var(--btn-primary-background);
+	font-size: 1rem;
+	color: var(--btn-primary-color);
+	border: none;
+	padding: 10px 14px;
+	margin-top: 12px;
+	border-radius: 6px;
+	box-shadow: var(--btn-shadow);
+	cursor: pointer;
+    transition: all 0.3s ease;
+}
+.btn-adicionar:hover { 
+	background: var(--btn-primary-background-hover);
+	border: 2px solid var(--btn-primary-background);
+	color: var(--btn-primary-color-hover);
+	font-weight: bold;
+    box-shadow: var(--btn-shadow-hover); 
+    transform: translateY(-1px); 
+}
+
+.btn-deletar {
+	width: 100%;
+	background: var(--btn-danger-background);
+	font-size: 1rem;
+	color: var(--btn-danger-color);
+	border: none;
+	padding: 10px 14px;
+	margin-top: 12px;
+	border-radius: 6px;
+	box-shadow: var(--btn-shadow);
+	cursor: pointer;
+	transition: all 0.3s ease;
+}	
+.btn-deletar:hover {
+	background: var(--btn-danger-background-hover);
+	border: none;
+	color: var(--btn-danger-color-hover);
+	font-weight: bold;
+	box-shadow: var(--btn-shadow-hover); 
+	transform: translateY(-1px); 
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 900; /* Fixa o overlay acima do conteúdo */
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+}
+.overlay.active {
+	display: block;
+	opacity: 1;
+}
+
+@media (max-width: 768px) {
+
+	.mesa-container {
+		padding: 10px;
+	}
+
+	.mesa-form { 
+		grid-template-columns: 1fr; 
+	}
+}
+
+@media (max-width: 480px) {
+    .mesa-card h2 { font-size: 1rem; }
+}

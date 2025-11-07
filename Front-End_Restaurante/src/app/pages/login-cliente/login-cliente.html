@@ -1,80 +1,97 @@
-<div class="login-cliente-container">
-  <div class="header">
-    <img src="/assets/imgs/logo.png" alt="Logo Bella Piatto">
-    <h2>{{ isRegistro ? 'Criar Conta' : 'Login Cliente' }}</h2>
-    <p>{{ isRegistro ? 'Cadastre-se e faça seus pedidos' : 'Acesse sua conta e faça seus pedidos' }}</p>
-  </div>
+<section class="login-cliente-section">
 
-  <form (ngSubmit)="onSubmit()" class="login-form">
-    <div class="form-group">
-      <label for="email">
-        <i class="icon-email"></i>
-        E-mail
-      </label>
-      <input 
-        type="email" 
-        id="email" 
-        name="email" 
-        [(ngModel)]="email" 
-        placeholder="Digite seu e-mail" 
-        required>
+  <article class="login-cliente-container">
+
+    <div class="header">
+      <img src="./svg/bem_vindo.svg" alt="Bem Vindos">
+      <h2>{{ isRegistrado ? 'Criar Conta' : 'Login Cliente' }}</h2>
+      <p>{{ isRegistrado ? 'Cadastre-se e faça seus pedidos' : 'Acesse sua conta e faça seus pedidos' }}</p>
     </div>
 
-    <div class="form-group" *ngIf="isRegistro">
-      <label for="telefone">
-        <i class="icon-phone"></i>
-        Telefone
-      </label>
-      <input 
-        type="tel" 
-        id="telefone" 
-        name="telefone" 
-        [(ngModel)]="telefone" 
-        placeholder="(00) 00000-0000" 
-        required>
-    </div>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
 
-    <div class="form-group">
-      <label for="senha">
-        <i class="icon-lock"></i>
-        Senha
-      </label>
-      <input 
-        type="password" 
-        id="senha" 
-        name="senha" 
-        [(ngModel)]="senha" 
-        placeholder="Digite sua senha" 
-        required>
-    </div>
+      @if (isRegistrado) {
+        <ng-container>
+          
+          <div class="form-group">
+            <label for="nome">
+              <i class="icon-user"></i>
+              Nome Completo
+            </label>
+            <input type="text" id="nome" formControlName="nome" placeholder="Nome completo">
+          </div>
+        
+          <div class="form-group">
+            <label for="telefone">
+              <i class="icon-phone"></i>
+              Telefone
+            </label>
+            <input type="tel" id="telefone" formControlName="telefone" placeholder="(00) 00000-0000">
+          </div>
+        
+        </ng-container>
+      }
 
-    <div class="error-message" *ngIf="erro">
-      {{ erro }}
-    </div>
+      <div class="form-group">
+        <label for="email">
+          <i class="icon-email"></i>
+          E-mail
+        </label>
+        <input type="email" id="email" formControlName="email" placeholder="Digite seu e-mail">
+      </div>
 
-    <div class="form-actions">
-      <button type="button" class="btn-voltar" (click)="voltarSelecao()">
-        ← Voltar
-      </button>
-      <button type="submit" class="btn-entrar">
-        {{ isRegistro ? 'Cadastrar' : 'Entrar' }}
-      </button>
-    </div>
+      <div class="form-group">
+        <label for="senha">
+          <i class="icon-lock"></i>
+          Senha
+        </label>
+        <input type="password" id="senha" formControlName="senha" placeholder="Digite sua senha">
+      </div>
 
-    <div class="toggle-section">
-      <p *ngIf="!isRegistro">
-        Ainda não tem conta? 
-        <a href="javascript:void(0)" (click)="toggleRegistro(); $event.preventDefault()">Cadastre-se aqui</a>
-      </p>
-      <p *ngIf="isRegistro">
-        Já tem conta? 
-        <a href="javascript:void(0)" (click)="toggleRegistro(); $event.preventDefault()">Faça login</a>
-      </p>
-    </div>
+      @if (erro) {
+        <div class="error-message" [class.active]="erro.includes('sucesso')">
+          {{ erro }}
+        </div>
+      }
 
-    <div class="links" *ngIf="!isRegistro">
-      <a href="javascript:void(0)" (click)="recuperarSenha()">Esqueci minha senha</a>
-      <a href="javascript:void(0)" (click)="toggleRegistro(); $event.preventDefault()">Cadastrar</a>
-    </div>
-  </form>
-</div>
+      <div class="form-actions">
+        <button type="button" class="btn-voltar" (click)="voltarSelecao()">
+          ← Voltar
+        </button>
+        <button type="submit" class="btn-entrar" [disabled]="isLoading">
+          {{ isLoading ? 'Processando...' : (isRegistrado ? 'Cadastrar' : 'Entrar') }}
+        </button>
+      </div>
+
+      <div class="toggle-section">
+
+        @if (!isRegistrado) {
+          <p>
+            Ainda não tem conta?
+            <a href="javascript:void(0)" (click)="toggleRegistro(); $event.preventDefault()">Cadastre-se aqui</a>
+          </p>
+        }
+        @else {
+          <p>
+            Já tem conta?
+            <a href="javascript:void(0)" (click)="toggleRegistro(); $event.preventDefault()">Faça login</a>
+          </p>
+        }
+
+      </div>
+
+      @if (!isRegistrado) {
+        <div class="links">
+          <a href="javascript:void(0)" (click)="recuperarSenha()">Esqueci minha senha</a>
+          <a href="javascript:void(0)" (click)="toggleRegistro(); $event.preventDefault()">Cadastrar</a>
+        </div>
+      }
+
+    </form>
+  </article>
+
+  <aside class="login-cliente-img">
+    <img src="svg/login_cliente.svg" alt="Pratos de login">
+  </aside>
+
+</section>

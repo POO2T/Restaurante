@@ -1,73 +1,131 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-login-cliente',
-  imports: [FormsModule, CommonModule],
+  standalone: true,
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './login-cliente.html',
-  styleUrl: './login-cliente.css'
+  styleUrls: ['./login-cliente.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginCliente {
-  protected email: string = '';
-  protected senha: string = '';
-  protected telefone: string = '';
-  protected erro: string = '';
-  protected isRegistro: boolean = false;
+  form: FormGroup;
 
-  constructor(private router: Router) { }
+  isRegistrado = false;
+  isLoading = false;
+  erro = '';
 
-  onSubmit() {
-    // Reset erro
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
+
+  private formatError(err: unknown, fallback = 'Ocorreu um erro'): string {
+    if (!err) return fallback;
+    if (typeof err === 'string') return err;
+    if (err instanceof Error) return err.message || fallback;
+    const anyErr = err as { error?: unknown; message?: string };
+    if (anyErr.error) return typeof anyErr.error === 'string' ? anyErr.error : JSON.stringify(anyErr.error);
+    if (anyErr.message) return anyErr.message;
+    try { return JSON.stringify(err); } catch { return fallback; }
+  }
+
+  
+
+  constructor() {
+    this.form = this.fb.group({
+      nome: [''],
+      email: ['', [Validators.required, Validators.email]],
+      telefone: [''],
+      senha: ['', Validators.required],
+      endereco: ['']
+    });
+  }
+
+  onSubmit(): void {
+    console.log('Formulário enviado', { isRegistrado: this.isRegistrado, values: this.form.value });
+
+    if (!this.form.valid) {
+      this.erro = 'Formulário inválido. Preencha os campos obrigatórios.';
+      return;
+    }
+
+    this.isLoading = true;
     this.erro = '';
 
-    // Validações básicas
-    if (!this.email || !this.senha) {
-      this.erro = 'Email e senha são obrigatórios';
-      return;
-    }
+    if (this.isRegistrado) {
+      const v = this.form.value;
+      const registerData = {
+        nome: (v.nome || '').trim(),
+        email: (v.email || '').trim(),
+        senha: v.senha,
+        cpf: (v['cpf'] || '').trim() || undefined,
+        telefone: (v.telefone || '').trim()
+      };
 
-    if (this.isRegistro && !this.telefone) {
-      this.erro = 'Telefone é obrigatório para cadastro';
-      return;
-    }
-
-    if (this.isRegistro) {
-      console.log("Cadastro Cliente:");
-      console.log("Email:", this.email);
-      console.log("Telefone:", this.telefone);
-      // Aqui implementaria o cadastro
-      alert('Cadastro realizado com sucesso!');
-      this.isRegistro = false;
+      this.authService.registerCliente(registerData).subscribe({
+        next: (usuario) => {
+          if (usuario && usuario.email === registerData.email) {
+            this.erro = 'Conta criada com sucesso! Faça login agora.';
+            this.isRegistrado = false;
+            this.clearForm();
+          } else {
+            this.erro = 'Erro ao criar conta. Verifique os dados.';
+          }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.erro = this.formatError(error, 'Erro ao criar conta. Verifique os dados e tente novamente.');
+          this.isLoading = false;
+        }
+      });
     } else {
-      console.log("Login Cliente:");
-      console.log("Email:", this.email);
-      // Aqui implementaria a autenticação
-      this.router.navigate(['/cardapio']); // Redireciona para área do cliente
+      const v = this.form.value;
+      const loginData = { email: (v.email || '').trim(), senha: v.senha };
+
+      this.authService.login(loginData).subscribe({
+        next: (response) => {
+          // AuthService will set signals; check isAuthenticated
+          if (this.authService.isAuthenticated()) {
+            if (this.authService.isCliente()) {
+              this.router.navigate(['/cardapio']);
+              console.log(this.authService.getToken());
+            } else {
+              this.erro = 'Login bem-sucedido, mas tipo de usuário inesperado.';
+              this.authService.logout();
+              this.router.navigate(['/login-funcionario']);
+            }
+          } else {
+            this.erro = 'Falha no login. Verifique suas credenciais.';
+          }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.erro = this.formatError(error, 'Falha no login. Verifique suas credenciais.');
+          this.isLoading = false;
+        }
+      });
     }
   }
 
-  toggleRegistro() {
-    this.isRegistro = !this.isRegistro;
+  toggleRegistro(): void {
+    this.isRegistrado = !this.isRegistrado;
     this.erro = '';
-    this.limparCampos();
+    this.clearForm();
   }
 
-  limparCampos() {
-    this.email = '';
-    this.senha = '';
-    this.telefone = '';
+  voltarSelecao(): void {
+    this.router.navigate(['/seletor-login']);
   }
 
-  voltarSelecao() {
-    this.router.navigate(['/']);
+  recuperarSenha(): void {
+    alert('Funcionalidade em desenvolvimento');
   }
 
-  recuperarSenha() {
-    const email = prompt('Digite seu email para recuperação de senha:');
-    if (email) {
-      alert(`Link de recuperação enviado para: ${email}\nVerifique sua caixa de entrada e spam.`);
-    }
+  private clearForm(): void {
+    this.form.reset();
   }
 }

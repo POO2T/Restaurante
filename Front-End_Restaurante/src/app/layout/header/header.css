@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .app-header {
     display: flex;
     justify-content: space-between;
@@ -29,4 +30,268 @@
     flex-shrink: 0;
     border-radius: 50%;
     border: 1px solid #333;
+=======
+/* 
+*   Estilos para o cabeçalho 
+*/
+.main-header {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ccc;
+}
+
+/* 
+*   Estilos de logo (Início) 
+*/
+.logo {
+    width: 150px;
+    height: 150px;
+    flex-shrink: 0;
+}
+
+.logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+/* 
+*   Estilos de logo (Fim)  
+*/
+
+/*
+*   Estilos de navegação principal (Início)
+*/
+
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    margin-left: 20px;
+}
+.nav-toggle span {
+    height: 3px;
+    width: 30px;
+    background-color: var(--text-link-color);
+    margin: 4px 0;
+    border-radius: 10px;
+
+    transition: all 0.3s ease;
+}
+
+.main-nav {
+    flex-grow: 1;
+    margin: 0px 30px;
+    text-align: center;
+}
+
+.main-nav ul {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 50px;
+    list-style-type: none;
+}
+
+.main-nav a {
+    font-size: 1.5em;
+}
+
+.main-nav a:hover {
+    font-size: 1.6em;
+    color: var(--secondary-color);
+}
+/*
+*   Estilos de navegação principal (Fim)
+*/
+
+/*
+*   Estilos de botão de login (Início)
+*/
+.login-button {
+    flex-shrink: 0;
+    margin-right: 20px;
+}
+
+.btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 24px;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text-link-color);
+    font-weight: 600;
+    font-size: 1rem;
+    font-family: var(--font-family);
+    
+    background: linear-gradient(135deg, var(--background-color) 0%, #e9ecef 100%);
+    border: 2px solid var(--secondary-color);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: var(--btn-shadow);
+}
+
+.btn:hover {
+    background: linear-gradient(135deg, #ffffff 0%, var(--background-color) 100%);
+    border-color: var(--primary-color);
+    box-shadow: var(--btn-shadow-hover);
+    transform: translateY(-2px);
+    color: var(--primary-color);
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: var(--btn-shadow);
+    background: linear-gradient(135deg, var(--background-color) 0%, #dee2e6 100%);
+    border-color: var(--primary-color);
+}
+
+.btn .user-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    border-radius: 50%;
+    background-color: #fff;
+    padding: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.btn:hover .user-icon {
+    transform: scale(1.2);
+}
+
+.btn span {
+    letter-spacing: .5px;
+}
+/*
+*   Estilos de botão de login (Início)
+*/
+
+/*
+*   Estilos do overlay quando o menu está aberto
+*/
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 900; /* Fixa o overlay acima do conteúdo */
+    opacity: 0;
+    transition: opacity 200ms ease-in-out;
+}
+
+.sidebar {
+    display: none; /* Escondido por padrão */
+}
+
+
+/*
+*   Responsividade para telas menores
+*/
+@media (max-width: 768px) {
+    .logo {
+        display: none;
+    }
+
+    .main-nav {
+        margin: 0px 10px;
+    }
+
+    .login-button {
+        margin-right: 10px;
+    }
+    
+    .btn-login {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .btn-login .user-icon {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .btn-login span {
+        display: none; /* Oculta o texto em telas muito pequenas */
+    }
+}
+
+@media (max-width: 480px) {
+
+    .nav-toggle {
+        display: flex;
+    }
+
+    .nav-toggle.active span:nth-child(1) {
+        height: 5px;
+        transform: rotate(-45deg) translateY(17px);
+    }
+    .nav-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+    .nav-toggle.active span:nth-child(3) {
+        height: 5px;
+        transform: rotate(45deg) translateY(-17px);
+    }
+
+    .nav-toggle.active + .main-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        position: absolute;
+        top: 7vh;
+        left: 10vw;
+        background-color: #f0f0f0;
+        padding: 10px 10px;
+
+        z-index: 1000;
+
+        border: 2px solid var(--secondary-color);
+        border-radius: 12px;
+        box-shadow: var(--btn-shadow);
+    }
+
+    .main-nav {
+        display: none; /* Esconde a navegação principal em telas menores */
+    }
+    .main-nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .main-nav li {
+        width: 100%;
+        text-align: center;
+        padding: 2px 0;
+        border-bottom: 10px solid var(--border-color);
+    }
+    .main-nav a {
+        font-size: 1.2em;
+        color: var(--text-link-color);
+    }
+
+
+    .btn-login {
+        padding: 8px 12px;
+        min-width: 44px; /* Tamanho mínimo para touch targets */
+    }
+
+    .btn-login span {
+        display: block;
+    }
+
+    .overlay.active {
+        display: block;
+        opacity: 1;
+    }
+>>>>>>> master-robert
 }

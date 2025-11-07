@@ -3,13 +3,72 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
+/** 
+**  DEFINIÇÃO DE VARIÁVEIS CSS
+**/
+:root {
+    --primary-color: #401820;
+    --secondary-color: #dfaf68;
+    --background-color: #DFDFDF;
+    --background-gradient-color: linear-gradient(135deg, #DFDFDF 0%, #401820 50%);
+
+    --text-color: #000000;
+    --text-link-color: #333333; 
+    --font-family: 'Inter', 'Roboto', sans-serif;
+
+    --btn-primary-background: #401820;
+    --btn-primary-color: #FFFFFF;
+    
+    --btn-secondary-background: transparent; /*  BACKGROUND NORMALMENTE TRANSPARENTE */
+    --btn-secondary-color: #dfaf68;
+
+    --btn-danger-background: #c53030;
+    --btn-danger-color: #FFFFFF;
+
+    --btn-primary-background-hover: transparent; /*  BACKGROUND NO HOVER */
+    --btn-primary-color-hover: #401820;
+
+    --btn-danger-background-hover: #FFFFFF;
+    --btn-danger-color-hover: #c53030;
+
+    --btn-shadow: 0 2px 8px rgba(64, 24, 32, 0.1);
+    --btn-shadow-hover: 0 4px 16px rgba(64, 24, 32, 0.2);
+    --btn-text-color: #f4f4f4;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-family);
 }
 
 html, body {
+    background-color: var(--background-color);
+    color: var(--text-color);
     height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+/* Garantir que o app-root também use a altura completa */
+app-root {
+    display: block;
+    min-height: 100vh;
+    width: 100%;
+}
+
+* a {
+    color: var(--text-link-color);
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+* a:hover {
+    color: var(--secondary-color);
+    transition: .2s;
 }

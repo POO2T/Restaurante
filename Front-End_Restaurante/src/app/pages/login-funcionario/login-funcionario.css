@@ -1,11 +1,25 @@
+.login-funcionario-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  justify-items: center;
+  min-height: 100%;
+  width: 100%;
+  padding: 40px 20px;
+  gap: 40px;
+}
+
 .login-funcionario-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  background-color: var(--secondary-color);
   padding: 20px;
+  border-radius: 10px;
+
+  flex-shrink: 1;
 }
 
 .header {
@@ -15,32 +29,30 @@
 }
 
 .header img {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 15px;
-  border-radius: 50%;
-  border: 3px solid #fff;
+  width: 60%;
+  height: 60%;
+  object-fit: contain;
 }
 
 .header h2 {
-  font-size: 28px;
+  font-size: 2rem;
   margin-bottom: 8px;
   font-weight: bold;
 }
 
 .header p {
-  font-size: 14px;
+  font-size: 1.2rem;
   opacity: 0.9;
   margin: 0;
 }
 
 .login-form {
+  max-width: 400px;
   background: white;
   padding: 40px;
+  margin-bottom: 10px;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  width: 100%;
-  max-width: 400px;
 }
 
 .form-group {
@@ -87,6 +99,11 @@
   margin-bottom: 20px;
   font-size: 14px;
   text-align: center;
+}
+.error-message.active {
+  background-color: #e6ffed;
+  border-color: #b2f5c2;
+  color: #2f855a;
 }
 
 .form-actions {
@@ -147,7 +164,40 @@
   text-decoration: underline;
 }
 
+.login-funcionario-img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.login-funcionario-img:hover {
+  transform: scale(1.05);
+}
+
+.login-funcionario-img img {
+  width: 100%;
+  max-width: 600px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+
 /* Responsividade */
+
+@media (max-width: 768px) {
+  .login-funcionario-section {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 20px;
+  }
+  
+  .login-funcionario-img {
+    display: none;
+  }
+}
+
 @media (max-width: 480px) {
   .login-funcionario-container {
     padding: 15px;

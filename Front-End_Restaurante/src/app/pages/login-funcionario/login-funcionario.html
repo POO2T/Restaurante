@@ -1,69 +1,54 @@
-<div class="login-funcionario-container">
-  <div class="header">
-    <img src="/assets/imgs/logo.png" alt="Logo Bella Piatto">
-    <h2>Login Funcionário</h2>
-    <p>Acesso restrito para funcionários</p>
-  </div>
+<section class="login-funcionario-section">
 
-  <form (ngSubmit)="onSubmit()" class="login-form">
-    <div class="form-group">
-      <label for="codigoFuncionario">
-        <i class="icon-badge"></i>
-        Código do Funcionário
-      </label>
-      <input 
-        type="text" 
-        id="codigoFuncionario" 
-        name="codigoFuncionario" 
-        [(ngModel)]="codigoFuncionario" 
-        placeholder="Digite seu código de funcionário" 
-        required>
-    </div>
+  <article class="login-funcionario-container">
+      <div class="header">
+        <img src="svg/bem_vindo.svg" alt="Bem vindo">
+        <h2>Login Funcionário</h2>
+        <p>Seja bem-vindo ao sistema de login</p>
+      </div>
 
-    <div class="form-group">
-      <label for="email">
-        <i class="icon-email"></i>
-        E-mail Corporativo
-      </label>
-      <input 
-        type="email" 
-        id="email" 
-        name="email" 
-        [(ngModel)]="email" 
-        placeholder="Digite seu e-mail corporativo" 
-        required>
-    </div>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
 
-    <div class="form-group">
-      <label for="senha">
-        <i class="icon-lock"></i>
-        Senha
-      </label>
-      <input 
-        type="password" 
-        id="senha" 
-        name="senha" 
-        [(ngModel)]="senha" 
-        placeholder="Digite sua senha" 
-        required>
-    </div>
+        <div class="form-group">
+          <label for="email">
+            <i class="icon-email"></i>
+            E-mail Corporativo
+          </label>
+          <input type="email" id="email" formControlName="email" placeholder="Digite seu e-mail corporativo" required>
+        </div>
 
-    <div class="error-message" *ngIf="erro">
-      {{ erro }}
-    </div>
+        <div class="form-group">
+          <label for="senha">
+            <i class="icon-lock"></i>
+            Senha
+          </label>
+          <input type="password" id="senha" formControlName="senha" placeholder="Digite sua senha" required>
+        </div>
 
-    <div class="form-actions">
-      <button type="button" class="btn-voltar" (click)="voltarSelecao()">
-        ← Voltar
-      </button>
-      <button type="submit" class="btn-entrar">
-        Entrar no Sistema
-      </button>
-    </div>
+        @if (erro) {
+        <div class="error-message" [class.active]="erro.includes('sucesso')">
+          {{ erro }}
+        </div>
+        }
 
-    <div class="links">
-      <a href="javascript:void(0)" (click)="recuperarSenha()">Esqueci minha senha</a>
-      <a href="javascript:void(0)" (click)="suporteTecnico()">Suporte Técnico</a>
-    </div>
-  </form>
-</div>
+        <div class="form-actions">
+          <button type="button" class="btn-voltar" (click)="voltarSelecao()">
+            ← Voltar
+          </button>
+          <button type="submit" class="btn-entrar">
+            Entrar no Sistema
+          </button>
+        </div>
+
+        <div class="links">
+          <a href="javascript:void(0)" (click)="recuperarSenha()">Esqueci minha senha</a>
+          <a href="javascript:void(0)" (click)="suporteTecnico()">Suporte Técnico</a>
+        </div>
+      </form>
+  </article>
+
+  <aside class="login-funcionario-img">
+    <img src="svg/login_funcionario.svg" alt="Pratos de login">
+  </aside>
+
+</section>

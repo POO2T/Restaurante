@@ -48,6 +48,12 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- H2 database for tests and in-memory development -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -62,6 +68,37 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.12.6</version> <!-- Use a versão mais recente -->
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.12.6</version> <!-- Use a mesma versão -->
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId> <!-- Necessário para serialização/deserialização -->
+			<version>0.12.6</version> <!-- Use a mesma versão -->
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Se usar Java 11 ou superior, JAXB é necessário para algumas operações do JJWT -->
+		<!-- Se você já tem dependências JAXB (talvez de spring-boot-starter-web), pode não precisar adicionar explicitamente -->
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<!-- A versão pode já vir gerenciada pelo Spring Boot -->
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-runtime</artifactId>
+			<!-- A versão pode já vir gerenciada pelo Spring Boot -->
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 

@@ -1,4 +1,5 @@
 <header class="main-header">
+<<<<<<< HEAD
     <div class="logo">
         <img src="assets/imgs/logo.png" alt="Logo Bella Piatto">
     </div>
@@ -15,3 +16,67 @@
         </a>
     </div>
 </header>
+=======
+  <div class="logo">
+    <img src="assets/imgs/logo.png" alt="Logo Bella Piatto" />
+  </div>
+
+  <div class="nav-toggle" (click)="toggleNav()" [class.active]="isNavOpen">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <nav class="main-nav">
+    <ul>
+      @if (rotaAtual != '/') {
+        <li><a routerLink="/" (click)="toggleNav()">Início</a></li>
+      }
+
+      @if (userRole() === 'FUNCIONARIO') {
+        <li><a routerLink="/funcionario/mesas" (click)="toggleNav()">Mesas</a></li>
+      }
+      
+      <li>
+        <!-- Trocar a rota de acordo com o usuário -->
+        <a [routerLink]="[userRole() === 'CLIENTE' ? '/pedidos' : '/funcionario/pedidos']" (click)="toggleNav()">Pedidos</a>
+      </li> 
+
+      <li><a routerLink="/cardapio" (click)="toggleNav()">Cardápio</a></li>
+    </ul>
+  </nav>
+
+  <div class="login-button">
+
+    <ng-container>
+
+      @if (isAuthenticated()) {
+        <a (click)="logout()" class="btn btn-logout">
+          <img class="user-icon" src="./svg/logout-icon.svg" alt="Ícone de logout" />
+          <span>Logout</span>
+        </a>
+      }
+      @else {
+        <a routerLink="/seletor-login" class="btn btn-login">
+          <img class="user-icon" src="./svg/generic_avatar.svg" alt="Ícone do usuário" />
+          <span>Login</span>
+        </a>
+      }
+
+    </ng-container>
+    
+    
+
+  </div>
+
+  <div class="overlay" [class.active]="isNavOpen" (click)="closeNav()"></div>
+</header>
+
+<div class="sidebar">
+  <ul>
+    <li><a routerLink="/home" (click)="toggleNav()">Início</a></li>
+    <li><a routerLink="/pedidos" (click)="toggleNav()">Pedidos</a></li>
+    <li><a routerLink="/cardapio" (click)="toggleNav()">Cardápio</a></li>
+  </ul>
+</div>
+>>>>>>> master-robert

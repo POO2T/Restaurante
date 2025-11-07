@@ -1,0 +1,23 @@
+<section class="home">
+
+    <header class="home-logo-mobile">
+        <img src="assets/imgs/logo.png" alt="Logo Bella Piatto" />
+    </header>
+
+    <article class="home-text">
+        <h1>Bem-vindo ao Restaurante Bella Piatto</h1>
+        <p>Descubra nossos pratos deliciosos e reserve sua mesa online!</p>
+        <div class="home-buttons">
+            <a routerLink="/cardapio" class="btn btn-primary">Ver Menu</a>
+            <a routerLink="/seletor-login" class="btn btn-secondary">Fazer Reserva</a>
+        </div>
+    </article>
+
+
+    <aside class="home-image">
+        <!-- @for(imagem of imagens; track imagem) {
+            <img [src]="imagem" alt="Imagem de pratos deliciosos" />
+        } -->
+        <img src="./svg/home_prato.svg" alt="Imagem de pratos deliciosos" />
+    </aside>
+</section>
