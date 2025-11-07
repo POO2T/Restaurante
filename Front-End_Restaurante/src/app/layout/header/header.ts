@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-header',
-  imports: [],
-  templateUrl: './header.html',
-  styleUrl: './header.css'
-})
-export class Header {
-
-=======
 import { Component, ChangeDetectionStrategy, inject, signal, OnDestroy } from '@angular/core';
 import { RouterModule, ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/internal/operators/filter';
@@ -87,5 +75,4 @@ export class Header {
     this.isAuthenticated.set(false);
     this.router.navigate(['/']);
   }
->>>>>>> master-robert
 }
