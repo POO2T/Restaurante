@@ -10,10 +10,9 @@
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
 
-      
-
       @if (isRegistrado) {
         <ng-container>
+          
           <div class="form-group">
             <label for="nome">
               <i class="icon-user"></i>
@@ -30,13 +29,6 @@
             <input type="tel" id="telefone" formControlName="telefone" placeholder="(00) 00000-0000">
           </div>
         
-          <div class="form-group">
-            <label for="endereco">
-              <i class="icon-location"></i>
-              Endereço (opcional)
-            </label>
-            <input type="text" id="endereco" formControlName="endereco" placeholder="Endereço (opcional)">
-          </div>
         </ng-container>
       }
 

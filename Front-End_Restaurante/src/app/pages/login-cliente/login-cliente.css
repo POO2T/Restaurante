@@ -10,13 +10,13 @@
 }
 
 .login-cliente-container {
-  min-height: 100vh;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: var(--secondary-color);
-  padding: 20px;
+  padding: 30px;
   border-radius: 10px;
 
   flex-shrink: 1;
@@ -36,24 +36,25 @@
 }
 
 .header h2 {
-  font-size: 28px;
+  font-size: 2rem;
   margin-bottom: 8px;
   font-weight: bold;
 }
 
 .header p {
-  font-size: 14px;
+  font-size: 1.2rem;
   opacity: 0.9;
   margin: 0;
 }
 
 .login-form {
+  max-width: 400px;
   background: white;
   padding: 40px;
+  margin-bottom: 10px;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   width: 100%;
-  max-width: 400px;
 }
 
 .form-group {
@@ -194,6 +195,11 @@
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.login-cliente-img:hover {
+  transform: scale(1.05);
 }
 
 .login-cliente-img img {
