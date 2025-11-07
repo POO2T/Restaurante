@@ -40,7 +40,7 @@ export class LoginCliente {
       nome: [''],
       email: ['', [Validators.required, Validators.email]],
       telefone: [''],
-      senha: ['', Validators.required],
+      senha: ['', [Validators.required, Validators.minLength(6)]],
       endereco: ['']
     });
   }

@@ -29,7 +29,7 @@
 
                                 <div class="form-group">
                                     <label for="numero-edit">Número da Mesa</label>
-                                    <input type="number" id="numero-edit" formControlName="numero" [min]="1" [value]="mesaSelecionada?.numero" placeholder="DIGITE O NÚMERO DA MESA" required>
+                                    <input type="number" id="numero-edit" formControlName="numero" [min]="1" [value]="mesaSelecionada?.numero || ''" placeholder="DIGITE O NÚMERO DA MESA" required>
                                 </div>
 
                                 <div class="form-group">
