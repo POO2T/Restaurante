@@ -9,9 +9,10 @@ import { SeletorLogin } from './pages/seletor-login/seletor-login';
 import { LoginCliente } from './pages/login-cliente/login-cliente';
 
 // ROTAS DE FUNCIONÁRIOS
-import { Pedidos } from './pages/pedidos/pedidos';
 import { LoginFuncionario } from './pages/login-funcionario/login-funcionario';
 import { Mesas } from './pages/funcionarios/mesas/mesas';
+import { Pedidos } from './pages/funcionarios/pedidos/pedidos';
+
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
