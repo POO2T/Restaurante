@@ -63,8 +63,8 @@ export class LoginFuncionario {
         // AuthService will set signals; check isAuthenticated
         if (this.authService.isAuthenticated()) {
           if (this.authService.isFuncionario()) {
-            console.log('Login Funcionário bem-sucedido. Redirecionando para /pedidos');
-            this.router.navigate(['/pedidos']);
+            console.log('Login Funcionário bem-sucedido. Redirecionando para /funcionarios/pedidos');
+            this.router.navigate(['/funcionario/pedidos']);
           } else {
             this.erro = 'Login bem-sucedido, mas tipo de usuário inesperado.';
             this.authService.logout();
