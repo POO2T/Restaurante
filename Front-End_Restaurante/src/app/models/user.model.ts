@@ -7,21 +7,21 @@ export interface Usuario {
   dataCriacao: Date;
 }
 
-export interface Cliente extends Usuario {
-  cpf: string;
-  planoFidelidadeId?: number;
-}
+// export interface Cliente extends Usuario {
+//   cpf: string;
+//   planoFidelidadeId?: number;
+// }
 
-export interface Funcionario extends Usuario {
-  tipoFuncionario: TipoFuncionario;
-  salario: number;
-  dataAdmissao: Date;
-}
+// export interface Funcionario extends Usuario {
+//   tipoFuncionario: TipoFuncionario;
+//   salario: number;
+//   dataAdmissao: Date;
+// }
 
-export enum TipoFuncionario {
-  GARCOM = 'GARCOM',
-  COZINHEIRO = 'COZINHEIRO',
-  GERENTE = 'GERENTE',
-  CAIXA = 'CAIXA',
-  ADMINISTRADOR = 'ADMINISTRADOR'
-}
+// export enum TipoFuncionario {
+//   GARCOM = 'GARCOM',
+//   COZINHEIRO = 'COZINHEIRO',
+//   GERENTE = 'GERENTE',
+//   CAIXA = 'CAIXA',
+//   ADMINISTRADOR = 'ADMINISTRADOR'
+// }
