@@ -54,8 +54,8 @@ public class AuthController {
             //    (Isso economiza uma busca no banco de dados!)
             Usuario usuario = customUserDetails.getUsuario();
 
-            String 
-            tipoUsuario;
+            String
+                    tipoUsuario;
             Object dadosUsuarioDTO; // Usará DTO para não vazar a senha
 
             // 4. Verifica o tipo e converte para o DTO apropriado
@@ -73,14 +73,14 @@ public class AuthController {
             // 5. Gerar token JWT
             final String token = jwtUtil.generateToken(customUserDetails);
 
-        // 6. Criar resposta completa com token, tipo e dados do usuário (em DTO)
-        // Agora retornamos o objeto no campo 'usuario' (nome padronizado)
-        LoginResponse response = new LoginResponse(
-            token,
-            tipoUsuario,
-            dadosUsuarioDTO, // Retorna o DTO (sem senha) -> será preenchido em 'usuario'
-            "Login realizado com sucesso!"
-        );
+            // 6. Criar resposta completa com token, tipo e dados do usuário (em DTO)
+            // Agora retornamos o objeto no campo 'usuario' (nome padronizado)
+            LoginResponse response = new LoginResponse(
+                    token,
+                    tipoUsuario,
+                    dadosUsuarioDTO, // Retorna o DTO (sem senha) -> será preenchido em 'usuario'
+                    "Login realizado com sucesso!"
+            );
 
             return ResponseEntity.ok(response);
 

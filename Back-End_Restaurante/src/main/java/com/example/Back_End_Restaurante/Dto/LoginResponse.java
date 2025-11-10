@@ -3,9 +3,9 @@ package com.example.Back_End_Restaurante.Dto;
 public class LoginResponse {
     private String token;
     private String tipoUsuario; // "CLIENTE" ou "FUNCIONARIO"
-    // Armazena os dados do usuário (DTO específico: ClienteDTO ou FuncionarioDTO)
-    // Usamos o nome 'usuario' para ser compatível com o frontend esperado.
-    private Object usuario;
+    // Mudamos de "Usuario" para "Object" para aceitar DTOs (ClienteDTO ou FuncionarioDTO)
+    // Isso evita vazar a senha hasheada.
+    private Object dadosUsuario;
     private String message;
 
     // Construtores
@@ -15,10 +15,10 @@ public class LoginResponse {
         this.token = token;
     }
 
-    public LoginResponse(String token, String tipoUsuario, Object usuario, String message) {
+    public LoginResponse(String token, String tipoUsuario, Object dadosUsuario, String message) {
         this.token = token;
         this.tipoUsuario = tipoUsuario;
-        this.usuario = usuario;
+        this.dadosUsuario = dadosUsuario;
         this.message = message;
     }
 
@@ -39,12 +39,12 @@ public class LoginResponse {
         this.tipoUsuario = tipoUsuario;
     }
 
-    public Object getUsuario() {
-        return usuario;
+    public Object getDadosUsuario() {
+        return dadosUsuario;
     }
 
-    public void setUsuario(Object usuario) {
-        this.usuario = usuario;
+    public void setDadosUsuario(Object dadosUsuario) {
+        this.dadosUsuario = dadosUsuario;
     }
 
     public String getMessage() {

@@ -12,102 +12,149 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Serviço que contém a lógica de negócio para gerenciar Mesas.
+ * É chamado pelo MesaController.
+ */
 @Service
 public class MesaService {
 
     @Autowired
     private MesaRepository mesaRepository;
 
-    // Converte Entidade (Mesa) para DTO (MesaDTO)
-    private MesaDTO convertToDTO(Mesa mesa) {
-        return new MesaDTO(
-                mesa.getId(),
-                mesa.getNumero(),
-                mesa.getNome(),
-                mesa.getStatus().name() // Converte Enum para String
-        );
-    }
+    // --- Métodos de Listagem (Públicos) ---
 
-    // Lista todas as mesas, ordenadas por número
+    /**
+     * Lista todas as mesas cadastradas, ordenadas por número.
+     * @return Lista de MesaDTO
+     */
     public List<MesaDTO> listarTodas() {
-        return mesaRepository.findAllByOrderByNumeroAsc().stream()
-                .map(this::convertToDTO)
+        return mesaRepository.findAllByOrderByNumeroAsc()
+                .stream()
+                .map(this::converterParaDTO) // Converte cada Entidade para DTO
                 .collect(Collectors.toList());
     }
 
-    // Busca uma mesa específica pelo ID
+    /**
+     * Busca uma mesa específica pelo seu ID.
+     * @param id O ID da mesa
+     * @return MesaDTO
+     */
     public MesaDTO buscarPorId(Long id) {
         Mesa mesa = mesaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Mesa não encontrada"));
-        return convertToDTO(mesa);
+        return converterParaDTO(mesa);
     }
 
-    // Cria uma nova mesa
+    // --- Métodos de Gerenciamento (Restritos) ---
+
+    /**
+     * Cria uma nova mesa (Apenas Gerente/Admin).
+     * @param mesaDTO DTO com os dados da nova mesa (nome e numero)
+     * @return MesaDTO da mesa salva
+     */
     public MesaDTO criarMesa(MesaDTO mesaDTO) {
+        // Validação: Não permitir mesas com mesmo número
         if (mesaRepository.existsByNumero(mesaDTO.getNumero())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Uma mesa com este número já existe");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe uma mesa com o número: " + mesaDTO.getNumero());
         }
+
+        // Criar nova entidade Mesa
         Mesa novaMesa = new Mesa();
         novaMesa.setNome(mesaDTO.getNome());
         novaMesa.setNumero(mesaDTO.getNumero());
 
-        // Define o status com base no DTO, se fornecido; caso contrário usa padrão
-        String statusStr = mesaDTO.getStatus();
-        if (statusStr == null || statusStr.isBlank()) {
-            novaMesa.setStatus(StatusMesa.DISPONIVEL); // Padrão com DISPONIVEL
-        } else {
-            try {
-                novaMesa.setStatus(StatusMesa.valueOf(statusStr.toUpperCase()));
-            } catch (IllegalArgumentException e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status inválido: " + statusStr);
-            }
-        }
+        // --- CORREÇÃO IMPORTANTE ---
+        // Define o status padrão para "DISPONIVEL" ao criar
+        novaMesa.setStatus(StatusMesa.DISPONIVEL);
+        // -------------------------
 
+        // Salvar no banco
         Mesa mesaSalva = mesaRepository.save(novaMesa);
-        return convertToDTO(mesaSalva);
+
+        // Retornar o DTO da mesa salva
+        return converterParaDTO(mesaSalva);
     }
 
-    // Atualiza uma mesa (Número e Nome)
+    /**
+     * Atualiza os dados de uma mesa (nome ou número) (Apenas Gerente/Admin).
+     * @param id O ID da mesa a ser atualizada
+     * @param mesaDTO DTO com os novos dados
+     * @return MesaDTO da mesa atualizada
+     */
     public MesaDTO atualizarMesa(Long id, MesaDTO mesaDTO) {
-        Mesa mesa = mesaRepository.findById(id)
+        Mesa mesaExistente = mesaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Mesa não encontrada"));
 
-        // Verifica se o novo número já está em uso por OUTRA mesa
-        if (!mesa.getNumero().equals(mesaDTO.getNumero()) && mesaRepository.existsByNumero(mesaDTO.getNumero())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Uma mesa com este novo número já existe");
+        // Validação: Se o número foi alterado, verifica se o novo número já existe em OUTRA mesa
+        if (mesaDTO.getNumero() != null && !mesaDTO.getNumero().equals(mesaExistente.getNumero()) &&
+                mesaRepository.existsByNumero(mesaDTO.getNumero())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe outra mesa com o número: " + mesaDTO.getNumero());
         }
 
-        mesa.setNome(mesaDTO.getNome());
-        mesa.setNumero(mesaDTO.getNumero());
-        // O status é atualizado por um método separado
+        // Atualiza os campos
+        if (mesaDTO.getNome() != null) {
+            mesaExistente.setNome(mesaDTO.getNome());
+        }
+        if (mesaDTO.getNumero() != null) {
+            mesaExistente.setNumero(mesaDTO.getNumero());
+        }
+        // Nota: O status não é atualizado aqui, e sim no método 'atualizarStatusMesa'
 
-        Mesa mesaAtualizada = mesaRepository.save(mesa);
-        return convertToDTO(mesaAtualizada);
+        Mesa mesaAtualizada = mesaRepository.save(mesaExistente);
+        return converterParaDTO(mesaAtualizada);
     }
 
-    // Atualiza APENAS o status de uma mesa (ex: Garçom ocupando a mesa)
-    public MesaDTO atualizarStatusMesa(Long id, String status) {
+    /**
+     * Atualiza APENAS o status de uma mesa (Garçom/Gerente/Admin).
+     * @param id O ID da mesa
+     * @param statusString O novo status (ex: "OCUPADO", "DISPONIVEL")
+     * @return MesaDTO da mesa atualizada
+     */
+    public MesaDTO atualizarStatusMesa(Long id, String statusString) {
         Mesa mesa = mesaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Mesa não encontrada"));
 
+        // Converte a String do DTO/JSON para o Enum StatusMesa
         try {
-            // Converte a String do DTO para o Enum
-            mesa.setStatus(StatusMesa.valueOf(status.toUpperCase()));
+            StatusMesa novoStatus = StatusMesa.valueOf(statusString.toUpperCase());
+            mesa.setStatus(novoStatus);
+            Mesa mesaAtualizada = mesaRepository.save(mesa);
+            return converterParaDTO(mesaAtualizada);
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status inválido: " + status);
+            // Se o frontend enviar um status inválido (ex: "QUEBRADA")
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status inválido: " + statusString);
         }
-
-        Mesa mesaAtualizada = mesaRepository.save(mesa);
-        return convertToDTO(mesaAtualizada);
     }
 
-
-    // Deleta uma mesa
+    /**
+     * Deleta uma mesa (Apenas Gerente/Admin).
+     * @param id O ID da mesa a ser deletada
+     */
     public void deletarMesa(Long id) {
         if (!mesaRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Mesa não encontrada");
         }
-        // Adicionar verificação futura: não deletar se tiver comanda aberta
+        // Adicionar verificação futura: não deletar mesa se tiver comanda aberta
+        // ...
+
         mesaRepository.deleteById(id);
+    }
+
+
+    // --- Método Auxiliar ---
+
+    /**
+     * Converte uma entidade Mesa em um MesaDTO (para enviar ao frontend).
+     * @param mesa A entidade Mesa
+     * @return O objeto MesaDTO
+     */
+    private MesaDTO converterParaDTO(Mesa mesa) {
+        return new MesaDTO(
+                mesa.getId(),
+                mesa.getNumero(),
+                mesa.getNome(),
+                mesa.getStatus().name() // Converte o Enum (ex: StatusMesa.DISPONIVEL) para String ("DISPONIVEL")
+        );
     }
 }
