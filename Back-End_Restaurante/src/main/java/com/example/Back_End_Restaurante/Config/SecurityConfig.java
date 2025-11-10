@@ -81,6 +81,11 @@ public class SecurityConfig {
                         // --- NOVA REGRA PÚBLICA ---
                         .requestMatchers(HttpMethod.POST, "/api/comandas/visitante").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/api/produtos").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/produtos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/categorias").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
+
                         // --- Endpoints PROTEGIDOS (authenticated) ---
                         .anyRequest().authenticated()
                 )
