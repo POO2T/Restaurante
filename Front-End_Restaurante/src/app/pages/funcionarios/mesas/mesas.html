@@ -1,0 +1,101 @@
+<section class="mesa-section">
+    <div class="mesa-container">
+        <h1>Lista de Mesas</h1>
+
+        <div class="mesa-list">
+
+            @for (mesa of mesas; track $index) {
+                <div class="mesa-card" (click)="selecionarMesa(mesa)">
+                    <h2>Mesa {{ mesa.id }} - {{ mesa.nome }}</h2>
+                    <p>Status: {{ mesa.status }}</p>
+                </div>
+
+                <div class="mesa-info" [class.active]="mesaInfoVisible">
+                    @if (mesaSelecionada) {
+                        <ng-container>
+                            <h3>Detalhes da Mesa {{ mesaSelecionada.id }}</h3>
+                            <p><strong>Nome:</strong> {{ mesaSelecionada.nome }}</p>
+                            <p><strong>Número:</strong> {{ mesaSelecionada.numero }}</p>
+                            <p><strong>Status:</strong> {{ mesaSelecionada.status }}</p>
+                        
+                            <h3>Atualizar Informações</h3>
+                            <!-- Form de edição separado (editMesaForm) -->
+                            <form [formGroup]="editMesaForm" (ngSubmit)="onUpdateSubmit()" class="mesa-form">
+
+                                <div class="form-group">
+                                    <label for="nome-edit">Nome da Mesa</label>
+                                    <input type="text" id="nome-edit" formControlName="nome" placeholder="EX: MESA 1" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="numero-edit">Número da Mesa</label>
+                                    <input type="number" id="numero-edit" formControlName="numero" [min]="1" [value]="mesaSelecionada?.numero" placeholder="DIGITE O NÚMERO DA MESA" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="status-edit">Status</label>
+                                    <select id="status-edit" formControlName="status" required>
+                                        @for (s of statusMesa; track $index) {
+                                            <option [value]="s">{{ s }}</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                @if (erro && editMesaForm.touched) {
+                                <ng-container>
+                                    <div class="error-message" [class.active]="erro.includes('sucesso')">
+                                        {{ erro }}
+                                    </div>
+                                </ng-container>
+        }
+
+                                <div class="form-action">
+                                    <button type="submit" class="btn btn-adicionar">Atualizar Mesa</button>
+                                    <button type="button" class="btn btn-deletar" (click)="onDeleteMesa(mesaSelecionada)">Deletar Mesa</button>
+                                </div>
+
+                            </form>
+                        
+                        
+                        </ng-container>
+                    }
+                </div>
+            }
+        </div>
+
+    </div>
+    <form [formGroup]="mesaForm" (ngSubmit)="onSubmit()" class="mesa-form">
+
+        <div class="form-group">
+            <label for="nome">Nome da Mesa</label>
+            <input type="text" id="nome" formControlName="nome" placeholder="EX: MESA 1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="numero">Número da Mesa</label>
+            <input type="number" id="numero" formControlName="numero" [min]="mesas.length + 1" placeholder="DIGITE O NÚMERO DA MESA" [value]="mesas.length + 1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" formControlName="status" required>
+                @for (s of statusMesa.values(); track $index) {
+                    <option [value]="s">{{ s }}</option>
+                }
+            </select>
+        </div>
+
+        @if (erro && mesaForm.touched) {
+            <ng-container>
+                <div class="error-message" [class.active]="erro.includes('sucesso')">
+                    {{ erro }}
+                </div>
+            </ng-container>
+        }
+
+        <div class="form-action">
+            <button type="submit" class="btn-adicionar">Adicionar Mesa</button>
+        </div>
+    </form>
+</section>
+<div class="overlay" [class.active]="mesaInfoVisible" (click)="closeMesaInfo()"></div>

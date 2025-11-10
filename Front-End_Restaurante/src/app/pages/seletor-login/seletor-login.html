@@ -1,0 +1,45 @@
+<div class="seletor-container">
+  <div class="header">
+    <img src="/assets/imgs/logo.png" alt="Logo Bella Piatto">
+    <h1>Bella Piatto</h1>
+    <p>Escolha como deseja acessar o sistema</p>
+  </div>
+
+  <div class="opcoes-login">
+    <div class="opcao-card funcionario-card" (click)="navegarParaFuncionario()">
+      <div class="card-icon">
+        <i class="icon-funcionario">👔</i>
+      </div>
+      <h3>Funcionário</h3>
+      <p>Acesso ao sistema administrativo</p>
+      <ul>
+        <li>Gerenciar pedidos</li>
+        <li>Controle de estoque</li>
+        <li>Relatórios</li>
+      </ul>
+      <div class="card-button">
+        Entrar como Funcionário
+      </div>
+    </div>
+
+    <div class="opcao-card cliente-card" (click)="navegarParaCliente()">
+      <div class="card-icon">
+        <i class="icon-cliente">🍽️</i>
+      </div>
+      <h3>Cliente</h3>
+      <p>Faça seus pedidos online</p>
+      <ul>
+        <li>Visualizar cardápio</li>
+        <li>Fazer pedidos</li>
+        <li>Acompanhar entregas</li>
+      </ul>
+      <div class="card-button">
+        Entrar como Cliente
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>Bella Piatto - Sabor que Encanta</p>
+  </div>
+</div>

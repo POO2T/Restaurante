@@ -1,0 +1,54 @@
+<section class="login-funcionario-section">
+
+  <article class="login-funcionario-container">
+      <div class="header">
+        <img src="svg/bem_vindo.svg" alt="Bem vindo">
+        <h2>Login Funcionário</h2>
+        <p>Seja bem-vindo ao sistema de login</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
+
+        <div class="form-group">
+          <label for="email">
+            <i class="icon-email"></i>
+            E-mail Corporativo
+          </label>
+          <input type="email" id="email" formControlName="email" placeholder="Digite seu e-mail corporativo" required>
+        </div>
+
+        <div class="form-group">
+          <label for="senha">
+            <i class="icon-lock"></i>
+            Senha
+          </label>
+          <input type="password" id="senha" formControlName="senha" placeholder="Digite sua senha" required>
+        </div>
+
+        @if (erro) {
+        <div class="error-message" [class.active]="erro.includes('sucesso')">
+          {{ erro }}
+        </div>
+        }
+
+        <div class="form-actions">
+          <button type="button" class="btn-voltar" (click)="voltarSelecao()">
+            ← Voltar
+          </button>
+          <button type="submit" class="btn-entrar">
+            Entrar no Sistema
+          </button>
+        </div>
+
+        <div class="links">
+          <a href="javascript:void(0)" (click)="recuperarSenha()">Esqueci minha senha</a>
+          <a href="javascript:void(0)" (click)="suporteTecnico()">Suporte Técnico</a>
+        </div>
+      </form>
+  </article>
+
+  <aside class="login-funcionario-img">
+    <img src="svg/login_funcionario.svg" alt="Pratos de login">
+  </aside>
+
+</section>
