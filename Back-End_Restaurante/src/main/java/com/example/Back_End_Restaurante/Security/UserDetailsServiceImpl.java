@@ -32,7 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     if (funcionarioOpt.isPresent()) {
         Funcionario funcionario = funcionarioOpt.get();
         Collection<? extends GrantedAuthority> authorities =
-            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + funcionario.getCargo().name()));
+            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + funcionario.gettipoFuncionario().name()));
         // Retorna CustomUserDetails contendo o objeto Funcionario para uso posterior
         return new CustomUserDetails(funcionario.getEmail(), funcionario.getSenha(), authorities, funcionario);
     }

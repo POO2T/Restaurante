@@ -64,11 +64,11 @@ public class FuncionarioService {
         funcionario.setSalario(funcionarioDTO.getSalario());
         funcionario.setAtivo(funcionarioDTO.isAtivo());
 
-        // 5. Converter Cargo (String do DTO para Enum da Entidade)
+        // 5. Converter tipoFuncionario (String do DTO para Enum da Entidade)
         try {
-            funcionario.setCargo(TipoFuncionario.valueOf(funcionarioDTO.getCargo().toUpperCase()));
+            funcionario.settipoFuncionario(TipoFuncionario.valueOf(funcionarioDTO.gettipoFuncionario().toUpperCase()));
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O cargo '" + funcionarioDTO.getCargo() + "' é inválido.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O tipoFuncionario '" + funcionarioDTO.gettipoFuncionario() + "' é inválido.");
         }
 
         // 6. Salvar no banco
@@ -121,12 +121,12 @@ public class FuncionarioService {
             funcionarioExistente.setSenha(passwordEncoder.encode(funcionarioDTO.getSenha()));
         }
 
-        // 5. Atualizar o cargo (só se foi fornecido)
-        if (funcionarioDTO.getCargo() != null) {
+        // 5. Atualizar o tipoFuncionario (só se foi fornecido)
+        if (funcionarioDTO.gettipoFuncionario() != null) {
             try {
-                funcionarioExistente.setCargo(TipoFuncionario.valueOf(funcionarioDTO.getCargo().toUpperCase()));
+                funcionarioExistente.settipoFuncionario(TipoFuncionario.valueOf(funcionarioDTO.gettipoFuncionario().toUpperCase()));
             } catch (IllegalArgumentException e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O cargo '" + funcionarioDTO.getCargo() + "' é inválido.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O tipoFuncionario '" + funcionarioDTO.gettipoFuncionario() + "' é inválido.");
             }
         }
 
@@ -146,7 +146,7 @@ public class FuncionarioService {
         dto.setId(funcionario.getId()); // <<< ADICIONADO
         dto.setNome(funcionario.getNome());
         dto.setEmail(funcionario.getEmail());
-        dto.setCargo(funcionario.getCargo().name()); // Converte Enum para String
+        dto.settipoFuncionario(funcionario.gettipoFuncionario().name()); // Converte Enum para String
         dto.setSalario(funcionario.getSalario());
         dto.setAtivo(funcionario.isAtivo());
         // SENHA NÃO É INCLUÍDA AQUI (propositalmente)

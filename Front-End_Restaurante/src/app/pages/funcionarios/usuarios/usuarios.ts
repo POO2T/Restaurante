@@ -65,7 +65,7 @@ export class Usuarios {
     this.authService.registerFuncionario(novoFuncionario).subscribe({
       next: (funcionario) => {
         // CAST USADO APENAS PARA EXEMPLO, AJUSTAR CONFORME NECESSÁRIO
-        this.funcionarios.push(funcionario as unknown as Funcionario);
+        this.funcionarios.push(funcionario as Funcionario);
         this.funcionarioForm.reset();
         this.erro = '';
       },
