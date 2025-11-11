@@ -18,8 +18,8 @@
                         <td>{{ f.email }}</td>
                         <td>{{ f.tipoFuncionario }}</td>
                         <td>
-                            <button (click)="editarFuncionario(f)">Editar</button>
-                            <button (click)="deletarFuncionario(f)">Deletar</button>
+                            <button (click)="editarFuncionario(f)" class="btn btn-edit">Editar</button>
+                            <button (click)="deletarFuncionario(f)" class="btn btn-delete">Deletar</button>
                         </td>
                     </tr>
 
@@ -40,11 +40,11 @@
         <label for="senha">Senha:</label>
         <input type="password" id="senha" formControlName="senha" required>
 
-        <label for="tipoFuncionario">Tipo de Funcionário:</label>
+        <label for="tipoFuncionario">Cargo:</label>
         <select id="tipoFuncionario" formControlName="tipoFuncionario" required>
-            @for (tipo of tipoFuncionario; track tipo) {
+            @for (c of tipoFuncionario; track c) {
                 <ng-container>
-                    <option [value]="tipo">{{ tipo }}</option>
+                    <option [value]="c">{{ c }}</option>
                 </ng-container>
             }
 

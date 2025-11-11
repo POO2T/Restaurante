@@ -1,0 +1,109 @@
+.usuarios-section {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.usarios-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.usuarios-table {
+    width: 80%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+.usuarios-table th, .usuarios-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+.usuarios-table th {
+    background-color: #f2f2f2;
+}
+.usuarios-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+.usuarios-table tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+.usuarios-table tr:hover {
+    background-color: #e9e9e9;
+}
+.usuarios-table td button {
+    margin-right: 5px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: 0.3s ease all;
+    font-weight: bold;
+}
+.usuarios-table td button.btn-edit {
+    background-color: var(--btn-primary-background);
+    color: var(--btn-primary-color);
+}
+.usuarios-table td button.btn-edit:hover {
+    background-color: var(--btn-primary-background-hover);
+    color: var(--btn-primary-color-hover);
+}
+.usuarios-table td button.btn-delete {
+    background-color: var(--btn-danger-background);
+    color: var(--btn-danger-color);
+}
+.usuarios-table td button.btn-delete:hover {
+    background-color: var(--btn-danger-background-hover);
+    color: var(--btn-danger-color-hover);
+}
+
+.usuarios-form {
+    display: flex;
+	width: 100%;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+.usuarios-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.usuarios-form .form-group {
+    margin-bottom: 15px;
+}
+.usuarios-form .form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+.usuarios-form .form-group input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+.usuarios-form .form-group input:focus {
+    border-color: #401820;
+    outline: none;
+}
+.usuarios-form button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 3px;
+    background-color: var(--btn-primary-background);
+    color: var(--btn-primary-color);
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s ease all;
+}
+.usuarios-form button:hover {
+    background-color: var(--btn-primary-background-hover);
+    color: var(--btn-primary-color-hover);
+}
