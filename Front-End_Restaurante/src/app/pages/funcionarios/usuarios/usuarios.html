@@ -53,6 +53,12 @@
         <label for="salario">Salário:</label>
         <input type="number" id="salario" formControlName="salario" required>
 
+        @if (erro) {
+            <ng-container>
+                <div class="error-message" [class.active]="erro.includes('sucesso')">{{ erro }}</div>
+            </ng-container>
+        }
+
         <button type="submit">Salvar</button>
     </form>
 
