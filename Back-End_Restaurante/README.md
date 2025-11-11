@@ -11,7 +11,7 @@ Foram adicionados dois perfis de aplicação (arquivos de propriedades) em `src/
 
 ## Pré-requisitos
 
-- Java 17+ (ou versão compatível com o Spring Boot definido no `pom.xml`).
+- Java 24+ (ou versão compatível com o Spring Boot definido no `pom.xml`).
 - Maven ou utilize o wrapper incluído (`mvnw.cmd` / `mvnw`).
 - Se for usar o perfil Postgres: um servidor PostgreSQL em execução e um banco (ex.: `restaurante_db`).
 
@@ -63,7 +63,7 @@ Executando os testes com H2:
 Com o perfil `h2` ativo, o console web estará disponível em:
 
 ```
-http://localhost:8080/api/h2-console
+http://localhost:8080/h2-console
 ```
 
 Use a JDBC URL definida em `application-h2.properties` para conectar-se.
