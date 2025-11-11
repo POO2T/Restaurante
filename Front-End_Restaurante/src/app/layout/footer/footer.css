@@ -3,6 +3,7 @@
     border-top: 2px solid var(--secondary-color);
     text-align: center;
     padding: 20px 0;
+    max-height: 140px;
     width: 100%;
     color: #ffffff;
     margin-top: auto;
