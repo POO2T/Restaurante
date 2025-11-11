@@ -1,6 +1,8 @@
 <header class="main-header">
   <div class="logo">
-    <img src="assets/imgs/logo.png" alt="Logo Bella Piatto" />
+    <a routerLink="/">
+      <img src="assets/imgs/logo.png" alt="Logo Bella Piatto" />
+    </a>
   </div>
 
   <div class="nav-toggle" (click)="toggleNav()" [class.active]="isNavOpen">
@@ -11,9 +13,6 @@
 
   <nav class="main-nav">
     <ul>
-      @if (rotaAtual != '/') {
-        <li><a routerLink="/" (click)="toggleNav()">Início</a></li>
-      }
 
       @if (userRole() === 'FUNCIONARIO') {
         <li><a routerLink="/funcionario/mesas" (click)="toggleNav()">Mesas</a></li>
