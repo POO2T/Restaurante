@@ -23,13 +23,19 @@ app-header {
   display: flex;
   flex-direction: column;
   width: 100vw;
+  /* Allow children to shrink and enable scroll inside the main content area when necessary */
+  min-height: 0;
+  overflow: auto;
 }
 
 /*
 *   Garantir que o conteúdo das páginas possa usar toda a altura disponível
+*   e que elementos internos possam rolar sem forçar overflow no body.
 */
 .main-content > * {
   flex: 1;
+  min-height: 0; /* important for flex children to allow scrolling */
+  overflow: auto;
 }
 
 /* 
@@ -37,8 +43,6 @@ app-header {
 */
 app-footer {
   flex-shrink: 0;
-  margin-top: auto;
-  width: 100vw;
 }
 
 

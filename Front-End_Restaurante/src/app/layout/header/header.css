@@ -3,40 +3,44 @@
 */
 .main-header {
     display: flex;
+    height: 80px;
     width: 100%;
-    height: 100px;
     justify-content: space-between;
     align-items: center;
     gap: 10px;
-    padding: 5px;
+    padding: 8px 12px;
     background-color: #f0f0f0;
     border-bottom: 1px solid #ccc;
+    box-sizing: border-box;
 }
 
 /* 
 *   Estilos de logo (Início) 
 */
 .logo {
-    width: 120px;
-    height: 100%;
+    width: 140px;
+    /* constrain logo height so header doesn't grow unexpectedly */
+    height: 56px;
     flex-shrink: 0;
     border-radius: 12px;
     overflow: hidden;
+    display: flex;
+    align-items: center;
 }
 
 .logo:hover img {
-    transform: scale(1.15);
+    transform: scale(1.3);
+    translate: 0 8px;
 }
 
 .logo img {
     width: 100%;
-    height: 100%;
+    height: auto;
+    max-height: 56px;
     object-fit: contain;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
 }
-
-
 /* 
 *   Estilos de logo (Fim)  
 */
