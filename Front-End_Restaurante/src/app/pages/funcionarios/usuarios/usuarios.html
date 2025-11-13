@@ -1,34 +1,5 @@
 <section class="usuarios-section">
-    <div class="usuarios-container">
-        <h2>Gerenciamento de Usuários</h2>
-        <table class="usuarios-table">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Email</th>
-                    <th>Função</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (f of funcionarios; track f.id) {
-                    
-                    <tr>
-                        <td>{{ f.nome }}</td>
-                        <td>{{ f.email }}</td>
-                        <td>{{ f.tipoFuncionario }}</td>
-                        <td>
-                            <button (click)="editarFuncionario(f)" class="btn btn-edit">Editar</button>
-                            <button (click)="deletarFuncionario(f)" class="btn btn-delete">Deletar</button>
-                        </td>
-                    </tr>
-
-                }
-            </tbody>
-        </table>
-        <!-- <button (click)="adicionarFuncionario()">Adicionar Novo Usuário</button> -->
-    </div>
-
+    
     <form [formGroup]="funcionarioForm" (ngSubmit)="onSubmit()" class="usuarios-form">
 
         <label for="nome">Nome:</label>
@@ -61,5 +32,35 @@
 
         <button type="submit">Salvar</button>
     </form>
+    
+    <div class="usuarios-container">
+        <h2>Gerenciamento de Funcionários</h2>
+        <table class="usuarios-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Função</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (f of funcionarios; track f.id) {
+                    
+                    <tr>
+                        <td>{{ f.nome }}</td>
+                        <td>{{ f.email }}</td>
+                        <td>{{ f.tipoFuncionario }}</td>
+                        <td>
+                            <button (click)="editarFuncionario(f)" class="btn btn-edit">Editar</button>
+                            <button (click)="deletarFuncionario(f)" class="btn btn-delete">Deletar</button>
+                        </td>
+                    </tr>
 
+                }
+            </tbody>
+        </table>
+        <button (click)="adicionarFuncionario()">Adicionar Novo Usuário</button>
+        
+    </div>
 </section>

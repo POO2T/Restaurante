@@ -1,13 +1,90 @@
 .usuarios-section {
-    height: 100%;
+    width: 100%;
+    height: 100vh;
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
+    justify-content: space-around;
     align-items: center;
-    justify-content: center;
+    gap: 40px;
 }
 
-.usarios-container {
+.usuarios-form {
     display: flex;
+	width: 50%;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    gap: 10px;
+}
+.usuarios-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.usuarios-form .form-group {
+    margin-bottom: 15px;
+}
+.usuarios-form .form-group label {
+    display: block;
+    font-size: 1rem; 
+    color: #333; margin-bottom: 3px;
+    margin-bottom: 5px;
+}
+
+.usuarios-form input, .usuarios-form select {
+    width: 100%;
+	padding: 10px 12px;
+	border: 1px solid rgba(0,0,0,0.12);
+	border-radius: 6px;
+	background: #fff;
+}
+.usuarios-form input:focus, .usuarios-form select:focus {
+	border-color: var(--primary-color);
+	box-shadow: 0 0 6px rgba(100, 50, 150, 0.1);
+	outline: none;
+}
+.usuarios-form option {
+	width: 100%;
+	padding: 5px;
+	font-size: 0.75rem;
+}
+
+.usuarios-form button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 3px;
+    background-color: var(--btn-primary-background);
+    color: var(--btn-primary-color);
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s ease all;
+}
+.usuarios-form button:hover {
+    background-color: var(--btn-primary-background-hover);
+    color: var(--btn-primary-color-hover);
+}
+
+.error-message {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  text-align: center;
+}
+.error-message.active {
+  background-color: #e6ffed;
+  border-color: #b2f5c2;
+  color: #2f855a;
+}
+
+.usuarios-container {
+    display: flex;
+    width: 50%;
     flex-direction: column;
     align-items: center;
     gap: 20px;
@@ -19,12 +96,12 @@
     margin: 20px 0;
 }
 .usuarios-table th, .usuarios-table td {
-    border: 1px solid #ddd;
     padding: 10px;
     text-align: left;
 }
 .usuarios-table th {
     background-color: #f2f2f2;
+    border: 2px solid #a9a4a4;
 }
 .usuarios-table tr:nth-child(even) {
     background-color: #f9f9f9;
@@ -59,67 +136,4 @@
 .usuarios-table td button.btn-delete:hover {
     background-color: var(--btn-danger-background-hover);
     color: var(--btn-danger-color-hover);
-}
-
-.usuarios-form {
-    display: flex;
-	width: 100%;
-    flex-wrap: wrap;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-}
-.usuarios-form h2 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-.usuarios-form .form-group {
-    margin-bottom: 15px;
-}
-.usuarios-form .form-group label {
-    display: block;
-    margin-bottom: 5px;
-}
-.usuarios-form .form-group input {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-}
-.usuarios-form .form-group input:focus {
-    border-color: #401820;
-    outline: none;
-}
-.usuarios-form button {
-    width: 100%;
-    padding: 10px;
-    border: none;
-    border-radius: 3px;
-    background-color: var(--btn-primary-background);
-    color: var(--btn-primary-color);
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s ease all;
-}
-.usuarios-form button:hover {
-    background-color: var(--btn-primary-background-hover);
-    color: var(--btn-primary-color-hover);
-}
-
-.error-message {
-  background-color: #fee;
-  border: 1px solid #fcc;
-  color: #c33;
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  font-size: 14px;
-  text-align: center;
-}
-.error-message.active {
-  background-color: #e6ffed;
-  border-color: #b2f5c2;
-  color: #2f855a;
 }
