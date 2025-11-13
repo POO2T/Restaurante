@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../../services/auth/auth.service';
-import { Funcionario, TipoFuncionario } from '../../../models/funcionario.model';
+import { Funcionario } from '../../../models/funcionario.model';
+import { TipoFuncionario } from '../../../enums/tipoFuncionario';
 import { RegisterFuncionarioRequest } from '../../../models/auth.model';
 
 @Component({
