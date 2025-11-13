@@ -22,6 +22,7 @@ app-header {
   flex: 1;
   display: flex;
   flex-direction: column;
+  height: 100vh;
   width: 100vw;
   /* Allow children to shrink and enable scroll inside the main content area when necessary */
   min-height: 0;
@@ -34,7 +35,8 @@ app-header {
 */
 .main-content > * {
   flex: 1;
-  min-height: 0; /* important for flex children to allow scrolling */
+  width: 100vw;
+  height: 100vh; /* important for flex children to allow scrolling */
   overflow: auto;
 }
 

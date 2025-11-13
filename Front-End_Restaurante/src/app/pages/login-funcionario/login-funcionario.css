@@ -1,10 +1,21 @@
-.login-funcionario-section {
+/* .login-funcionario-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
   justify-items: center;
   min-height: 100%;
   width: 100%;
+  padding: 40px 20px;
+  gap: 40px;
+} */
+
+.login-funcionario-section {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
   padding: 40px 20px;
   gap: 40px;
 }
