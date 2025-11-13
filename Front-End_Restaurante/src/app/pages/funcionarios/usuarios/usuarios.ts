@@ -76,6 +76,8 @@ export class Usuarios {
 
   }
 
+  adicionarFuncionario() {}
+
   editarFuncionario(funcionario: Funcionario) {
 
   }
