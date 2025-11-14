@@ -15,7 +15,7 @@ public class Funcionario extends Usuario {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private TipoFuncionario tipoFuncionario; // Usando o Enum TipoFuncionario
+    private TipoFuncionario cargo; // Usando o Enum TipoFuncionario
 
     @Column(nullable = false)
     private double salario;
@@ -31,12 +31,12 @@ public class Funcionario extends Usuario {
         super.setNome(nome);
     }
 
-    public TipoFuncionario gettipoFuncionario() {
-        return tipoFuncionario;
+    public TipoFuncionario getCargo() {
+        return cargo;
     }
 
-    public void settipoFuncionario(TipoFuncionario tipoFuncionario) {
-        this.tipoFuncionario = tipoFuncionario;}
+    public void setCargo(TipoFuncionario cargo) {
+        this.cargo = cargo;}
 
     public double getSalario() {
         return salario;

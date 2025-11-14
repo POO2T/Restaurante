@@ -6,7 +6,7 @@ public  class FuncionarioDTO {
     private String nome;
     private String email;
     private String senha; // <<< PARA REQUISIÇÕES (Cadastro/Atualização)
-    private String tipoFuncionario; // String para simplificar a entrada (ex: "GERENTE")
+    private String cargo; // String para simplificar a entrada (ex: "GERENTE")
     private double salario;
     private boolean ativo;
 
@@ -16,11 +16,11 @@ public  class FuncionarioDTO {
 
     // Construtor completo (útil para testes ou lógica interna)
     // ATENÇÃO: A ordem aqui deve corresponder à ordem no 'converterParaDTO' se for usado.
-    public FuncionarioDTO(Long id, String nome, String email, String tipoFuncionario, double salario, boolean ativo) {
+    public FuncionarioDTO(Long id, String nome, String email, String cargo, double salario, boolean ativo) {
         this.id = id;
         this.nome = nome;
         this.email = email;
-        this.tipoFuncionario = tipoFuncionario;
+        this.cargo = cargo;
         this.salario = salario;
         this.ativo = ativo;
         // Note: A senha não é incluída no construtor de resposta padrão
@@ -60,12 +60,12 @@ public  class FuncionarioDTO {
         this.senha = senha;
     }
 
-    public String gettipoFuncionario() {
-        return tipoFuncionario;
+    public String getCargo() {
+        return cargo;
     }
 
-    public void settipoFuncionario(String tipoFuncionario) {
-        this.tipoFuncionario = tipoFuncionario;
+    public void setCargo(String cargo) {
+        this.cargo = cargo;
     }
 
     public double getSalario() {

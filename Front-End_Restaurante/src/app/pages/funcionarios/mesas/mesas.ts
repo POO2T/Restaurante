@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { Mesa } from '../../../models/mesa.model';
-import { statusMesa } from '../../../models/mesa.model';
+import { statusMesa } from '../../../enums/statusMesa';
 import { MesasService } from '../../../services/mesas/mesas.service';
 // import { AuthGuard } from '../../../guards/auth.guard';
 
@@ -68,6 +68,10 @@ export class Mesas {
   onSubmit() {
     if (this.mesaForm.invalid) {
       this.erro = 'Formulário inválido. Por favor, verifique os campos.';
+      return;
+    }
+
+    if (!confirm('Confirmar o cadastro da nova mesa?\n\nNúmero: ' + this.mesaForm.value.numero + '\nNome: ' + this.mesaForm.value.nome)) {
       return;
     }
 
@@ -216,7 +220,7 @@ export class Mesas {
         this.mesas = this.mesas.filter(m => m.id !== mesa.id);
         this.erro = 'Mesa deletada com sucesso!';
         console.log('Mesa deletada:', mesa);
-      
+        
         this.closeMesaInfo();
       },
       error: (err: any) => {

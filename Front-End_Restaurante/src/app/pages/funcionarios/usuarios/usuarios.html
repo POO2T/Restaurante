@@ -1,6 +1,7 @@
 <section class="usuarios-section">
     
-    <form [formGroup]="funcionarioForm" (ngSubmit)="onSubmit()" class="usuarios-form">
+    @if (addFuncionario) {
+        <form [formGroup]="funcionarioForm" (ngSubmit)="onSubmit()" class="usuarios-form">
 
         <label for="nome">Nome:</label>
         <input type="text" id="nome" formControlName="nome" required>
@@ -32,6 +33,7 @@
 
         <button type="submit">Salvar</button>
     </form>
+    }
     
     <div class="usuarios-container">
         <h2>Gerenciamento de Funcionários</h2>
@@ -60,7 +62,8 @@
                 }
             </tbody>
         </table>
-        <button (click)="adicionarFuncionario()">Adicionar Novo Usuário</button>
+        <button class="btn btn-adicionar" (click)="adicionarFuncionario()">Adicionar Novo Usuário</button>
         
     </div>
 </section>
+<div class="overlay" [class.active]="addFuncionario"></div>

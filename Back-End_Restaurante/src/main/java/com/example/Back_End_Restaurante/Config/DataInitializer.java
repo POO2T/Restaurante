@@ -27,11 +27,11 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Lista de tipoFuncionarios de administração
+        // Lista de cargos de administração
         List<TipoFuncionario> adminRoles = Arrays.asList(TipoFuncionario.ADMINISTRADOR, TipoFuncionario.GERENTE);
 
-        // Verifica se já existe algum usuário com um desses tipoFuncionarios
-        if (!funcionarioRepository.existsBytipoFuncionarioIn(adminRoles)) {
+        // Verifica se já existe algum usuário com um desses cargos
+        if (!funcionarioRepository.existsByCargoIn(adminRoles)) {
             // Se nenhum admin/gerente existir, cria um
             System.out.println("Nenhum usuário ADMIN ou GERENTE encontrado. Criando usuário admin padrão...");
 
@@ -40,7 +40,7 @@ public class DataInitializer implements CommandLineRunner {
             adminUser.setEmail("admin@restaurante.com");
             // SENHA: "admin123" (hasheada)
             adminUser.setSenha(passwordEncoder.encode("admin123"));
-            adminUser.settipoFuncionario(TipoFuncionario.ADMINISTRADOR); // Define o tipoFuncionario
+            adminUser.setCargo(TipoFuncionario.ADMINISTRADOR); // Define o cargo
             adminUser.setSalario(0.0); // Salário simbólico
             adminUser.setAtivo(true); // Usuário está ativo
 
