@@ -5,7 +5,7 @@
     padding: 20px 0;
     width: 100%;
     color: #ffffff;
-    margin-top: auto;
+    box-sizing: border-box;
 }
 
 .footer-content {

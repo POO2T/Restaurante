@@ -1,4 +1,5 @@
-import { TipoFuncionario, Usuario } from "./user.model";
+import { Usuario } from "./user.model";
+import { TipoFuncionario } from "../enums/tipoFuncionario";
 
 export interface LoginRequest {
   telefone?: string;
@@ -16,10 +17,10 @@ export interface LoginResponse {
 
 export interface RegisterClienteRequest {
   nome: string;
-  email?: string;
+  email: string;
   senha: string;
   cpf?: string;
-  telefone: string;
+  telefone?: string;
 }
 
 export interface RegisterFuncionarioRequest {

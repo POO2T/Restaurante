@@ -2,11 +2,11 @@ package com.example.Back_End_Restaurante.Model;
 
 import com.example.Back_End_Restaurante.Enums.StatusComanda;
 import jakarta.persistence.*;
-import lombok.Data;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-@Data
+
 @Entity
 @Table(name = "comandas")
 public class Comanda {
@@ -15,32 +15,92 @@ public class Comanda {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false, updatable = false)
-    private Date dataAbertura;
+    @Column(nullable = false)
+    private LocalDateTime dataAbertura;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dataFechamento;
+    @Column
+    private LocalDateTime dataFechamento;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private StatusComanda status; // Usando o Enum StatusComanda
+    private StatusComanda status;
 
-    // Muitas comandas podem pertencer a um cliente
-    @ManyToOne(fetch = FetchType.LAZY) // LAZY: Carrega o cliente só quando necessário
+    // Relacionamento com Cliente (pode ser nulo, para visitantes)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
-    // Muitas comandas podem estar associadas a uma mesa
+    // Relacionamento com Mesa (obrigatório)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mesa_id", nullable = false)
     private Mesa mesa;
 
-    // Uma comanda tem uma lista de pedidos [cite: 5]
-    @OneToMany(mappedBy = "comanda", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Pedido> pedidos;
 
-    // Uma comanda pode ter vários pagamentos (caso de conta dividida)
-    @OneToMany(mappedBy = "comanda", cascade = CascadeType.ALL)
-    private List<Pagamento> pagamentos;
+    @OneToMany(mappedBy = "comanda", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pedido> pedidos = new ArrayList<>();
+
+    // Construtores
+    public Comanda() {
+        this.dataAbertura = LocalDateTime.now();
+        this.status = StatusComanda.ABERTA;
+    }
+
+    // Getters e Setters (Manuais)
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getDataAbertura() {
+        return dataAbertura;
+    }
+
+    public void setDataAbertura(LocalDateTime dataAbertura) {
+        this.dataAbertura = dataAbertura;
+    }
+
+    public LocalDateTime getDataFechamento() {
+        return dataFechamento;
+    }
+
+    public void setDataFechamento(LocalDateTime dataFechamento) {
+        this.dataFechamento = dataFechamento;
+    }
+
+    public StatusComanda getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusComanda status) {
+        this.status = status;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public Mesa getMesa() {
+        return mesa;
+    }
+
+    public void setMesa(Mesa mesa) {
+        this.mesa = mesa;
+    }
+
+    // Getters e Setters para Pedidos (a ser adicionado no futuro)
+    // public List<Pedido> getPedidos() {
+    //     return pedidos;
+    // }
+    //
+    // public void setPedidos(List<Pedido> pedidos) {
+    //     this.pedidos = pedidos;
+    // }
 }

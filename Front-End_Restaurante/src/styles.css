@@ -12,25 +12,35 @@
     --background-color: #DFDFDF;
     --background-gradient-color: linear-gradient(135deg, #DFDFDF 0%, #401820 50%);
 
+
     --text-color: #000000;
-    --text-link-color: #333333; 
+    --text-link-color: #333333;
+    --text-link-color-hover: #dfaf68; 
     --font-family: 'Inter', 'Roboto', sans-serif;
 
+
+    /* BOTÃO PRIMÁRIO */
     --btn-primary-background: #401820;
     --btn-primary-color: #FFFFFF;
-    
-    --btn-secondary-background: transparent; /*  BACKGROUND NORMALMENTE TRANSPARENTE */
-    --btn-secondary-color: #dfaf68;
-
-    --btn-danger-background: #c53030;
-    --btn-danger-color: #FFFFFF;
-
     --btn-primary-background-hover: transparent; /*  BACKGROUND NO HOVER */
     --btn-primary-color-hover: #401820;
 
+
+    /* BOTÃO SECUNDÁRIO */
+    --btn-secondary-background: transparent; /*  BACKGROUND NORMALMENTE TRANSPARENTE */
+    --btn-secondary-color: #dfaf68;
+    --btn-secondary-background-hover: #dfaf68;
+    --btn-secondary-color-hover: #401820;
+
+
+    /* BOTÃO DE PERIGO */
+    --btn-danger-background: #c53030;
+    --btn-danger-color: #FFFFFF;
     --btn-danger-background-hover: #FFFFFF;
     --btn-danger-color-hover: #c53030;
+    
 
+    /* ESTILIZAÇÃO COMUM AOS BOTÕES */
     --btn-shadow: 0 2px 8px rgba(64, 24, 32, 0.1);
     --btn-shadow-hover: 0 4px 16px rgba(64, 24, 32, 0.2);
     --btn-text-color: #f4f4f4;
@@ -56,7 +66,7 @@ html, body {
 app-root {
     display: block;
     min-height: 100vh;
-    width: 100%;
+    width: 100vw;
 }
 
 * a {
@@ -69,6 +79,6 @@ app-root {
     -moz-user-select: none;
 }
 * a:hover {
-    color: var(--secondary-color);
+    color: var(--text-link-hover-color);
     transition: .2s;
 }

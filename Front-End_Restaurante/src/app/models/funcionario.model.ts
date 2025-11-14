@@ -1,15 +1,9 @@
 import { Usuario } from './user.model';
+import { TipoFuncionario } from '../enums/tipoFuncionario';
 
 export interface Funcionario extends Usuario {
   tipoFuncionario: TipoFuncionario;
   salario: number;
+  ativo: boolean;
   dataAdmissao: Date;
-}
-
-export enum TipoFuncionario {
-  GARCOM = 'GARCOM',
-  COZINHEIRO = 'COZINHEIRO',
-  GERENTE = 'GERENTE',
-  CAIXA = 'CAIXA',
-  ADMINISTRADOR = 'ADMINISTRADOR'
 }

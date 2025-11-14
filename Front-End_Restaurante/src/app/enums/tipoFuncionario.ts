@@ -1,0 +1,7 @@
+export enum TipoFuncionario {
+  GARCOM = 'GARCOM',
+  COZINHEIRO = 'COZINHEIRO',
+  GERENTE = 'GERENTE',
+  CAIXA = 'CAIXA',
+  ADMINISTRADOR = 'ADMINISTRADOR'
+}

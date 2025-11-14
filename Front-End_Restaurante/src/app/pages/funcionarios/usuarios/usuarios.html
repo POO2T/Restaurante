@@ -1,1 +1,66 @@
-<p>usuarios works!</p>
+<section class="usuarios-section">
+    
+    <form [formGroup]="funcionarioForm" (ngSubmit)="onSubmit()" class="usuarios-form">
+
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" formControlName="nome" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" formControlName="email" required>
+
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" formControlName="senha" required>
+
+        <label for="tipoFuncionario">Cargo:</label>
+        <select id="tipoFuncionario" formControlName="tipoFuncionario" required>
+            @for (c of tipoFuncionario; track c) {
+                <ng-container>
+                    <option [value]="c">{{ c }}</option>
+                </ng-container>
+            }
+
+        </select>
+
+        <label for="salario">Salário:</label>
+        <input type="number" id="salario" formControlName="salario" required>
+
+        @if (erro) {
+            <ng-container>
+                <div class="error-message" [class.active]="erro.includes('sucesso')">{{ erro }}</div>
+            </ng-container>
+        }
+
+        <button type="submit">Salvar</button>
+    </form>
+    
+    <div class="usuarios-container">
+        <h2>Gerenciamento de Funcionários</h2>
+        <table class="usuarios-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Função</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (f of funcionarios; track f.id) {
+                    
+                    <tr>
+                        <td>{{ f.nome }}</td>
+                        <td>{{ f.email }}</td>
+                        <td>{{ f.tipoFuncionario }}</td>
+                        <td>
+                            <button (click)="editarFuncionario(f)" class="btn btn-edit">Editar</button>
+                            <button (click)="deletarFuncionario(f)" class="btn btn-delete">Deletar</button>
+                        </td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+        <button (click)="adicionarFuncionario()">Adicionar Novo Usuário</button>
+        
+    </div>
+</section>
