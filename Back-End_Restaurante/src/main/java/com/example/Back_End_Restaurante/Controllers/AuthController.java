@@ -1,14 +1,12 @@
 package com.example.Back_End_Restaurante.Controllers;
 
-import com.example.Back_End_Restaurante.Dto.ClienteDTO;
-import com.example.Back_End_Restaurante.Dto.FuncionarioDTO;
 import com.example.Back_End_Restaurante.Dto.LoginRequest;
 import com.example.Back_End_Restaurante.Dto.LoginResponse;
 import com.example.Back_End_Restaurante.Model.Cliente;
 import com.example.Back_End_Restaurante.Model.Funcionario;
 import com.example.Back_End_Restaurante.Model.Usuario;
 import com.example.Back_End_Restaurante.Security.CustomUserDetails; // <<< IMPORTAR
-import com.example.Back_End_Restaurante.Security.Jwt.JwtUtil;
+import com.example.Back_End_Restaurante.Security.JwtUtil;
 import com.example.Back_End_Restaurante.Services.ClienteService;
 import com.example.Back_End_Restaurante.Services.FuncionarioService;
 import org.springframework.beans.factory.annotation.Autowired;

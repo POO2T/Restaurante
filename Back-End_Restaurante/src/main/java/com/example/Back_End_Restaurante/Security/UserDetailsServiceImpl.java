@@ -1,4 +1,4 @@
-package com.example.Back_End_Restaurante.Security;
+package com.example.Back_End_Restaurante.Security; // <-- PACOTE CORRIGIDO
 
 import com.example.Back_End_Restaurante.Model.Cliente;
 import com.example.Back_End_Restaurante.Model.Funcionario;
@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Collections; // Para criar a lista de roles
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -29,13 +29,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<Funcionario> funcionarioOpt = funcionarioRepository.findByEmail(email);
-    if (funcionarioOpt.isPresent()) {
-        Funcionario funcionario = funcionarioOpt.get();
-        Collection<? extends GrantedAuthority> authorities =
-            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + funcionario.gettipoFuncionario().name()));
-        // Retorna CustomUserDetails contendo o objeto Funcionario para uso posterior
-        return new CustomUserDetails(funcionario.getEmail(), funcionario.getSenha(), authorities, funcionario);
-    }
+        if (funcionarioOpt.isPresent()) {
+            Funcionario funcionario = funcionarioOpt.get();
+            Collection<? extends GrantedAuthority> authorities =
+                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + funcionario.getCargo().name()));
+            return new CustomUserDetails(funcionario.getEmail(), funcionario.getSenha(), authorities, funcionario);
+        }
 
         Optional<Cliente> clienteOpt = clienteRepository.findByEmail(email);
         if (clienteOpt.isPresent()) {

@@ -1,14 +1,15 @@
 package com.example.Back_End_Restaurante.Config;
 
-
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
-// Imports do Spring Security
-import com.example.Back_End_Restaurante.Security.Jwt.JwtRequestFilter;
+// 👇👇👇 IMPORTS CORRIGIDOS (SEM /Jwt) 👇👇👇
+import com.example.Back_End_Restaurante.Security.JwtRequestFilter;
 import com.example.Back_End_Restaurante.Security.UserDetailsServiceImpl;
+// 👆👆👆 IMPORTS CORRIGIDOS 👆👆👆
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +27,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true) // Permite usar @PreAuthorize
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Autowired
@@ -53,7 +54,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // URL do seu Angular
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         configuration.setAllowCredentials(true);
@@ -69,24 +70,18 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        // --- Endpoints PÚBLICOS (permitAll) ---
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/funcionarios").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/mesas").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/mesas/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-
-                        // --- NOVA REGRA PÚBLICA ---
-                        .requestMatchers(HttpMethod.POST, "/api/comandas/visitante").permitAll()
-
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/funcionarios").permitAll() // Mantenha público por enquanto, proteja no Controller
                         .requestMatchers(HttpMethod.GET, "/api/produtos").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/produtos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categorias").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
-
-                        // --- Endpoints PROTEGIDOS (authenticated) ---
+                        .requestMatchers(HttpMethod.GET, "/api/mesas").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/mesas/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/comandas/visitante").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
