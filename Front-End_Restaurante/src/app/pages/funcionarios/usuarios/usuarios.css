@@ -54,7 +54,7 @@
     width: 100%;
     padding: 10px;
     border: none;
-    border-radius: 3px;
+    border-radius: 6px;
     background-color: var(--btn-primary-background);
     color: var(--btn-primary-color);
     cursor: pointer;
@@ -63,6 +63,7 @@
 }
 .usuarios-form button:hover {
     background-color: var(--btn-primary-background-hover);
+    border: 2px solid var(--btn-primary-background);
     color: var(--btn-primary-color-hover);
 }
 
@@ -136,4 +137,20 @@
 .usuarios-table td button.btn-delete:hover {
     background-color: var(--btn-danger-background-hover);
     color: var(--btn-danger-color-hover);
+}
+
+.btn-adicionar {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    background-color: var(--btn-primary-background);
+    color: var(--btn-primary-color);
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s ease all;
+}
+.btn-adicionar:hover {
+    background-color: var(--btn-primary-background-hover);
+    border: 2px solid var(--btn-primary-background);
+    color: var(--btn-primary-color-hover);
 }

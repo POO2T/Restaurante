@@ -18,10 +18,11 @@ export class Usuarios {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
 
+  addFuncionario: boolean = false;
+
   funcionarioForm: FormGroup;
   erro: string = '';
 
-  //usuarios: Usuario[] = [];
   funcionarios: Funcionario[] = [];
   tipoFuncionario = Object.values(TipoFuncionario);
 
@@ -77,13 +78,13 @@ export class Usuarios {
 
   }
 
-  adicionarFuncionario() {}
-
-  editarFuncionario(funcionario: Funcionario) {
-
+  adicionarFuncionario() {
+    this.addFuncionario = true;
   }
-  deletarFuncionario(funcionario: Funcionario) {
 
-  }
+  editarFuncionario(funcionario: Funcionario) {}
+  deletarFuncionario(funcionario: Funcionario) {}
+
+
 
 }
