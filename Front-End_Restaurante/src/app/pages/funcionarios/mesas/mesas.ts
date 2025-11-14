@@ -71,6 +71,10 @@ export class Mesas {
       return;
     }
 
+    if (!confirm('Confirmar o cadastro da nova mesa?\n\nNúmero: ' + this.mesaForm.value.numero + '\nNome: ' + this.mesaForm.value.nome)) {
+      return;
+    }
+
     const mesa: Mesa = this.mesaForm.value;
     
     mesa.nome = mesa.nome.toUpperCase();
@@ -216,7 +220,7 @@ export class Mesas {
         this.mesas = this.mesas.filter(m => m.id !== mesa.id);
         this.erro = 'Mesa deletada com sucesso!';
         console.log('Mesa deletada:', mesa);
-      
+        
         this.closeMesaInfo();
       },
       error: (err: any) => {

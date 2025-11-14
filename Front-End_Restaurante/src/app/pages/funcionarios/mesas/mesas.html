@@ -42,15 +42,15 @@
                                 </div>
 
                                 @if (erro && editMesaForm.touched) {
-                                <ng-container>
-                                    <div class="error-message" [class.active]="erro.includes('sucesso')">
-                                        {{ erro }}
-                                    </div>
-                                </ng-container>
-        }
+                                    <ng-container>
+                                        <div class="error-message" [class.active]="erro.includes('sucesso')">
+                                            {{ erro }}
+                                        </div>
+                                    </ng-container>
+                                }
 
                                 <div class="form-action">
-                                    <button type="submit" class="btn btn-adicionar">Atualizar Mesa</button>
+                                    <button type="submit" class="btn btn-adicionar" [disabled]="editMesaForm.invalid">Atualizar Mesa</button>
                                     <button type="button" class="btn btn-deletar" (click)="onDeleteMesa(mesaSelecionada)">Deletar Mesa</button>
                                 </div>
 
@@ -94,7 +94,7 @@
         }
 
         <div class="form-action">
-            <button type="submit" class="btn-adicionar">Adicionar Mesa</button>
+            <button type="submit" class="btn-adicionar" [disabled]="mesaForm.invalid">Adicionar Mesa</button>
         </div>
     </form>
 </section>
