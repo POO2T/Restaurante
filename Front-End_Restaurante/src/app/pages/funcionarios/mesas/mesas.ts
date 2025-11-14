@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { Mesa } from '../../../models/mesa.model';
-import { statusMesa } from '../../../models/mesa.model';
+import { statusMesa } from '../../../enums/statusMesa';
 import { MesasService } from '../../../services/mesas/mesas.service';
 // import { AuthGuard } from '../../../guards/auth.guard';
 
