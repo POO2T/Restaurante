@@ -32,6 +32,11 @@
     --btn-secondary-background-hover: #dfaf68;
     --btn-secondary-color-hover: #401820;
 
+    /* BOTÃO DE AVISO */
+    --btn-warn-background: #f6ad55;
+    --btn-warn-color: #FFFFFF;
+    --btn-warn-background-hover: #ffffff;
+    --btn-warn-color-hover: #f6ad55;
 
     /* BOTÃO DE PERIGO */
     --btn-danger-background: #c53030;
