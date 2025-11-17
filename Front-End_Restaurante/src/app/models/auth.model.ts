@@ -27,7 +27,7 @@ export interface RegisterFuncionarioRequest {
   nome: string;
   email: string;
   senha: string;
-  tipoFuncionario: TipoFuncionario;
+  cargo: TipoFuncionario;
   salario: number;
   telefone?: string;
 }

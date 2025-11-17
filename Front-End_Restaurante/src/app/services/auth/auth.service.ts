@@ -52,9 +52,9 @@ export class AuthService {
             const u = (response as any).dadosUsuario ?? (response as LoginResponse).usuario as any;
             if (u) {
               // Verificar campos específicos para determinar tipo
-              if (u.telefone && !u.tipoFuncionario && !u.salario) {
+              if (u.telefone && !u.cargo && !u.salario) {
                 tipo = 'CLIENTE';
-              } else if (u.tipoFuncionario || u.salario) {
+              } else if (u.cargo || u.salario) {
                 tipo = 'FUNCIONARIO';
               } else {
                 console.warn('TIPO DE USUÁRIO NÃO PÔDE SER DETERMINADO.');
@@ -85,12 +85,12 @@ export class AuthService {
       .pipe(catchError(this.handleError));
   }
 
-  registerFuncionario(userData: RegisterFuncionarioRequest): Observable<Usuario> {
-    // ENDPOINT CORRETO: /api/funcionarios
-    return this.apiService
-      .post<Usuario>('/funcionarios', userData) // Ajustei para /api/funcionarios, verifique seu backend
-      .pipe(catchError(this.handleError));
-  }
+  // registerFuncionario(userData: RegisterFuncionarioRequest): Observable<Usuario> {
+  //   // ENDPOINT CORRETO: /api/funcionarios
+  //   return this.apiService
+  //     .post<Usuario>('/funcionarios', userData) // Ajustei para /api/funcionarios, verifique seu backend
+  //     .pipe(catchError(this.handleError));
+  // }
 
   // --- MÉTODOS DE LOGIN ESPECÍFICOS (para compatibilidade) ---
   // Ambos usam o mesmo endpoint /auth/login
@@ -236,7 +236,7 @@ export class AuthService {
     const user = this.currentUser();
     return (
       this.userType() === 'FUNCIONARIO' &&
-      (user as any)?.tipoFuncionario === 'ADMINISTRADOR'
+      (user as any)?.cargo === 'ADMINISTRADOR'
     );
   }
 
