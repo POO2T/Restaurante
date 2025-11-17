@@ -2,37 +2,78 @@
     
     @if (addFuncionario) {
         <form [formGroup]="funcionarioForm" (ngSubmit)="onSubmit()" class="usuarios-form">
+            <h2>Adicionar Novo Funcionário</h2>
 
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" formControlName="nome" required>
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" formControlName="nome" required>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" formControlName="email" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" formControlName="email" required>
 
-        <label for="senha">Senha:</label>
-        <input type="password" id="senha" formControlName="senha" required>
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" formControlName="senha" required>
 
-        <label for="tipoFuncionario">Cargo:</label>
-        <select id="tipoFuncionario" formControlName="tipoFuncionario" required>
-            @for (c of tipoFuncionario; track c) {
+            <!-- <label for="confirmarSenha">Confirmar Senha:</label>
+            <input type="password" id="confirmarSenha" formControlName="confirmarSenha" required> -->
+
+            <label for="cargo">Cargo:</label>
+            <select id="cargo" formControlName="cargo" required>
+                @for (c of tipoFuncionario; track $index) {
+                    <ng-container>
+                        <option [value]="c">{{ c }}</option>
+                    </ng-container>
+                }
+            </select>
+
+            <label for="salario">Salário:</label>
+            <input type="number" id="salario" formControlName="salario" required>
+
+            @if (erro) {
                 <ng-container>
-                    <option [value]="c">{{ c }}</option>
+                    <div class="error-message" [class.active]="erro.includes('sucesso')">{{ erro }}</div>
                 </ng-container>
             }
 
-        </select>
+            <button type="submit" >Salvar</button>
+        </form>
+    }
 
-        <label for="salario">Salário:</label>
-        <input type="number" id="salario" formControlName="salario" required>
+    @if (editandoFuncionario) {
+        <form [formGroup]="editFuncionarioForm" (ngSubmit)="onEditSubmit()" class="usuarios-form">
+            <h2>Editar Funcionário</h2>
 
-        @if (erro) {
-            <ng-container>
-                <div class="error-message" [class.active]="erro.includes('sucesso')">{{ erro }}</div>
-            </ng-container>
-        }
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" formControlName="nome" required>
 
-        <button type="submit">Salvar</button>
-    </form>
+            <label for="email">Email:</label>
+            <input type="email" id="email" formControlName="email" required>
+
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" formControlName="senha" required>
+
+            <label for="confirmarSenha">Confirmar Senha:</label>
+            <input type="password" id="confirmarSenha" formControlName="confirmarSenha" required>
+
+            <label for="cargo">Cargo:</label>
+            <select id="cargo" formControlName="cargo" required>
+                @for (c of tipoFuncionario; track $index) {
+                    <ng-container>
+                        <option [value]="c">{{ c }}</option>
+                    </ng-container>
+                }
+            </select>
+
+            <label for="salario">Salário:</label>
+            <input type="number" id="salario" formControlName="salario" required>
+
+            @if (erro) {
+                <ng-container>
+                    <div class="error-message" [class.active]="erro.includes('sucesso')">{{ erro }}</div>
+                </ng-container>
+            }
+
+            <button type="submit" [disabled]="editFuncionarioForm.invalid">Salvar</button>
+        </form>
     }
     
     <div class="usuarios-container">
@@ -40,6 +81,7 @@
         <table class="usuarios-table">
             <thead>
                 <tr>
+                    <!-- <th>Id</th> -->
                     <th>Nome</th>
                     <th>Email</th>
                     <th>Função</th>
@@ -50,9 +92,10 @@
                 @for (f of funcionarios; track f.id) {
                     
                     <tr>
+                        <!-- <td>{{ f.id }}</td> -->
                         <td>{{ f.nome }}</td>
                         <td>{{ f.email }}</td>
-                        <td>{{ f.tipoFuncionario }}</td>
+                        <td>{{ f.cargo }}</td>
                         <td>
                             <button (click)="editarFuncionario(f)" class="btn btn-edit">Editar</button>
                             <button (click)="deletarFuncionario(f)" class="btn btn-delete">Deletar</button>
@@ -62,8 +105,8 @@
                 }
             </tbody>
         </table>
-        <button class="btn btn-adicionar" (click)="adicionarFuncionario()">Adicionar Novo Usuário</button>
+        <button class="btn btn-adicionar" (click)="toggleFuncionario()">Adicionar Novo Usuário</button>
         
     </div>
 </section>
-<div class="overlay" [class.active]="addFuncionario"></div>
+<div class="overlay" (click)="closeFuncionario()" [class.active]="addFuncionario || editandoFuncionario"></div>

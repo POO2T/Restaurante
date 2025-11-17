@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../../services/auth/auth.service';
 import { Funcionario } from '../../../models/funcionario.model';
 import { TipoFuncionario } from '../../../enums/tipoFuncionario';
 import { RegisterFuncionarioRequest } from '../../../models/auth.model';
+import { FuncionarioService } from '../../../services/funcionario/funcionario.service';
 
 @Component({
   selector: 'app-usuarios',
@@ -16,11 +16,13 @@ import { RegisterFuncionarioRequest } from '../../../models/auth.model';
 export class Usuarios {
 
   private fb = inject(FormBuilder);
-  private authService = inject(AuthService);
+  private funcionarioService = inject(FuncionarioService);
 
   addFuncionario: boolean = false;
+  editandoFuncionario: boolean = false;
 
-  funcionarioForm: FormGroup;
+  funcionarioForm!: FormGroup;
+  editFuncionarioForm!: FormGroup;
   erro: string = '';
 
   funcionarios: Funcionario[] = [];
@@ -32,9 +34,24 @@ export class Usuarios {
       nome: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       senha: ['', [Validators.required, Validators.minLength(6)]],
-      tipoFuncionario: ['', Validators.required],
+      // confirmarSenha: ['', [Validators.required, Validators.minLength(6)]],
+      cargo: ['', Validators.required],
       salario: [0, [Validators.required, Validators.min(0)]],
     });
+
+    this.editFuncionarioForm = this.fb.group({
+      id: [{ value: null, disabled: true }],
+      nome: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      senha: ['', [Validators.required, Validators.minLength(6)]],
+      confirmarSenha: ['', [Validators.required, Validators.minLength(6)]],
+      cargo: ['', Validators.required],
+      salario: [0, [Validators.required, Validators.min(0)]],
+    });
+  }
+
+  ngOnInit() {
+    this.loadFuncionarios();
   }
 
   private formatError(err: unknown, fallback = 'Ocorreu um erro'): string {
@@ -54,6 +71,17 @@ export class Usuarios {
     }
   }
 
+  private loadFuncionarios() {
+    this.funcionarioService.getFuncionarios().subscribe({
+      next: (funcionarios) => {
+        this.funcionarios = funcionarios;  
+      },
+      error: (err) => {
+        this.erro = this.formatError(err, 'Erro ao carregar funcionários.');
+      }
+    });
+  }
+
   onSubmit() {
     
     if (this.funcionarioForm.invalid) {
@@ -63,8 +91,7 @@ export class Usuarios {
 
     const novoFuncionario = this.funcionarioForm.value as RegisterFuncionarioRequest;
     
-
-    this.authService.registerFuncionario(novoFuncionario).subscribe({
+    this.funcionarioService.registerFuncionario(novoFuncionario).subscribe({
       next: (funcionario) => {
         // CAST USADO APENAS PARA EXEMPLO, AJUSTAR CONFORME NECESSÁRIO
         this.funcionarios.push(funcionario as Funcionario);
@@ -76,14 +103,66 @@ export class Usuarios {
       }
     });
 
+    this.addFuncionario = false;
+
   }
 
-  adicionarFuncionario() {
-    this.addFuncionario = true;
+  onEditSubmit() {
+    if (this.editFuncionarioForm.invalid) {
+      this.erro = 'Formulário inválido. Preencha todos os campos corretamente.';
+      return;
+    }
+
+    const funcionarioAtualizado = this.editFuncionarioForm.value as RegisterFuncionarioRequest & { id: number };
+
+    this.funcionarioService.updateFuncionario(funcionarioAtualizado.id, funcionarioAtualizado).subscribe({
+      next: (funcionario) => {
+        const index = this.funcionarios.findIndex(f => f.id === funcionario.id);
+        if (index !== -1) {
+          this.funcionarios[index] = funcionario as Funcionario;
+        }
+        this.editFuncionarioForm.reset();
+        this.erro = '';
+      },
+      error: (err) => {
+        this.erro = this.formatError(err, 'Erro ao atualizar funcionário.');
+      }
+    });
+
+    this.editandoFuncionario = false;
   }
 
-  editarFuncionario(funcionario: Funcionario) {}
-  deletarFuncionario(funcionario: Funcionario) {}
+  toggleFuncionario() {
+    this.addFuncionario = !this.addFuncionario;
+  }
+  closeFuncionario() {
+    this.addFuncionario = false;
+    this.editandoFuncionario = false;
+    this.funcionarioForm.reset();
+  }
+
+  editarFuncionario(funcionario: Funcionario) {
+    this.editandoFuncionario = true;
+    this.editFuncionarioForm.patchValue(funcionario);
+  }
+
+  deletarFuncionario(funcionario: Funcionario) {
+    
+    if (!confirm(`Confirma a exclusão do funcionário ${funcionario.nome}?`)) {
+      return;
+    }
+
+    this.funcionarioService.deleteFuncionario(funcionario.id).subscribe({
+      next: () => {
+        this.funcionarios = this.funcionarios.filter(f => f.id !== funcionario.id);
+        this.erro = 'Usuário deletado com sucesso.';
+        console.warn(this.erro);
+      },
+      error: (err) => {
+        this.erro = this.formatError(err, 'Erro ao deletar funcionário.');
+      }
+    });
+  }
 
 
 
