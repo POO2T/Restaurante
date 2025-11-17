@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Funcionario } from '../../../models/funcionario.model';
 import { TipoFuncionario } from '../../../enums/tipoFuncionario';
@@ -18,11 +18,19 @@ export class Usuarios {
   private fb = inject(FormBuilder);
   private funcionarioService = inject(FuncionarioService);
 
+  // Checagem de mudanças manual
+  private cdr = inject(ChangeDetectorRef);
+
   addFuncionario: boolean = false;
   editandoFuncionario: boolean = false;
 
+  // Indicador de carregamento
+  loading: boolean = false;
+
   funcionarioForm!: FormGroup;
   editFuncionarioForm!: FormGroup;
+
+  dataAvailable: boolean = false;
   erro: string = '';
 
   funcionarios: Funcionario[] = [];
@@ -72,18 +80,26 @@ export class Usuarios {
   }
 
   private loadFuncionarios() {
+    this.loading = true;
     this.funcionarioService.getFuncionarios().subscribe({
       next: (funcionarios) => {
-        this.funcionarios = funcionarios;  
+        this.funcionarios = funcionarios;
+        this.dataAvailable = true;
+        this.loading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.erro = this.formatError(err, 'Erro ao carregar funcionários.');
+        this.dataAvailable = false;
+        this.loading = false;
+        this.cdr.markForCheck();
       }
     });
   }
 
   onSubmit() {
-    
+    this.loading = true;
+
     if (this.funcionarioForm.invalid) {
       this.erro = 'Formulário inválido. Preencha todos os campos corretamente.';
       return;
@@ -101,7 +117,7 @@ export class Usuarios {
       error: (err) => {
         this.erro = this.formatError(err, 'Erro ao criar funcionário.');
       }
-    });
+    })
 
     this.addFuncionario = false;
 

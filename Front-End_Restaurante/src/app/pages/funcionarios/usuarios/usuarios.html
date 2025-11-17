@@ -89,20 +89,27 @@
                 </tr>
             </thead>
             <tbody>
-                @for (f of funcionarios; track f.id) {
-                    
-                    <tr>
-                        <!-- <td>{{ f.id }}</td> -->
-                        <td>{{ f.nome }}</td>
-                        <td>{{ f.email }}</td>
-                        <td>{{ f.cargo }}</td>
-                        <td>
-                            <button (click)="editarFuncionario(f)" class="btn btn-edit">Editar</button>
-                            <button (click)="deletarFuncionario(f)" class="btn btn-delete">Deletar</button>
-                        </td>
-                    </tr>
-
+                @if (dataAvailable) {
+                    @for (f of funcionarios; track f.id) {
+                    <ng-container>
+                        <tr>
+                            <!-- <td>{{ f.id }}</td> -->
+                            <td>{{ f.nome }}</td>
+                            <td>{{ f.email }}</td>
+                            <td>{{ f.cargo }}</td>
+                            <td>
+                                <button (click)="editarFuncionario(f)" class="btn btn-edit">
+                                    <img src="./svg/icons/edit-icon.svg" alt="Edit-icon">
+                                </button>
+                                <button (click)="deletarFuncionario(f)" class="btn btn-delete">
+                                    <img src="./svg/icons/delete-icon.svg" alt="Delete-icon">
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    }
                 }
+                
             </tbody>
         </table>
         <button class="btn btn-adicionar" (click)="toggleFuncionario()">Adicionar Novo Usuário</button>
