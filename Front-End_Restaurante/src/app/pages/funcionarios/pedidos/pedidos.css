@@ -341,3 +341,10 @@
     gap: 5px;
   }
 }
+
+@media (max-width: 480px) {
+  /* .btn-nav, .btn-detalhes, .select-status {
+    width: 100%;
+    text-align: center;
+  } */
+}
