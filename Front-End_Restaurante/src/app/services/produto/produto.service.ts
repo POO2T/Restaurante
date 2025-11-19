@@ -5,4 +5,8 @@ import { Injectable } from '@angular/core';
 })
 export class ProdutoService {
   
+  private readonly endpoint = '/produtos';
+
+  constructor() { }
+
 }
