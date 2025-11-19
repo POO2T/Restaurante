@@ -5,38 +5,38 @@
     display: flex;
     height: 80px;
     width: 100%;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
+    gap: 5px;
+    padding: 8px 8px;
     background-color: #f0f0f0;
     border-bottom: 1px solid #ccc;
     box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* 
 *   Estilos de logo (Início) 
 */
 .logo {
-    width: 140px;
-    /* constrain logo height so header doesn't grow unexpectedly */
-    height: 56px;
+    max-width: 140px;
+    height: 100%;
     flex-shrink: 0;
     border-radius: 12px;
     overflow: hidden;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .logo:hover img {
-    transform: scale(1.3);
-    translate: 0 8px;
+    transform: scale(1.05);
+    translate: 0 -2px;
 }
 
 .logo img {
-    width: 100%;
-    height: auto;
-    max-height: 56px;
+    max-width: 90%;
     object-fit: contain;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -180,10 +180,6 @@
 *   Responsividade para telas menores
 */
 @media (max-width: 768px) {
-    .logo {
-        display: none;
-    }
-
     .main-nav {
         margin: 0px 10px;
     }
@@ -208,6 +204,10 @@
 }
 
 @media (max-width: 480px) {
+
+    .logo {
+        display: none;
+    }
 
     .nav-toggle {
         display: flex;

@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 
 import { AuthGuard } from '../../guards/auth.guard';
 import { AuthService } from '../../services/auth/auth.service';
+import { SidebarService } from '../../services/sidebar/sidebar.service';
 
 @Component({
   selector: 'app-header',
@@ -21,10 +22,11 @@ export class Header {
   isFuncionarioRoute: boolean = false;
   isNavOpen: boolean = false;
 
+  private sidebarService = inject(SidebarService);
 
   private router = inject(Router);
-  private activatedRoute = inject(ActivatedRoute);
-  private authGuard = inject(AuthGuard);
+  // private activatedRoute = inject(ActivatedRoute);
+  // private authGuard = inject(AuthGuard);
   private authService = inject(AuthService);
   private subs: Subscription[] = [];
   
@@ -63,11 +65,19 @@ export class Header {
   }
 
   
-  toggleNav(): void {
-    this.isNavOpen = !this.isNavOpen;
+
+
+  get isSidebarActive(): boolean {
+    return this.sidebarService.isOpen();
   }
-  closeNav(): void {
-    this.isNavOpen = false;
+
+  toggleSidebar(): void {
+    this.sidebarService.toggle();
+  }
+
+  get closeSidebar(): boolean {
+    this.sidebarService.close();
+    return this.sidebarService.isOpen();
   }
 
   logout(): void {
