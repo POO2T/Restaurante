@@ -1,0 +1,68 @@
+@if (isAuthenticated) {
+    <section class="sidebar-section" [class.active]="isSidebarActive">
+        <button class="btn sidebar-close" (click)="closeSidebar">✖</button>
+
+        <div class="sidebar-logo">
+            <img src="./svg/icons/logo-icon.svg" alt="Logo Bella Piatto">
+        </div>
+    
+        <!-- <h2>Destinos</h2> -->
+        <ul class="sidebar-menu">
+
+            @if (isUserType === 'FUNCIONARIO') {                
+                <ng-container>
+                    <li>
+                        <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+                    </li>
+                    <li>
+                        <a routerLink="/funcionario/produtos" routerLinkActive="active" (click)="toggleSidebar">Produtos</a>
+                    </li>
+                    <li>
+                        <a routerLink="/funcionario/pedidos" routerLinkActive="active">Pedidos</a>
+                    </li>
+                
+                    <li>
+                        <a routerLink="/funcionario/mesas" routerLinkActive="active">Mesas</a>
+                    </li>
+                
+                    <li>
+                        <a routerLink="/funcionario/usuarios" routerLinkActive="active">Funcionários</a>
+                    </li>
+                    <li>
+                        <a routerLink="/relatorios" routerLinkActive="active">Relatórios</a>
+                    </li>
+                    <li>
+                        <a routerLink="/funcionario/configuracoes" routerLinkActive="active">Configurações</a>
+                    </li>
+                </ng-container>
+            }
+
+            <li>
+                <a routerLink="/cardapio">
+                    Cardápio
+                </a>
+            </li>
+
+            @if (isUserType === 'CLIENTE') {
+
+                <ng-container>
+                    <li>
+                        <a routerLink="/pedidos" routerLinkActive="active">
+                            Pedidos
+                        </a>
+                    </li>
+                </ng-container>
+            }
+
+            
+        </ul>
+    
+    </section>
+    <button class="btn sidebar-button" (click)="toggleSidebar">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+    </button>
+    
+    <div class="overlay" (click)="closeSidebar"></div>
+}
