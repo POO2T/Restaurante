@@ -86,15 +86,16 @@ export class LoginCliente {
       const v = this.form.value;
       const loginData = { email: (v.email || '').trim(), senha: v.senha };
 
-      this.authService.login(loginData).subscribe({
+      this.authService.loginCliente(loginData).subscribe({
         next: (response) => {
           // AuthService will set signals; check isAuthenticated
           if (this.authService.isAuthenticated()) {
             if (this.authService.isCliente()) {
               this.router.navigate(['/cardapio']);
-              console.log(this.authService.getToken());
+              console.warn(`TOKEN: ${this.authService.getToken()}`);
             } else {
               this.erro = 'Login bem-sucedido, mas tipo de usuário inesperado.';
+              console.warn(this.erro);
               this.authService.logout();
               this.router.navigate(['/login-funcionario']);
             }

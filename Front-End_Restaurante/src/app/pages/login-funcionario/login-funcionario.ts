@@ -58,9 +58,10 @@ export class LoginFuncionario {
     const v = this.form.value;
     const loginData = { email: (v.email || '').trim(), senha: v.senha };
 
-    this.authService.login(loginData).subscribe({
+    this.authService.loginFuncionario(loginData).subscribe({
       next: (response) => {
         // AuthService will set signals; check isAuthenticated
+        console.log('Após login (funcionario) - userType signal:', this.authService.userType());
         if (this.authService.isAuthenticated()) {
           if (this.authService.isFuncionario()) {
             console.log('Login Funcionário bem-sucedido. Redirecionando para /funcionarios/pedidos');
