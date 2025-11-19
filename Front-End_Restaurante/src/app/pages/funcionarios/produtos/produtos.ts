@@ -38,12 +38,14 @@ export class Produtos {
   }
 
   addCategoria() {
-
+    if (this.categoriaForm.invalid) {
+      return;
+    }
   }
   editarCategoria(categoria: Categoria) {}
   deletarCategoria(categoria: Categoria) {}
 
-  addProduto() {}
+  addProduto(categoria: Categoria) {}
   editarProduto(produto: Produto) {}
   deletarProduto(produto: Produto) {}
 }

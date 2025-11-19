@@ -1,16 +1,14 @@
 <section class="produtos-section">
     <h2>Gerenciamento de Produtos</h2>
 
-    <div class="produtos-header">
-        <button (click)="addCategoria()">Adicionar Categoria</button>
-    </div>
-
     <div class="produtos-container">
         @for(c of categorias; track c.id) {
-            <div class="categoria-card">
-                <h3>{{ c.nome }}</h3>
 
-                @for(p of c.produtos; track p.id) {
+            <ng-container>
+                <div class="categoria-card">
+                    <h3>{{ c.nome }}</h3>
+                
+                    @for(p of c.produtos; track p.id) {
                     <div class="categoria-produto">
                         <span>{{ p.nome }} - {{ p.preco | currency:'BRL' }}</span>
                         <div class="produto-actions">
@@ -18,14 +16,16 @@
                             <button (click)="deletarProduto(p)" class="btn btn-delete">Deletar</button>
                         </div>
                     </div>
-                }
-
-                <div class="categoria-actions">
-                    <button (click)="addProduto()">Adicionar Produto</button>
-                    <button (click)="editarCategoria(c)" class="btn btn-edit">Editar</button>
-                    <button (click)="deletarCategoria(c)" class="btn btn-delete">Deletar</button>
+                    }
+                
+                    <div class="categoria-actions">
+                        <button (click)="addProduto(c)">Adicionar Produto</button>
+                        <button (click)="editarCategoria(c)" class="btn btn-edit">Editar</button>
+                        <button (click)="deletarCategoria(c)" class="btn btn-delete">Deletar</button>
+                    </div>
                 </div>
-            </div>
+            </ng-container>
+            
         }
     </div>
 
