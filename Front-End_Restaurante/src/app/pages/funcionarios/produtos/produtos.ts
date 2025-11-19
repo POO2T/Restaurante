@@ -27,13 +27,13 @@ export class Produtos {
 
   constructor() {
     this.categoriaForm = this.fb.group({
-      nome: ['', Validators.required],
+      nome: ['', Validators.required]
     });
 
     this.produtoForm = this.fb.group({
       nome: ['', Validators.required],
       preco: ['', [Validators.required, Validators.min(0)]],
-      categoriaId: ['', Validators.required]
+      categoria: ['', Validators.required]
     });
   }
 
@@ -41,6 +41,20 @@ export class Produtos {
     if (this.categoriaForm.invalid) {
       return;
     }
+
+    const novaCategoria: Partial<Categoria> = {
+      nome: this.categoriaForm.value.nome
+    };
+
+    this.categoriaService.postCategoria(novaCategoria).subscribe({
+      next: (categoria) => {
+        this.categorias.push(categoria);
+        this.categoriaForm.reset();
+      },
+      error: (error) => {
+        console.error('Erro ao adicionar categoria:', error);
+      }
+    });
   }
   editarCategoria(categoria: Categoria) {}
   deletarCategoria(categoria: Categoria) {}
