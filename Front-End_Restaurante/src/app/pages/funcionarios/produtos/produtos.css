@@ -12,6 +12,23 @@
     margin-bottom: 20px;
 }
 
+.categoria-form {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 50%;
+    margin-bottom: 30px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.categoria-form input {
+    align-self: flex-end;
+}
+
 .produtos-container {
     display: flex;
     flex-direction: column;

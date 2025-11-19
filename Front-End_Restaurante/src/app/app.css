@@ -35,8 +35,8 @@ app-header {
 */
 .main-content > * {
   flex: 1;
-  width: 100vw;
-  height: 100vh; /* important for flex children to allow scrolling */
+  min-height: 100%;
+  width: 100%;
   overflow: auto;
 }
 
