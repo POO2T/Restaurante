@@ -12,7 +12,7 @@ export class AuthGuard {
   // Angular will call canActivate(route, state).
   // We accept optional route data.role to require specific roles (e.g. 'FUNCIONARIO' or 'ADMIN').
   canActivate(route?: ActivatedRouteSnapshot, state?: RouterStateSnapshot): boolean {
-  const requiredRole = route?.data?.['role'] as 'FUNCIONARIO' | 'CLIENTE' | 'ADMIN' | undefined;
+    const requiredRole = route?.data?.['role'] as 'FUNCIONARIO' | 'CLIENTE' | 'ADMIN' | undefined;
 
     // Not authenticated -> redirect to selector
     if (!this.authService.isAuthenticated()) {
@@ -41,6 +41,14 @@ export class AuthGuard {
     return false;
   }
 
+  canActivateCliente(): boolean {
+    if (this.authService.isAuthenticated() && this.authService.isCliente()) {
+      return true;
+    }
+    this.router.navigate(['/login-cliente']);
+    return false;
+  }
+
   canActivateFuncionario(): boolean {
     if (this.authService.isAuthenticated() && this.authService.isFuncionario()) {
       return true;
@@ -57,5 +65,13 @@ export class AuthGuard {
     
     this.router.navigate(['/']);
     return false;
+  }
+
+  isAuthenticated(): boolean {
+    return this.authService.isAuthenticated();
+  }
+
+  getUserType(): 'CLIENTE' | 'FUNCIONARIO' | null {
+    return this.authService.userType();
   }
 }

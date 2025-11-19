@@ -45,9 +45,21 @@ export class AuthService {
             throw new Error('Resposta de login inválida do servidor.');
           }
 
-          // Determinar tipo de usuário baseado na resposta
-          let tipo: 'CLIENTE' | 'FUNCIONARIO' = (response as any).tipoUsuario.toUpperCase() ?? null;
-          
+          // Determinar tipo de usuário baseado na resposta (defensivo)
+          let tipo: 'CLIENTE' | 'FUNCIONARIO' | null = null;
+          try {
+            const respTipoRaw = (response as any)?.tipoUsuario;
+            if (respTipoRaw) {
+              const up = String(respTipoRaw).toUpperCase();
+              if (up === 'FUNCIONARIO') tipo = 'FUNCIONARIO';
+              if (up === 'CLIENTE') tipo = 'CLIENTE';
+            }
+          } catch (e) {
+            // não deve acontecer, mas não queremos quebrar o fluxo
+            console.warn('Erro ao ler tipoUsuario do response:', e);
+            tipo = null;
+          }
+
           if (!tipo) {
             const u = (response as any).dadosUsuario ?? (response as LoginResponse).usuario as any;
             if (u) {
@@ -57,18 +69,17 @@ export class AuthService {
               } else if (u.cargo || u.salario) {
                 tipo = 'FUNCIONARIO';
               } else {
-                console.warn('TIPO DE USUÁRIO NÃO PÔDE SER DETERMINADO.');
+                console.warn('TIPO DE USUÁRIO NÃO PÔDE SER DETERMINADO PELOS CAMPOS DO USUÁRIO.');
               }
-
-              console.warn('TIPO DE USUÁRIO INFERIDO COMO:', tipo);
-
             }
           }
 
           // Fallback: assumir CLIENTE se não conseguir determinar
           if (!tipo) {
-            console.warn('Não foi possível determinar tipo de usuário; assumindo CLIENTE.');
+            console.warn('Não foi possível determinar tipo de usuário; assumindo CLIENTE. Response:', response);
             tipo = 'CLIENTE';
+          } else {
+            console.log('Tipo de usuário inferido no frontend:', tipo, 'Resposta do login:', response);
           }
 
           this.handleLoginSuccess(response, tipo);
@@ -97,19 +108,27 @@ export class AuthService {
   loginCliente(credentials: { email: string; senha: string }): Observable<LoginResponse> {
     const loginRequest: LoginRequest = {
       ...credentials,
-      // Adicione qualquer campo extra que seu backend precise para identificar tipo
-      tipoUsuario: 'CLIENTE' // Se necessário
+      tipoUsuario: 'CLIENTE'
     };
-    return this.login(loginRequest);
+
+    // Fazer chamada diretamente e forçar o tipo CLIENTE no handleLoginSuccess
+    return this.apiService.post<LoginResponse>('/auth/login', loginRequest).pipe(
+      tap((response) => this.handleLoginSuccess(response, 'CLIENTE')),
+      catchError(this.handleError)
+    );
   }
 
   loginFuncionario(credentials: { email: string; senha: string }): Observable<LoginResponse> {
     const loginRequest: LoginRequest = {
       ...credentials,
-      // Adicione qualquer campo extra que seu backend precise para identificar tipo
-      tipoUsuario: 'FUNCIONARIO' // Se necessário
+      tipoUsuario: 'FUNCIONARIO'
     };
-    return this.login(loginRequest);
+
+    // Fazer chamada diretamente e forçar o tipo FUNCIONARIO no handleLoginSuccess
+    return this.apiService.post<LoginResponse>('/auth/login', loginRequest).pipe(
+      tap((response) => this.handleLoginSuccess(response, 'FUNCIONARIO')),
+      catchError(this.handleError)
+    );
   }
 
   // --- LOGOUT ---
