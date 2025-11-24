@@ -97,6 +97,20 @@
     border: none;
 }
 
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 50%;
+    padding: 15px;
+    border: 3px dashed var(--primary-color);
+    border-radius: 10px;
+    background-color: var(--warn-color);
+    gap: 10px;
+}
+
 .categoria-container {
     display: flex;
     flex-direction: column;

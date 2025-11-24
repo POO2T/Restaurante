@@ -20,9 +20,10 @@
 
     @if (categorias.length === 0) {
         <ng-container>
-            <h2>
-                Está vazio por aqui..... Adicione uma nova categoria para começar a gerenciar produtos.
-            </h2>
+            <div class="empty-state">
+                <h2> Está vazio por aqui...</h2>
+                <h2>Adicione uma nova categoria para começar a gerenciar produtos.</h2>
+            </div>
         </ng-container>
     }
     @else {
