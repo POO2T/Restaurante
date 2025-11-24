@@ -5,6 +5,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Mesa } from '../../../models/mesa.model';
 import { statusMesa } from '../../../enums/statusMesa';
 import { MesasService } from '../../../services/mesas/mesas.service';
+import { formatError } from '../../../utils/formatError';
 // import { AuthGuard } from '../../../guards/auth.guard';
 
 @Component({
@@ -48,23 +49,6 @@ export class Mesas {
     this.loadMesas();
   }
 
-  private formatError(err: unknown, fallback = 'Ocorreu um erro'): string {
-    if (!err) return fallback;
-    if (typeof err === 'string') return err;
-    if (err instanceof Error) return err.message || fallback;
-    const anyErr = err as { error?: unknown; message?: string };
-    if (anyErr.error)
-      return typeof anyErr.error === 'string'
-        ? anyErr.error
-        : JSON.stringify(anyErr.error);
-    if (anyErr.message) return anyErr.message;
-    try {
-      return JSON.stringify(err);
-    } catch {
-      return fallback;
-    }
-  }
-
   onSubmit() {
     if (this.mesaForm.invalid) {
       this.erro = 'Formulário inválido. Por favor, verifique os campos.';
@@ -87,7 +71,7 @@ export class Mesas {
         this.erro = 'Mesa cadastrada com sucesso!';
       },
       error: (err) => {
-        this.erro = this.formatError(err, 'Erro ao cadastrar mesa.');
+        this.erro = formatError(err, 'Erro ao cadastrar mesa.');
         console.error('Erro ao cadastrar mesa:', err);
       }
     });
@@ -106,7 +90,7 @@ export class Mesas {
         }
       },
       error: (err) => {
-        this.erro = this.formatError(err, 'Erro ao carregar mesas.');
+        this.erro = formatError(err, 'Erro ao carregar mesas.');
         console.error('Erro ao carregar mesas:', err);
       }
     });
@@ -173,7 +157,7 @@ export class Mesas {
           console.log('Status atualizado:', updatedMesa);
         },
         error: (err) => {
-          this.erro = this.formatError(err, 'Erro ao atualizar status da mesa.');
+          this.erro = formatError(err, 'Erro ao atualizar status da mesa.');
           console.error('Erro ao atualizar status da mesa:', err);
         }
       });
@@ -193,7 +177,7 @@ export class Mesas {
           }
         },
         error: (err) => {
-          this.erro = this.formatError(err, 'Erro ao atualizar mesa.');
+          this.erro = formatError(err, 'Erro ao atualizar mesa.');
           console.error('Erro ao atualizar mesa:', err);
         }
       });
@@ -224,7 +208,7 @@ export class Mesas {
         this.closeMesaInfo();
       },
       error: (err: any) => {
-        this.erro = this.formatError(err, 'Erro ao deletar mesa.');
+        this.erro = formatError(err, 'Erro ao deletar mesa.');
         console.error('Erro ao deletar mesa:', err);
       }
     });
