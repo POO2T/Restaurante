@@ -43,7 +43,10 @@
     --btn-danger-color: #FFFFFF;
     --btn-danger-background-hover: #FFFFFF;
     --btn-danger-color-hover: #c53030;
-    
+
+    /* BOTÃO DESABILITADO */
+    --btn-disabled-background: #a0a0a0;
+    --btn-disabled-color: #666666;
 
     /* ESTILIZAÇÃO COMUM AOS BOTÕES */
     --btn-shadow: 0 2px 8px rgba(64, 24, 32, 0.1);
