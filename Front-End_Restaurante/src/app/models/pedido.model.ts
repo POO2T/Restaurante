@@ -8,4 +8,5 @@ export interface Pedido {
   status: statusPedido;
   comanda: Comanda;
   itens: ItemPedido[];
+  total: number;
 }

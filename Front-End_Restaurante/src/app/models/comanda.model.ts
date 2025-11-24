@@ -12,4 +12,5 @@ export interface Comanda {
   cliente: Cliente | null;
   mesa: Mesa | null;
   pedidos: Pedido[];
+  total: number;
 }
