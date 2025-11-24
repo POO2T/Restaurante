@@ -49,9 +49,19 @@
                     }
         
                     <div class="categoria-actions">
-                        <button (click)="addProduto(c)" class="btn btn-add">Adicionar Produto</button>
-                        <button (click)="editarCategoria(c)" class="btn btn-edit">Editar</button>
-                        <button (click)="deletarCategoria(c)" class="btn btn-delete">Deletar</button>
+                        <button (click)="addProduto(c)" class="btn btn-add">
+                            Adicionar Produto
+                            <!-- <span class="btn-icon"></span> -->
+                            <img src="./svg/icons/add-icon.svg" alt="Adiconar_Produto">
+                        </button>
+                        <button (click)="editarCategoria(c)" class="btn btn-edit">
+                            Editar
+                            <span class="btn-icon"></span>
+                        </button>
+                        <button (click)="deletarCategoria(c)" class="btn btn-delete">
+                            Deletar
+                            <span class="btn-icon"></span>
+                        </button>
                     </div>
                 </div>
             </ng-container>
