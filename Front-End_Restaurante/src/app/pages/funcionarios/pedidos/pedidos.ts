@@ -2,23 +2,16 @@ import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ChangeDetectorRef } from '@angular/core';
 
-interface ItemPedido {
-  id: number;
-  nome: string;
-  quantidade: number;
-  preco: number;
-}
+import { formatError } from '../../../utils/formatError';
 
-interface Pedido {
-  id: string;
-  cliente: string;
-  dataHora: Date;
-  status: 'Pendente' | 'Preparando' | 'Pronto' | 'Entregue' | 'Cancelado';
-  itens: ItemPedido[];
-  total: number;
-  observacoes?: string;
-}
+import { Pedido } from '../../../models/pedido.model';
+import { ItemPedido } from '../../../models/itemPedido.model';
+import { statusPedido } from '../../../enums/statusPedido';
+
+//import { PedidoService } from '../../../services/pedido/pedido.service';
+
 
 @Component({
   selector: 'app-pedidos',
@@ -30,64 +23,41 @@ interface Pedido {
 export class Pedidos implements OnInit {
 
   pedidos: Pedido[] = [];
-  statusFiltro: string = 'Todos';
-  statusOptions = ['Todos', 'Pendente', 'Preparando', 'Pronto', 'Entregue', 'Cancelado'];
+  statusFiltro: string = 'TODOS';
+  statusOptions = ['TODOS', ...Object.values(statusPedido)];
+  erro: string | null = null;
 
   private router = inject(Router);
 
   ngOnInit(): void {
+    // Simulação de dados de pedidos
     this.pedidos = [
       {
-        id: 'PED001',
-        cliente: 'João Silva',
-        dataHora: new Date('2024-10-06T12:30:00'),
-        status: 'Pendente',
+        id: 1,
+        dataHora: new Date(),
+        status: statusPedido.PENDENTE,
+        comanda: {} as any,
         itens: [
-          { id: 1, nome: 'Lasanha à Bolonhesa', quantidade: 1, preco: 45.90 },
-          { id: 5, nome: 'Tiramisu Clássico', quantidade: 2, preco: 18.90 }
-        ],
-        total: 83.70,
-        observacoes: 'Sem cebola na lasanha'
+          { id: 1, quantidade: 2, precoUnitario: 15.0 },
+          { id: 2, quantidade: 1, precoUnitario: 5.0 } 
+        ] as ItemPedido[],
+        total: 35.0
       },
       {
-        id: 'PED002',
-        cliente: 'Maria Santos',
-        dataHora: new Date('2024-10-06T13:15:00'),
-        status: 'Preparando',
+        id: 2,
+        dataHora: new Date(),
+        status: statusPedido.PREPARANDO,
+        comanda: {} as any,
         itens: [
-          { id: 2, nome: 'Salmão Grelhado ao Limone', quantidade: 1, preco: 68.50 },
-          { id: 6, nome: 'Vinho Tinto Reserva', quantidade: 1, preco: 89.90 }
-        ],
-        total: 158.40
-      },
-      {
-        id: 'PED003',
-        cliente: 'Carlos Oliveira',
-        dataHora: new Date('2024-10-06T11:45:00'),
-        status: 'Pronto',
-        itens: [
-          { id: 3, nome: 'Risotto de Camarão', quantidade: 2, preco: 52.90 }
-        ],
-        total: 105.80,
-        observacoes: 'Para viagem'
-      },
-      {
-        id: 'PED004',
-        cliente: 'Ana Costa',
-        dataHora: new Date('2024-10-06T10:20:00'),
-        status: 'Entregue',
-        itens: [
-          { id: 1, nome: 'Lasanha à Bolonhesa', quantidade: 1, preco: 45.90 },
-          { id: 2, nome: 'Salmão Grelhado ao Limone', quantidade: 1, preco: 68.50 },
-          { id: 5, nome: 'Tiramisu Clássico', quantidade: 1, preco: 18.90 }
-        ],
-        total: 133.30
+          { id: 3, quantidade: 1, precoUnitario: 20.0 }
+        ] as ItemPedido[],
+        total: 20.0
       }
     ];
   }
 
   get pedidosFiltrados() {
-    if (this.statusFiltro === 'Todos') {
+    if (this.statusFiltro === 'TODOS') {
       return this.pedidos.sort((a, b) => b.dataHora.getTime() - a.dataHora.getTime());
     }
     return this.pedidos
@@ -138,7 +108,7 @@ export class Pedidos implements OnInit {
       .filter(p => {
         const dataPedido = new Date(p.dataHora);
         dataPedido.setHours(0, 0, 0, 0);
-        return dataPedido.getTime() === hoje.getTime() && p.status === 'Entregue';
+        return dataPedido.getTime() === hoje.getTime() && p.status === statusPedido.ENTREGUE;
       })
       .reduce((total, pedido) => total + pedido.total, 0);
   }
