@@ -2,11 +2,12 @@ import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+
 import { AuthService } from '../../services/auth/auth.service';
+import { formatError } from '../../utils/formatError';
 
 @Component({
   selector: 'app-login-funcionario',
-  standalone: true,
   imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './login-funcionario.html',
   styleUrls: ['./login-funcionario.css'],
@@ -20,6 +21,7 @@ export class LoginFuncionario {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
 
+
   constructor() {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -27,23 +29,6 @@ export class LoginFuncionario {
     });
   }
 
-
-  private formatError(err: unknown, fallback = 'Ocorreu um erro'): string {
-    if (!err) return fallback;
-    if (typeof err === 'string') return err;
-    if (err instanceof Error) return err.message || fallback;
-    const anyErr = err as { error?: unknown; message?: string };
-    if (anyErr.error)
-      return typeof anyErr.error === 'string'
-        ? anyErr.error
-        : JSON.stringify(anyErr.error);
-    if (anyErr.message) return anyErr.message;
-    try {
-      return JSON.stringify(err);
-    } catch {
-      return fallback;
-    }
-  }
 
   onSubmit() {
     this.erro = '';
@@ -76,10 +61,7 @@ export class LoginFuncionario {
         }
       },
       error: (error) => {
-        this.erro = this.formatError(
-          error,
-          'Falha no login. Verifique suas credenciais.'
-        );
+        this.erro = formatError(error, 'Falha no login. Verifique suas credenciais.');
       },
     });
 

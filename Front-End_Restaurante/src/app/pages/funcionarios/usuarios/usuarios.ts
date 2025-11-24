@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ChangeDetectorRef, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 import { Funcionario } from '../../../models/funcionario.model';
 import { TipoFuncionario } from '../../../enums/tipoFuncionario';
 import { RegisterFuncionarioRequest } from '../../../models/auth.model';
 import { FuncionarioService } from '../../../services/funcionario/funcionario.service';
+import { formatError } from '../../../utils/formatError';
 
 @Component({
   selector: 'app-usuarios',
@@ -62,23 +64,6 @@ export class Usuarios {
     this.loadFuncionarios();
   }
 
-  private formatError(err: unknown, fallback = 'Ocorreu um erro'): string {
-    if (!err) return fallback;
-    if (typeof err === 'string') return err;
-    if (err instanceof Error) return err.message || fallback;
-    const anyErr = err as { error?: unknown; message?: string };
-    if (anyErr.error)
-      return typeof anyErr.error === 'string'
-        ? anyErr.error
-        : JSON.stringify(anyErr.error);
-    if (anyErr.message) return anyErr.message;
-    try {
-      return JSON.stringify(err);
-    } catch {
-      return fallback;
-    }
-  }
-
   private loadFuncionarios() {
     this.loading = true;
     this.funcionarioService.getFuncionarios().subscribe({
@@ -89,7 +74,7 @@ export class Usuarios {
         this.cdr.markForCheck();
       },
       error: (err) => {
-        this.erro = this.formatError(err, 'Erro ao carregar funcionários.');
+        this.erro = formatError(err, 'Erro ao carregar funcionários.');
         this.dataAvailable = false;
         this.loading = false;
         this.cdr.markForCheck();
@@ -115,7 +100,7 @@ export class Usuarios {
         this.erro = '';
       },
       error: (err) => {
-        this.erro = this.formatError(err, 'Erro ao criar funcionário.');
+        this.erro = formatError(err, 'Erro ao criar funcionário.');
       }
     })
 
@@ -141,7 +126,7 @@ export class Usuarios {
         this.erro = '';
       },
       error: (err) => {
-        this.erro = this.formatError(err, 'Erro ao atualizar funcionário.');
+        this.erro = formatError(err, 'Erro ao atualizar funcionário.');
       }
     });
 
@@ -175,7 +160,7 @@ export class Usuarios {
         console.warn(this.erro);
       },
       error: (err) => {
-        this.erro = this.formatError(err, 'Erro ao deletar funcionário.');
+        this.erro = formatError(err, 'Erro ao deletar funcionário.');
       }
     });
   }
