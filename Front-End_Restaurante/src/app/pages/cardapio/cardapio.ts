@@ -1,119 +1,73 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 
-interface Produto {
-  id: number;
-  nome: string;
-  descricao: string;
-  preco: number;
-  categoria: string;
-  imagemUrl: string;
-  disponivel: boolean;
-}
+//import { Router } from '@angular/router';
+
+import { formatError } from '../../utils/formatError';
+
+import { Produto } from '../../models/produto.model';
+import { Categoria } from '../../models/categoria.model';
+import { CategoriaService } from '../../services/categoria/categoria.service';
+import { ProdutoService } from '../../services/produto/produto.service';
+import { error } from 'console';
+
 
 @Component({
   selector: 'app-cardapio',
   imports: [CommonModule, FormsModule],
   templateUrl: './cardapio.html',
   styleUrls: ['./cardapio.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Cardapio implements OnInit {
+export class Cardapio {
+  private categoriaService = inject(CategoriaService);
+  private produtoService = inject(ProdutoService);
 
   produtos: Produto[] = [];
-  categorias: string[] = ['Todos', 'Massas', 'Peixes', 'Carnes', 'Sobremesas', 'Bebidas'];
-  categoriaSelecionada: string = 'Todos';
-  carrinho: { produto: Produto, quantidade: number }[] = [];
+  categorias: Categoria[] = [];
+  categoriaSelecionada: Categoria | 'Todos' = 'Todos';
+  carrinho: { produto: Produto; quantidade: number }[] = [];
 
-  private router = inject(Router);
+  // private router = inject(Router);
 
   ngOnInit(): void {
-    this.produtos = [
-      {
-        id: 1,
-        nome: 'Lasanha à Bolonhesa',
-        descricao: 'Uma obra-prima da culinária italiana, feita com camadas de massa fresca, molho bolonhesa caseiro e queijos selecionados.',
-        preco: 45.90,
-        categoria: 'Massas',
-        imagemUrl: '/assets/imgs/lasanha.png',
-        disponivel: true
-      },
-      {
-        id: 2,
-        nome: 'Salmão Grelhado ao Limone',
-        descricao: 'Um filé de salmão fresco, perfeitamente grelhado com crosta crocante por fora e suculento por dentro, acompanhado de molho de limão siciliano.',
-        preco: 68.50,
-        categoria: 'Peixes',
-        imagemUrl: '/assets/imgs/salmao.png',
-        disponivel: true
-      },
-      {
-        id: 3,
-        nome: 'Risotto de Camarão',
-        descricao: 'Arroz arbóreo cremoso com camarões frescos, finalizado com parmesão e ervas finas.',
-        preco: 52.90,
-        categoria: 'Massas',
-        imagemUrl: '/assets/imgs/lasanha.png',
-        disponivel: true
-      },
-      {
-        id: 4,
-        nome: 'Filé Mignon ao Molho Madeira',
-        descricao: 'Filé mignon grelhado ao ponto, servido com molho madeira e acompanhamentos da casa.',
-        preco: 75.90,
-        categoria: 'Carnes',
-        imagemUrl: '/assets/imgs/salmao.png',
-        disponivel: false
-      },
-      {
-        id: 5,
-        nome: 'Tiramisu Clássico',
-        descricao: 'A sobremesa italiana mais famosa do mundo, com mascarpone, café expresso e cacau.',
-        preco: 18.90,
-        categoria: 'Sobremesas',
-        imagemUrl: '/assets/imgs/lasanha.png',
-        disponivel: true
-      },
-      {
-        id: 6,
-        nome: 'Vinho Tinto Reserva',
-        descricao: 'Vinho tinto encorpado, ideal para acompanhar carnes e massas.',
-        preco: 89.90,
-        categoria: 'Bebidas',
-        imagemUrl: '/assets/imgs/salmao.png',
-        disponivel: true
-      }
-    ];
+    this.loadData();
   }
 
   get produtosFiltrados() {
     if (this.categoriaSelecionada === 'Todos') {
       return this.produtos;
     }
-    return this.produtos.filter(p => p.categoria === this.categoriaSelecionada);
+    return this.produtos.filter(
+      (p) => p.categoria === this.categoriaSelecionada
+    );
   }
 
-  filtrarPorCategoria(categoria: string) {
+  filtrarPorCategoria(categoria: Categoria | 'Todos') {
     this.categoriaSelecionada = categoria;
   }
 
   adicionarAoCarrinho(produto: Produto) {
-    const itemExistente = this.carrinho.find(item => item.produto.id === produto.id);
-    
+    const itemExistente = this.carrinho.find(
+      (item) => item.produto.id === produto.id
+    );
+
     if (itemExistente) {
       itemExistente.quantidade++;
     } else {
       this.carrinho.push({ produto, quantidade: 1 });
     }
-    
+
     console.log('Produto adicionado ao carrinho:', produto.nome);
     console.log('Carrinho atual:', this.carrinho);
   }
 
   get totalCarrinho() {
-    return this.carrinho.reduce((total, item) => total + (item.produto.preco * item.quantidade), 0);
+    return this.carrinho.reduce(
+      (total, item) => total + item.produto.preco * item.quantidade,
+      0
+    );
   }
 
   get quantidadeItensCarrinho() {
@@ -127,14 +81,42 @@ export class Cardapio implements OnInit {
     }
 
     // Simula finalização do pedido
-    alert(`Pedido finalizado com sucesso! Total: R$ ${this.totalCarrinho.toFixed(2)}`);
+    alert(
+      `Pedido finalizado com sucesso! Total: R$ ${this.totalCarrinho.toFixed(
+        2
+      )}`
+    );
     console.log('Pedido finalizado:', {
       itens: this.carrinho,
       total: this.totalCarrinho,
-      dataHora: new Date()
+      dataHora: new Date(),
     });
-    
+
     // Limpa o carrinho
     this.carrinho = [];
+  }
+
+  loadData(): void {
+    // Carregar categorias do serviço
+    this.categoriaService.getCategorias().subscribe({
+      next: (categorias) => {
+        this.categorias = categorias;
+        // this.categoriaSelecionada = this.categorias[0]; // Seleciona "Todos" por padrão
+
+        this.produtoService.getProdutos().subscribe({
+          next: (produtos) => {
+            this.produtos = produtos;
+          },
+          error: (error) => {
+            alert(formatError(error));
+            console.error('Erro ao carregar produtos:', formatError(error));
+          },
+        });
+      },
+      error: (error) => {
+        alert(formatError(error));
+        console.error('Erro ao carregar categorias:', formatError(error));
+      },
+    });
   }
 }
