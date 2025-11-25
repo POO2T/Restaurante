@@ -1,10 +1,9 @@
 <section class="produtos-section">
 
-    <form [formGroup]="categoriaForm" (ngSubmit)="onAddCategoria()" class="categoria-form">
-        <h3>Adicionar Categoria</h3>
+    <form [formGroup]="categoriaForm" (ngSubmit)="onAddCategoria()" class="form categoria-form">
         <div class="form-group">
-            <label for="categoria-nome">Nome:</label>
-            <input id="categoria-nome" formControlName="nome" type="text" />
+            <!-- <label for="categoria-nome">Nome:</label> -->
+            <input id="categoria-nome" formControlName="nome" type="text" placeholder="Digite o nome da categoria" />
         </div>
         
         @if (erro) {
@@ -14,7 +13,10 @@
         }
 
         <div class="form-action">
-            <button type="submit" [disabled]="categoriaForm.invalid">Adicionar Categoria</button>
+            <button type="submit" class="btn btn-add" [disabled]="categoriaForm.invalid">
+                Adicionar Categoria
+                <img src="./svg/icons/add-icon.svg" alt="Adicionar_Categoria">
+            </button>
         </div>
     </form>
 
@@ -35,33 +37,39 @@
                 <div class="categoria-card">
                     <h3>{{ c.nome }}</h3>
         
-                    @for(p of c.produtos; track p.id) {
+                    @for(p of c.produtos; track $index) {
         
-                    <ng-container>
-                        <div class="produto-container">
-                            <span>{{ p.nome }} - {{ p.preco | currency:'BRL' }}</span>
-                            <div class="produto-actions">
-                                <button (click)="editarProduto(p)" class="btn btn-edit">Editar</button>
-                                <button (click)="deletarProduto(p)" class="btn btn-delete">Deletar</button>
+                        <ng-container>
+                            <div class="produto-container">
+                                <h3>{{ p.nome }}</h3>
+                                <h3>{{ p.preco | currency:'BRL' }}</h3>
+                                <div class="produto-actions">
+                                    <button (click)="editarProduto(p)" class="btn btn-edit">
+                                        <!-- Editar -->
+                                        <img src="./svg/icons/edit-icon.svg" alt="">
+                                    </button>
+                                    <button (click)="deletarProduto(p)" class="btn btn-delete">
+                                        <!-- Deletar -->
+                                        <img src="./svg/icons/delete-icon.svg" alt="">
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    </ng-container>
+                        </ng-container>
         
                     }
         
                     <div class="categoria-actions">
-                        <button (click)="addProduto(c)" class="btn btn-add">
-                            Adicionar Produto
-                            <!-- <span class="btn-icon"></span> -->
+                        <button (click)="addProduto(c)" class="btn btn-add"> 
+                            <span>Adicionar Produto</span>
                             <img src="./svg/icons/add-icon.svg" alt="Adiconar_Produto">
                         </button>
                         <button (click)="editarCategoria(c)" class="btn btn-edit">
-                            Editar
-                            <span class="btn-icon"></span>
+                            <span>Editar Categoria</span>
+                            <img src="./svg/icons/edit-icon.svg" alt="Editar_Categoria">
                         </button>
                         <button (click)="deletarCategoria(c)" class="btn btn-delete">
-                            Deletar
-                            <span class="btn-icon"></span>
+                            <span>Deletar Categoria</span>
+                            <img src="./svg/icons/delete-icon.svg" alt="Deletar_Categoria">
                         </button>
                     </div>
                 </div>
@@ -72,34 +80,135 @@
     }
     
 </section>
+    
+<form class="form produto-add-form" [class.active]="adicionandoProduto" [formGroup]="produtoForm" (ngSubmit)="onAddProdutoSubmit()">
+    <h2>Adicionar Produto</h2>
 
-@if (editandoCategoria) {
-    <form class="categoria-edit-form" [formGroup]="categoriaEditForm" (ngSubmit)="onEditCategoriaSubmit()">
-        <h2>Editar Categoria</h2>
+    <div class="form-group">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" formControlName="nome" required>
+    </div>
 
-        
-        <!-- <div class="form-group">
-            <label for="id">Id:</label>
-            <input type="number" id="id" formControlName="id" [disabled]="this.categoriaEditForm.value.id">
-        </div> -->
+    <div class="form-group">
+        <label for="preco">Preço:</label>
+        <input type="number" id="preco" formControlName="preco" required>
+    </div>
 
-        <div class="form-group">
-            <label for="nome">Nome:</label>
-            <input type="text" id="nome" formControlName="nome" required>
-        </div>
+    <!-- <div class="form-group">
+        <label for="imagemUrl">URL da Imagem:</label>
+        <input type="text" id="imagemUrl" formControlName="imagemUrl">
+    </div> -->
 
-        @if (erro) {
-            <ng-container>
-                <div class="error-message" [class.active]="erro.includes('sucesso')">{{ erro }}</div>
-            </ng-container>
-        }
-        <div class="form-action">
-            <button type="submit" class="btn btn-add" [disabled]="categoriaEditForm.invalid">Salvar</button>
-        </div>
-    </form>
-}
+    <div class="form-group">
+        <label for="descricao">Descrição:</label>
+        <textarea id="descricao" formControlName="descricao"></textarea>
+    </div>
 
-<div class="overlay" [class.active]="editandoCategoria" (click)="closeEditCategoria()"></div>
+    <div class="form-group">
+        <label for="quantidadeEstoque">Quantidade em Estoque:</label>
+        <input type="number" id="quantidadeEstoque" formControlName="quantidadeEstoque" min="0" value="0" required>
+    </div>
+
+    <div class="form-group">
+        <label for="disponibilidade">Disponibilidade:</label>
+        <select id="disponibilidade" formControlName="disponibilidade" required>
+            @for (status of statusProduto; track $index) {
+                <ng-container>
+                    <option [value]="status">{{ status }}</option>
+                </ng-container>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="categoria">Categoria:</label>
+        <select id="categoria" formControlName="categoria" required>
+            @for (categoria of categorias; track categoria.id) {
+                    <ng-container>
+                        <option [value]="categoria.id">{{ categoria.nome.toUpperCase() }}</option>
+                    </ng-container>
+                }
+        </select>
+    </div>
+
+    <input type="hidden" formControlName="categoria">
+
+    @if (erro) {
+        <ng-container>
+            <div class="error-message" [class.active]="erro.includes('sucesso')">{{ erro }}</div>
+        </ng-container>
+    }
+
+    <div class="form-action">
+        <button type="submit" class="btn btn-add" [disabled]="produtoForm.invalid">Adicionar</button>
+    </div>
+</form>
+
+
+<form class="form categoria-edit-form" [class.active]="editandoCategoria" [formGroup]="categoriaEditForm" (ngSubmit)="onEditCategoriaSubmit()">
+    <h2>Editar Categoria</h2>
+
+    <div class="form-group">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" formControlName="nome" required>
+    </div>
+
+    @if (erro) {
+        <ng-container>
+            <div class="error-message" [class.active]="erro.includes('sucesso')">{{ erro }}</div>
+        </ng-container>
+    }
+    <div class="form-action">
+        <button type="submit" class="btn btn-add" [disabled]="categoriaEditForm.invalid">Salvar</button>
+    </div>
+</form>
+
+<form class="form produto-edit-form" [class.active]="editandoProduto" [formGroup]="produtoEditForm" (ngSubmit)="onEditProdutoSubmit()">
+    <h2>Editar Produto</h2>
+
+    <div class="form-group">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" formControlName="nome" required>
+    </div>
+
+    <div class="form-group">
+        <label for="preco">Preço:</label>
+        <input type="number" id="preco" formControlName="preco" required>
+    </div>
+
+    <div class="form-group">
+        <label for="quantidadeEstoque">Quantidade em Estoque:</label>
+        <input type="number" id="quantidadeEstoque" formControlName="quantidadeEstoque" min="0" value="0" required>
+    </div>
+
+    <div class="form-group">
+        <label for="disponibilidade">Disponibilidade:</label>
+        <select id="disponibilidade" formControlName="disponibilidade" required>
+            @for (status of statusProduto; track $index) {
+                <ng-container>
+                    <option [value]="status">{{ status }}</option>
+                </ng-container>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="descricao">Descrição:</label>
+        <textarea id="descricao" formControlName="descricao"></textarea>
+    </div>
+
+    @if (erro) {
+    <ng-container>
+        <div class="error-message" [class.active]="erro.includes('sucesso')">{{ erro }}</div>
+    </ng-container>
+    }
+    <div class="form-action">
+        <button type="submit" class="btn btn-add" [disabled]="produtoEditForm.invalid">Salvar</button>
+    </div>
+</form>
+
+
+<div class="overlay" [class.active]="isOverlayVisible" (click)="closeOverlay()"></div>
 
 @if (loading) {
     <div class="loading-overlay">
