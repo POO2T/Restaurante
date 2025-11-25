@@ -9,5 +9,13 @@ export interface Produto {
   quantidadeEstoque: number;
   disponibilidade: statusProduto;
   categoria: Categoria;
-  imagemUrl: string;
+}
+
+export interface ProdutoRequest {
+    nome: string;
+    descricao?: string;
+    preco: number;
+    quantidadeEstoque: number;
+    disponibilidade: boolean;
+    categoriaId: number;
 }
