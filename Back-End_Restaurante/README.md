@@ -63,11 +63,7 @@ Executando os testes com H2:
 Com o perfil `h2` ativo, o console web estará disponível em:
 
 ```
-<<<<<<< HEAD
 http://localhost:8080/h2-console
-=======
-http://localhost:8080/api/h2-console
->>>>>>> 95b0695714112778eb179d989ae202fda83b8e29
 ```
 
 Use a JDBC URL definida em `application-h2.properties` para conectar-se.
@@ -101,6 +97,7 @@ Com o banco de dados configurado, você pode utilizar os comandos a seguir para 
 }
 '@ > login.json
 ```
+
 - Criação do JSON com informações de login para Admin
 
 ```powershell
@@ -108,17 +105,21 @@ $login = Invoke-RestMethod -Uri "http://localhost:8080/api/auth/login" -Method P
 $token = $login.token
 Write-Output "Token obtido: $token"
 ```
+
 - Criando uma requisição para obter um token de autenticação
 
 ```powershell
 $headers = @{ Authorization = "Bearer $token" }
 Invoke-RestMethod -Uri "http://localhost:8080/api/funcionarios" -Method Post -ContentType 'application/json' -Headers $headers -Body (Get-Content .\payload.json -Raw)
 ```
+
 - Finalização para cadastro
 
 
 ## 🧭Observações e solução de problemas
+
 ---
+
 - Se alterar `server.servlet.context-path` em algum perfil, os endpoints serão prefixados (ex.: `/api`). Atualize as URLs do frontend conforme necessário.
 - Spring Security: o `formLogin()` padrão espera `application/x-www-form-urlencoded`; SPAs geralmente enviam JSON. Para SPAs é recomendado expor um endpoint REST (ex.: `/api/auth/login`) que aceite JSON e retorne token (JWT) ou informações do usuário.
 - CORS: se houver falha no preflight, verifique a configuração de CORS no backend e a origem do frontend (padrão: `http://localhost:4200`).
