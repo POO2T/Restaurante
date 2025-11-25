@@ -82,6 +82,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/mesas").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/mesas/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/comandas/visitante").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/planos-fidelidade").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/planos-fidelidade/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));

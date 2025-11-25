@@ -1,11 +1,12 @@
 package com.example.Back_End_Restaurante.Model;
 
+// 2. Entidade Pagamento (Novo)
+// (Usando Getters/Setters manuais, sem Lombok)
+
 import com.example.Back_End_Restaurante.Enums.FormaPagamento;
 import jakarta.persistence.*;
-import lombok.Data;
-import java.util.Date;
+import java.time.LocalDateTime;
 
-@Data
 @Entity
 @Table(name = "pagamentos")
 public class Pagamento {
@@ -14,19 +15,65 @@ public class Pagamento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    private Date dataPagamento;
+    private LocalDateTime dataPagamento;
 
     @Column(nullable = false)
-    private double valor;
+    private Double valor;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private FormaPagamento forma; // Dinheiro, Débito, Crédito, PIX
+    private FormaPagamento forma;
 
-    // Muitos pagamentos podem estar associados a uma comanda
+    // Relacionamento: Muitos pagamentos para UMA comanda
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comanda_id", nullable = false)
     private Comanda comanda;
+
+    // Construtor
+    public Pagamento() {
+        this.dataPagamento = LocalDateTime.now();
+    }
+
+    // --- Getters e Setters ---
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getDataPagamento() {
+        return dataPagamento;
+    }
+
+    public void setDataPagamento(LocalDateTime dataPagamento) {
+        this.dataPagamento = dataPagamento;
+    }
+
+    public Double getValor() {
+        return valor;
+    }
+
+    public void setValor(Double valor) {
+        this.valor = valor;
+    }
+
+    public FormaPagamento getForma() {
+        return forma;
+    }
+
+    public void setForma(FormaPagamento forma) {
+        this.forma = forma;
+    }
+
+    public Comanda getComanda() {
+        return comanda;
+    }
+
+    public void setComanda(Comanda comanda) {
+        this.comanda = comanda;
+    }
 }

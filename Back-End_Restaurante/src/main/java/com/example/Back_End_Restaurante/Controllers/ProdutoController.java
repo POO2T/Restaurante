@@ -24,7 +24,10 @@ public class ProdutoController {
     @GetMapping
     @PreAuthorize("permitAll")
     public ResponseEntity<List<ProdutoResponseDTO>> listarTodosProdutos() {
-        return ResponseEntity.ok(produtoService.listarTodos());
+        // Debug: log number of products returned to help diagnose client / security issues
+        List<ProdutoResponseDTO> lista = produtoService.listarTodos();
+        System.out.println("listarTodosProdutos -> count=" + (lista != null ? lista.size() : 0));
+        return ResponseEntity.ok(lista);
     }
 
     @GetMapping("/categoria/{categoriaId}")

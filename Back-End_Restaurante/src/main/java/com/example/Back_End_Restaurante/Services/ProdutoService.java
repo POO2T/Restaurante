@@ -46,9 +46,10 @@ public class ProdutoService {
 
     // Listar todos os produtos
     public List<ProdutoResponseDTO> listarTodos() {
-        return produtoRepository.findAll().stream()
-                .map(this::converterParaDTO)
-                .collect(Collectors.toList());
+        // Use repository method that fetches Categoria with join fetch to avoid LazyInitializationException
+        return produtoRepository.findAllWithCategoria().stream()
+            .map(this::converterParaDTO)
+            .collect(Collectors.toList());
     }
 
     // Listar produtos por categoria
@@ -56,15 +57,15 @@ public class ProdutoService {
         if (!categoriaRepository.existsById(categoriaId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada");
         }
-        return produtoRepository.findByCategoriaId(categoriaId).stream()
+        return produtoRepository.findByCategoriaIdWithCategoria(categoriaId).stream()
                 .map(this::converterParaDTO)
                 .collect(Collectors.toList());
     }
 
     // Buscar produto por ID
     public ProdutoResponseDTO buscarPorId(Long id) {
-        Produto produto = produtoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
+        Produto produto = produtoRepository.findByIdWithCategoria(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
         return converterParaDTO(produto);
     }
 
@@ -92,8 +93,8 @@ public class ProdutoService {
 
     // Atualizar produto
     public ProdutoResponseDTO atualizarProduto(Long id, ProdutoRequestDTO dto) {
-        Produto produto = produtoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
+        Produto produto = produtoRepository.findByIdWithCategoria(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
 
         // Atualiza campos
         if (dto.getNome() != null) produto.setNome(dto.getNome());
@@ -117,7 +118,10 @@ public class ProdutoService {
         }
 
         Produto atualizado = produtoRepository.save(produto);
-        return converterParaDTO(atualizado);
+        // Garantir que a Categoria esteja inicializada ao converter para DTO
+        return produtoRepository.findByIdWithCategoria(atualizado.getId())
+            .map(this::converterParaDTO)
+            .orElseGet(() -> converterParaDTO(atualizado));
     }
 
     // Deletar produto

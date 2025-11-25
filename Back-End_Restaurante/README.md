@@ -63,7 +63,11 @@ Executando os testes com H2:
 Com o perfil `h2` ativo, o console web estará disponível em:
 
 ```
+<<<<<<< HEAD
 http://localhost:8080/h2-console
+=======
+http://localhost:8080/api/h2-console
+>>>>>>> 95b0695714112778eb179d989ae202fda83b8e29
 ```
 
 Use a JDBC URL definida em `application-h2.properties` para conectar-se.
