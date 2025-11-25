@@ -12,7 +12,19 @@ export class ApiService {
   private storage = new StorageService();
 
   private getHeaders(): HttpHeaders {
-    const token = this.storage.getItem('auth_token');
+    let token = this.storage.getItem('auth_token');
+    // Fallback: read directly from window.localStorage if StorageService returned null
+    if (!token && typeof window !== 'undefined' && window?.localStorage) {
+      try {
+        token = window.localStorage.getItem('auth_token');
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    // Debug: log presence of token and a short redacted preview (do not leak full token)
+    console.debug('ApiService.getHeaders token present?', !!token, token ? `${token.substring(0, 10)}...` : null);
+
     return new HttpHeaders({
       'Content-Type': 'application/json',
       ...(token ? { 'Authorization': `Bearer ${token}` } : {})
