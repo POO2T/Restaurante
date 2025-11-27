@@ -1,8 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-//import { Router } from '@angular/router';
 
 import { formatError } from '../../utils/formatError';
 
@@ -10,7 +8,6 @@ import { Produto } from '../../models/produto.model';
 import { Categoria } from '../../models/categoria.model';
 import { CategoriaService } from '../../services/categoria/categoria.service';
 import { ProdutoService } from '../../services/produto/produto.service';
-import { error } from 'console';
 
 
 @Component({

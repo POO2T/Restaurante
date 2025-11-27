@@ -16,7 +16,7 @@ export class AuthService {
   userType = signal<'CLIENTE' | 'FUNCIONARIO' | null>(null);
 
   private apiService = inject(ApiService);
-  private storage = new StorageService();
+  private storage = inject(StorageService);
 
   // Effects can run side effects as signals change; keep a noop effect to retain reactivity
   private _noopSync = effect(() => {

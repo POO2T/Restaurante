@@ -1,7 +1,6 @@
-import { Injectable, signal, inject, effect } from '@angular/core';
-import { Observable, tap, catchError, throwError } from 'rxjs'; // Importe throwError
-import { signalToObservable } from '../../utils/signal-observable';
-import { ApiService } from '../api'; // Seu serviço base para chamadas HTTP
+import { Injectable, inject } from '@angular/core';
+import { Observable, tap, catchError, throwError } from 'rxjs';
+import { ApiService } from '../api';
 import { Mesa } from '../../models/mesa.model';
 
 @Injectable({
