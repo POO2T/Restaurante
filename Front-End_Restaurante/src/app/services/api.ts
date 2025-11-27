@@ -9,7 +9,7 @@ import { StorageService } from './storage.service';
 export class ApiService {
   private baseUrl = 'http://localhost:8080/api'; // Ajuste conforme seu backend
   private http = inject(HttpClient);
-  private storage = new StorageService();
+  private storage = inject(StorageService);
 
   private getHeaders(): HttpHeaders {
     let token = this.storage.getItem('auth_token');

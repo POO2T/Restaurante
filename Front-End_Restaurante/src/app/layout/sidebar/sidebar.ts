@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, Injectable, signal, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import { AuthGuard } from '../../guards/auth.guard';
@@ -15,20 +15,16 @@ import { SidebarService } from '../../services/sidebar/sidebar.service';
 export class Sidebar {
 
   // Inject the AuthService to decide whether to show the sidebar
-  private authGaurd = inject(AuthGuard);
+  private authGuard = inject(AuthGuard);
   private sidebarService = inject(SidebarService);
-
-  //readonly isUser = signal<'CLIENTE' | 'FUNCIONARIO' | null>(null);
-
-  constructor() {}
 
   // Getter used by the template to conditionally render the sidebar
   get isUserType(): 'CLIENTE' | 'FUNCIONARIO' | null {
-    return this.authGaurd.getUserType();
+    return this.authGuard.getUserType();
   }
 
   get isAuthenticated(): boolean {
-    return this.authGaurd.isAuthenticated();
+    return this.authGuard.isAuthenticated();
   }
 
   get isSidebarActive(): boolean {

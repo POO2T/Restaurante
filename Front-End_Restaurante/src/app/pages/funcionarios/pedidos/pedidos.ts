@@ -1,35 +1,31 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { ChangeDetectorRef } from '@angular/core';
-
-import { formatError } from '../../../utils/formatError';
 
 import { Pedido } from '../../../models/pedido.model';
 import { ItemPedido } from '../../../models/itemPedido.model';
 import { statusPedido } from '../../../enums/statusPedido';
 
-//import { PedidoService } from '../../../services/pedido/pedido.service';
-
 
 @Component({
   selector: 'app-pedidos',
-  imports: [CommonModule, FormsModule],
+  imports: [DatePipe, FormsModule],
   templateUrl: './pedidos.html',
   styleUrls: ['./pedidos.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Pedidos implements OnInit {
+export class Pedidos {
 
   pedidos: Pedido[] = [];
   statusFiltro: string = 'TODOS';
   statusOptions = ['TODOS', ...Object.values(statusPedido)];
   erro: string | null = null;
 
-  private router = inject(Router);
+  constructor() {
+    this.loadPedidos();
+  }
 
-  ngOnInit(): void {
+  private loadPedidos(): void {
     // Simulação de dados de pedidos
     this.pedidos = [
       {

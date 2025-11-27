@@ -52,7 +52,7 @@
           </div>
       
           <div class="pedido-status">
-            <span class="status-badge" [ngClass]="getStatusClass(pedido.status)">
+            <span class="status-badge" [class]="getStatusClass(pedido.status)">
               {{ pedido.status }}
             </span>
             <div class="total">R$ {{ pedido.total.toFixed(2) }}</div>

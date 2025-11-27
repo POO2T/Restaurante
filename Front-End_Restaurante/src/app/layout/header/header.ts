@@ -1,9 +1,8 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnDestroy } from '@angular/core';
-import { RouterModule, ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/internal/operators/filter';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
-import { AuthGuard } from '../../guards/auth.guard';
 import { AuthService } from '../../services/auth/auth.service';
 import { SidebarService } from '../../services/sidebar/sidebar.service';
 
@@ -25,13 +24,9 @@ export class Header {
   private sidebarService = inject(SidebarService);
 
   private router = inject(Router);
-  // private activatedRoute = inject(ActivatedRoute);
-  // private authGuard = inject(AuthGuard);
   private authService = inject(AuthService);
   private subs: Subscription[] = [];
-  
-  constructor() {}
-  
+
   ngOnInit(): void {
 
     // Inicializa com o estado atual
