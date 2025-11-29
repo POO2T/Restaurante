@@ -1,0 +1,262 @@
+<section class="relatorio-section">
+  <div class="relatorio-container">
+    
+    <!-- Mensagem de Carregamento -->
+    <div *ngIf="carregando" class="carregando-container">
+      <div class="spinner"></div>
+      <p>Carregando relatório financeiro...</p>
+    </div>
+
+    <!-- Mensagem de Erro -->
+    <div *ngIf="erro && !carregando" class="erro-container">
+      <h2>⚠️ Erro ao Carregar Dados</h2>
+      <p>{{ erro }}</p>
+      <button class="btn-recarregar" (click)="recarregar()">🔄 Tentar Novamente</button>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <ng-container *ngIf="!carregando && !erro">
+    <div class="relatorio-header">
+      <h1>📊 Relatório Financeiro</h1>
+      <p>Análise de receitas, despesas e desempenho</p>
+    </div>
+
+    <!-- Cards de Resumo -->
+    <div class="resumo-cards">
+      <div class="card resumo-card receita">
+        <div class="card-header">
+          <h3>💰 Receita Total</h3>
+          <p class="subtexto-header">Soma de todos os pedidos</p>
+        </div>
+        <div class="card-body">
+          <p class="valor">R$ {{ resumoGeral.totalReceita.toFixed(2) }}</p>
+          <p class="subtexto">{{ totalPedidosRealizados }} pedidos com {{ totalProdutosVendidos }} itens</p>
+        </div>
+      </div>
+
+      <div class="card resumo-card despesa">
+        <div class="card-header">
+          <h3>📉 Despesa Total</h3>
+          <p class="subtexto-header">Estimada em 30% da receita</p>
+        </div>
+        <div class="card-body">
+          <p class="valor">R$ {{ resumoGeral.totalDespesa.toFixed(2) }}</p>
+          <p class="subtexto">últimos 6 meses</p>
+        </div>
+      </div>
+
+      <div class="card resumo-card lucro">
+        <div class="card-header">
+          <h3>📈 Lucro Total</h3>
+          <p class="subtexto-header">Receita - Despesa</p>
+        </div>
+        <div class="card-body">
+          <p class="valor">R$ {{ resumoGeral.totalLucro.toFixed(2) }}</p>
+          <p class="subtexto">Margem: {{ resumoGeral.margemLucro.toFixed(1) }}%</p>
+        </div>
+      </div>
+
+      <div class="card resumo-card ticket">
+        <div class="card-header">
+          <h3>🎫 Ticket Médio</h3>
+          <p class="subtexto-header">Por pedido realizado</p>
+        </div>
+        <div class="card-body">
+          <p class="valor">R$ {{ resumoGeral.ticketMedio.toFixed(2) }}</p>
+          <p class="subtexto">por pedido</p>
+        </div>
+      </div>
+
+      <div class="card resumo-card pedidos">
+        <div class="card-header">
+          <h3>📦 Total de Pedidos</h3>
+          <p class="subtexto-header">Quantidade real</p>
+        </div>
+        <div class="card-body">
+          <p class="valor">{{ totalPedidosRealizados }}</p>
+          <p class="subtexto">pedidos realizados</p>
+        </div>
+      </div>
+
+      <div class="card resumo-card itens">
+        <div class="card-header">
+          <h3>🛍️ Itens Vendidos</h3>
+          <p class="subtexto-header">Quantidade de produtos</p>
+        </div>
+        <div class="card-body">
+          <p class="valor">{{ totalProdutosVendidos }}</p>
+          <p class="subtexto">produtos saidos</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Divisão: Gráfico e Relatório Financeiro -->
+    <div class="relatorio-divisao">
+      
+      <!-- Seção de Gráficos -->
+      <div class="secao-graficos">
+        <div class="card">
+          <div class="card-header">
+            <h2>📊 Evolução Mensal</h2>
+            <p class="subtexto">Receita vs Despesa</p>
+          </div>
+          <div class="card-body grafico-container">
+            <!-- Gráfico ASCII (representação visual) -->
+            <div class="grafico-barras">
+              <div *ngFor="let dado of dadosFinanceiros" class="barra-mes">
+                <div class="mes-label">{{ dado.mes }}</div>
+                <div class="barras-wrapper">
+                  <div class="barra receita-barra" [style.height]="(dado.receita / 12000 * 200) + 'px'" [title]="'Receita: R$ ' + dado.receita">
+                    <span class="valor-barra">{{ (dado.receita / 1000).toFixed(1) }}k</span>
+                  </div>
+                  <div class="barra despesa-barra" [style.height]="(dado.despesa / 5000 * 200) + 'px'" [title]="'Despesa: R$ ' + dado.despesa">
+                    <span class="valor-barra">{{ (dado.despesa / 1000).toFixed(1) }}k</span>
+                  </div>
+                </div>
+                <div class="lucro-label">L: R$ {{ dado.lucro }}</div>
+              </div>
+            </div>
+            
+            <!-- Legenda -->
+            <div class="legenda-grafico">
+              <div class="legenda-item">
+                <div class="legenda-cor receita"></div>
+                <span>Receita</span>
+              </div>
+              <div class="legenda-item">
+                <div class="legenda-cor despesa"></div>
+                <span>Despesa</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabela de Evolução -->
+        <div class="card">
+          <div class="card-header">
+            <h2>📈 Tabela de Evolução</h2>
+          </div>
+          <div class="card-body">
+            <table class="tabela-evolucao">
+              <thead>
+                <tr>
+                  <th>Mês</th>
+                  <th>Receita</th>
+                  <th>Despesa</th>
+                  <th>Lucro</th>
+                  <th>Crescimento</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let dado of dadosFinanceiros; let i = index">
+                  <td class="mes-cell"><strong>{{ dado.mes }}</strong></td>
+                  <td class="receita-cell">R$ {{ dado.receita.toFixed(2) }}</td>
+                  <td class="despesa-cell">R$ {{ dado.despesa.toFixed(2) }}</td>
+                  <td class="lucro-cell"><strong>R$ {{ dado.lucro.toFixed(2) }}</strong></td>
+                  <td class="crescimento-cell" *ngIf="i > 0">
+                    <span [class.positivo]="obterCrescimento(dadosFinanceiros[i-1], dado) > 0" 
+                          [class.negativo]="obterCrescimento(dadosFinanceiros[i-1], dado) < 0">
+                      {{ obterCrescimento(dadosFinanceiros[i-1], dado).toFixed(1) }}%
+                    </span>
+                  </td>
+                  <td *ngIf="i === 0" class="crescimento-cell">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção de Relatório Financeiro -->
+      <div class="secao-relatorio">
+        
+        <!-- Resumo Executivo -->
+        <div class="card">
+          <div class="card-header">
+            <h2>📋 Resumo Executivo</h2>
+          </div>
+          <div class="card-body resumo-executivo">
+            <div class="resumo-item">
+              <span class="label">Total de Receita:</span>
+              <span class="valor-destaque receita">R$ {{ resumoGeral.totalReceita.toFixed(2) }}</span>
+            </div>
+            <div class="resumo-item">
+              <span class="label">Total de Despesa:</span>
+              <span class="valor-destaque despesa">R$ {{ resumoGeral.totalDespesa.toFixed(2) }}</span>
+            </div>
+            <div class="resumo-item">
+              <span class="label">Lucro Líquido:</span>
+              <span class="valor-destaque lucro">R$ {{ resumoGeral.totalLucro.toFixed(2) }}</span>
+            </div>
+            <div class="resumo-item">
+              <span class="label">Margem de Lucro:</span>
+              <span class="valor-destaque margem">{{ resumoGeral.margemLucro.toFixed(2) }}%</span>
+            </div>
+            <div class="resumo-item">
+              <span class="label">Ticket Médio Mensal:</span>
+              <span class="valor-destaque ticket">R$ {{ resumoGeral.ticketMedio.toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Produtos -->
+        <div class="card">
+          <div class="card-header">
+            <h2>🏆 Top Produtos</h2>
+            <p class="subtexto">Mais vendidos</p>
+          </div>
+          <div class="card-body">
+            <div class="produtos-ranking">
+              <div *ngFor="let produto of produtosTop; let i = index" class="produto-rank-item">
+                <div class="rank-numero">{{ i + 1 }}</div>
+                <div class="rank-info">
+                  <h4>{{ produto.nome }}</h4>
+                  <p class="rank-stats">{{ produto.quantidade }} vendas • R$ {{ produto.receita.toFixed(2) }}</p>
+                </div>
+                <div class="rank-barra">
+                  <!-- <div class="rank-barra-preenchida" 
+                       [style.width]="(produto.quantidade / 342 * 100) + '%">
+                  </div> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Indicadores de Performance -->
+        <div class="card">
+          <div class="card-header">
+            <h2>⚡ Performance</h2>
+          </div>
+          <div class="card-body performance-indicators">
+            <div class="indicator">
+              <div class="indicator-label">Mês com Maior Receita</div>
+              <div class="indicator-value">{{ dadosFinanceiros[4].mes }} - R$ {{ dadosFinanceiros[4].receita.toFixed(2) }}</div>
+            </div>
+            <div class="indicator">
+              <div class="indicator-label">Mês com Maior Lucro</div>
+              <div class="indicator-value">{{ dadosFinanceiros[4].mes }} - R$ {{ dadosFinanceiros[4].lucro.toFixed(2) }}</div>
+            </div>
+            <div class="indicator">
+              <div class="indicator-label">Taxa Média de Despesa</div>
+              <div class="indicator-value">{{ ((resumoGeral.totalDespesa / resumoGeral.totalReceita) * 100).toFixed(2) }}%</div>
+            </div>
+            <div class="indicator">
+              <div class="indicator-label">Total de Produtos Vendidos</div>
+              <div class="indicator-value">{{ totalProdutosVendidos }}</div>
+            </div>
+            <div class="indicator">
+              <div class="indicator-label">Total de Pedidos</div>
+              <div class="indicator-value">{{ totalPedidosRealizados }}</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    </ng-container>
+
+  </div>
+</section>

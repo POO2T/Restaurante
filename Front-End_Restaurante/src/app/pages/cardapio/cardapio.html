@@ -10,11 +10,9 @@
         </div>
         <div class="header-nav">
 
-          @if (quantidadeItensCarrinho > 0) {
-          <div class="carrinho-info">
+          <div *ngIf="quantidadeItensCarrinho > 0" class="carrinho-info">
             🛒 {{ quantidadeItensCarrinho }} itens - R$ {{ totalCarrinho.toFixed(2) }}
           </div>
-          }
 
         </div>
       </div>
@@ -23,30 +21,28 @@
     <!-- Filtros por Categoria -->
     <div class="categorias-filter">
 
-      @for (categoria of categorias; track categoria) {
-      <button [class.active]="categoria === categoriaSelecionada" (click)="filtrarPorCategoria(categoria)"
+      <button *ngFor="let categoria of categorias" [class.active]="categoria === categoriaSelecionada" (click)="filtrarPorCategoria(categoria)"
         class="btn-categoria">
-
-        {{ categoria }}
+        {{ categoria.nome || categoria }}
       </button>
-      }
+
+      <!-- botão Todos -->
+      <button [class.active]="categoriaSelecionada === 'Todos'" (click)="filtrarPorCategoria('Todos')" class="btn-categoria">
+        Todos
+      </button>
 
     </div>
 
     <!-- Grid de Produtos -->
     <div class="grid-cardapio">
 
-      @for (produto of produtosFiltrados; track produto) {
-
-      <div class="card-produto" [class.indisponivel]="!produto.disponibilidade">
+      <div *ngFor="let produto of produtosFiltrados; trackBy: trackByProdutoId" class="card-produto" [class.indisponivel]="!isDisponivel(produto)">
 
         <div class="produto-imagem">
-          <img [src]="produto.imagemUrl" [alt]="produto.nome">
-          <div class="categoria-badge">{{ produto.categoria }}</div>
+          <img [src]="imageFor(produto)" [alt]="produto.nome" (error)="onImageError($event)" [attr.data-slug]="slugFor(produto)">
+          <div class="categoria-badge">{{ (produto.categoria && (produto.categoria.nome || produto.categoria)) || 'Sem categoria' }}</div>
 
-          @if (!produto.disponibilidade) {
-          <div class="status-badge">Indisponível</div>
-          }
+          <div *ngIf="!isDisponivel(produto)" class="status-badge">Indisponível</div>
 
         </div>
 
@@ -56,44 +52,32 @@
 
           <div class="produto-footer">
             <span class="preco">R$ {{ produto.preco.toFixed(2) }}</span>
-            <button class="btn-adicionar" [disabled]="!produto.disponibilidade" (click)="adicionarAoCarrinho(produto)">
-
-              @if (produto.disponibilidade) {
-              <span>🛒 Adicionar</span>
-              }
-              @else {
-              <span>❌ Indisponível</span>
-              }
-
+            <button class="btn-adicionar" [disabled]="!isDisponivel(produto)" (click)="adicionarAoCarrinho(produto)">
+              <span *ngIf="isDisponivel(produto)">🛒 Adicionar</span>
+              <span *ngIf="!isDisponivel(produto)">❌ Indisponível</span>
             </button>
           </div>
         </div>
       </div>
 
-      }
-
     </div>
 
     <!-- Carrinho Resumo -->
-    @if (carrinho.length > 0) {
-    <div class="carrinho-resumo">
-      <h3>Seu Pedido</h3> 
+    <div *ngIf="carrinho.length > 0" class="carrinho-resumo">
+      <h3>Seu Pedido</h3>
       <div class="carrinho-items">
-        @for (item of carrinho; track item) {
-        <div class="carrinho-item">
+        <div *ngFor="let item of carrinho" class="carrinho-item">
           <span>{{ item.produto.nome }}</span>
           <span>{{ item.quantidade }}x</span>
           <span>R$ {{ (item.produto.preco * item.quantidade).toFixed(2) }}</span>
         </div>
-        }
       </div>
       <div class="carrinho-total">
         <strong>Total: R$ {{ totalCarrinho.toFixed(2) }}</strong>
       </div>
       <button class="btn-finalizar" (click)="finalizarPedido()">Finalizar Pedido</button>
     </div>
-    }
 
   </div>
 
-</section> 
+</section>

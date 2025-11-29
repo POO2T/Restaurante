@@ -16,6 +16,7 @@ import { Usuarios } from './pages/funcionarios/usuarios/usuarios';
 
 import { AuthGuard } from './guards/auth.guard';
 import { Produtos } from './pages/funcionarios/produtos/produtos';
+import { Relatorio } from './pages/funcionarios/relatorio/relatorio';
 
 export const routes: Routes = [
     { path: "", component: Home },
@@ -29,6 +30,6 @@ export const routes: Routes = [
     { path: "funcionario/mesas", component: Mesas, canActivate: [AuthGuard], data: { role: 'FUNCIONARIO' } },
     { path: "funcionario/usuarios", component: Usuarios, canActivate: [AuthGuard], data: { role: 'FUNCIONARIO' } },
     { path: "funcionario/produtos", component: Produtos, canActivate: [AuthGuard], data: { role: 'FUNCIONARIO' } },
-
+    {path: "funcionario/relatorio", component: Relatorio, canActivate: [AuthGuard], data: { role: 'FUNCIONARIO' } },
     { path: "**", redirectTo: "", pathMatch: "full" } // Rota coringa para páginas não encontradas
 ];

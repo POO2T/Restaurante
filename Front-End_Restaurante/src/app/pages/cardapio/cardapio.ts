@@ -17,7 +17,7 @@ import { ProdutoService } from '../../services/produto/produto.service';
   styleUrls: ['./cardapio.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Cardapio {
+export class Cardapio implements OnInit {
   private categoriaService = inject(CategoriaService);
   private produtoService = inject(ProdutoService);
   private cdr = inject(ChangeDetectorRef);
@@ -25,6 +25,7 @@ export class Cardapio {
   produtos: Produto[] = [];
   categorias: Categoria[] = [];
   categoriaSelecionada: Categoria | 'Todos' = 'Todos';
+  produtosFiltrados: Produto[] = [];
   carrinho: { produto: Produto; quantidade: number }[] = [];
 
 
@@ -32,28 +33,58 @@ export class Cardapio {
     this.loadData();
   }
 
-  get produtosFiltrados() {
+  atualizarProdutosFiltrados(): void {
     if (this.categoriaSelecionada === 'Todos') {
-      return this.produtos;
-    }
+      this.produtosFiltrados = this.produtos;
+      console.debug('Filtro aplicado: Todos', { totalProdutos: this.produtosFiltrados.length });
+    } else {
+      const selected: any = this.categoriaSelecionada;
+      const selectedId = selected?.id;
+      const selectedNome = selected?.nome || selected;
 
-    // Comparar por ID quando possível (produto.categoria pode ser objeto ou string)
-    const selectedIsCategoria = this.categoriaSelecionada as Categoria;
-    return this.produtos.filter((p) => {
-      const prodCat = (p as any).categoria;
-      // prodCat pode ser: { id, nome } ou apenas nome (string) ou id
-      const prodCatId = prodCat && typeof prodCat === 'object' ? prodCat.id : prodCat;
-      if (prodCatId != null && selectedIsCategoria && (selectedIsCategoria as any).id != null) {
-        return prodCatId === (selectedIsCategoria as any).id;
-      }
-      // fallback para comparar por nome/valor
-      const prodCatName = prodCat && typeof prodCat === 'object' ? prodCat.nome : prodCat;
-      return prodCatName === (selectedIsCategoria as any).nome || prodCatName === this.categoriaSelecionada;
-    });
+      console.debug('Filtrando por categoria:', { selectedId, selectedNome });
+
+      this.produtosFiltrados = this.produtos.filter((p) => {
+        const prodCat: any = (p as any).categoria;
+        
+        const prodCatId = prodCat?.id ?? (typeof prodCat === 'number' ? prodCat : null);
+        const prodCatNome = prodCat?.nome ?? (typeof prodCat === 'string' ? prodCat : null);
+
+        // Log para cada produto e sua categoria
+        console.debug(`Produto "${p.nome}":`, {
+          prodCatId,
+          prodCatNome,
+          selectedId,
+          selectedNome,
+          match: false,
+        });
+
+        if (selectedId != null && prodCatId != null) {
+          const match = prodCatId === selectedId;
+          if (match) console.debug(`  ✓ Match por ID: ${prodCatId} === ${selectedId}`);
+          return match;
+        }
+
+        if (selectedNome && (prodCatNome || selectedNome)) {
+          const match = (prodCatNome || '').toLowerCase().trim() === selectedNome.toLowerCase().trim();
+          if (match) console.debug(`  ✓ Match por Nome: "${prodCatNome}" === "${selectedNome}"`);
+          return match;
+        }
+
+        return false;
+      });
+
+      console.debug('Resultado do filtro:', { 
+        totalFiltrado: this.produtosFiltrados.length,
+        produtosFiltrados: this.produtosFiltrados.map(p => ({ id: p.id, nome: p.nome }))
+      });
+    }
+    this.cdr.markForCheck();
   }
 
   filtrarPorCategoria(categoria: Categoria | 'Todos') {
     this.categoriaSelecionada = categoria;
+    this.atualizarProdutosFiltrados();
   }
 
   adicionarAoCarrinho(produto: Produto) {
@@ -69,6 +100,94 @@ export class Cardapio {
 
     console.log('Produto adicionado ao carrinho:', produto.nome);
     console.log('Carrinho atual:', this.carrinho);
+  }
+
+  // Retorna a URL da imagem considerando possíveis formatos retornados pela API
+  imageFor(produto: Produto): string {
+    const p: any = produto as any;
+    // possíveis propriedades usadas pela API
+    const candidates = [p.imagemUrl, p.imagem, p.imagem_url, p.imagemURL, p.imagem_base64, p.imageUrl, p.image];
+    for (const c of candidates) {
+      if (!c) continue;
+      // se for base64
+      if (typeof c === 'string' && c.length > 100 && /^[A-Za-z0-9+/=\s]+$/.test(c.trim())) {
+        const result = `data:image/png;base64,${c.trim()}`;
+        console.debug(`imageFor("${p.nome}"): base64 encontrado`);
+        return result;
+      }
+      console.debug(`imageFor("${p.nome}"): candidato URL: ${c}`);
+      return c;
+    }
+    // fallback para slug
+    const name = (p.nome || produto.nome || '').toString();
+    const slug = name
+      .normalize('NFD')
+      .replace(/\p{Diacritic}/gu, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+    if (slug) {
+      const result = `/assets/imgs/${slug}.png`;
+      console.debug(`imageFor("${p.nome}"): usando slug fallback: ${result}`);
+      return result;
+    }
+    console.debug(`imageFor("${p.nome}"): usando placeholder SVG`);
+    return 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120"><rect width="100%" height="100%" fill="%23f3f3f3"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23999" font-family="Arial,Helvetica" font-size="14">Sem imagem</text></svg>';
+  }
+
+  // Normaliza diferentes formatos de disponibilidade retornados pela API
+  isDisponivel(produto: Produto): boolean {
+    const p: any = produto as any;
+    if (typeof p.disponivel === 'boolean') return p.disponivel;
+    if (typeof p.disponibilidade === 'boolean') return p.disponibilidade;
+    if (typeof p.disponibilidade === 'string') return p.disponibilidade.toUpperCase() === 'DISPONIVEL' || p.disponibilidade.toUpperCase() === 'DISPONÍVEL';
+    if (typeof p.disponivel === 'string') return p.disponivel.toUpperCase() === 'DISPONIVEL' || p.disponivel.toUpperCase() === 'DISPONÍVEL';
+    return !!p.disponibilidade || !!p.disponivel;
+  }
+
+  onImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    if (!img) return;
+    img.onerror = null; // evitar loop
+
+    // tentar extensões alternativas se houver slug no data attribute
+    const slug = img.dataset['slug'];
+    if (slug) {
+      const attemptsKey = `img-attempts-${slug}`;
+      const attempts = (this._imageAttempts.get(slug) || 0);
+      const exts = ['png', 'jpg', 'jpeg', 'webp', 'svg'];
+      if (attempts < exts.length - 1) {
+        const next = attempts + 1;
+        this._imageAttempts.set(slug, next);
+        img.src = `./svg/produtos/${slug}.${exts[next]}`;
+        return;
+      }
+    }
+
+    img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120"><rect width="100%" height="100%" fill="%23f3f3f3"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23999" font-family="Arial,Helvetica" font-size="14">Sem imagem</text></svg>';
+  }
+
+  private _imageAttempts = new Map<string, number>();
+
+  slugFor(produto: Produto): string {
+    const p: any = produto as any;
+    const name = (p.nome || produto.nome || '').toString();
+    const slug = name
+      .normalize('NFD')
+      .replace(/\p{Diacritic}/gu, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+    return slug;
+  }
+
+  trackByProdutoId(index: number, produto: Produto): any {
+    // use id when available, otherwise use a stable slug derived from the name, fallback to index
+    const id = (produto as any).id;
+    if (id !== undefined && id !== null && id !== 0) return id;
+    const slug = this.slugFor(produto);
+    if (slug) return `slug:${slug}`;
+    return index;
   }
 
   get totalCarrinho() {
@@ -114,6 +233,19 @@ export class Cardapio {
         this.produtoService.getProdutos().subscribe({
           next: (produtos) => {
             this.produtos = produtos;
+            this.atualizarProdutosFiltrados();
+            // debug: log lista de produtos com slug e imagem candidata
+            try {
+              const debugList = produtos.map((p: any) => ({
+                id: p.id,
+                nome: p.nome,
+                slug: this.slugFor(p),
+                imageCandidate: this.imageFor(p),
+              }));
+              console.debug('Cardapio - produtos debug:', debugList);
+            } catch (e) {
+              console.debug('Cardapio - erro ao gerar debug produtos', e);
+            }
             this.cdr.markForCheck();
           },
           error: (error) => {
