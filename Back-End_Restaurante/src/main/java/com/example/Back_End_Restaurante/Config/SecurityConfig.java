@@ -5,11 +5,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
-// 👇👇👇 IMPORTS CORRIGIDOS (SEM /Jwt) 👇👇👇
-import com.example.Back_End_Restaurante.Security.JwtRequestFilter;
+import com.example.Back_End_Restaurante.Security.Jwt.JwtRequestFilter;
 import com.example.Back_End_Restaurante.Security.UserDetailsServiceImpl;
-// 👆👆👆 IMPORTS CORRIGIDOS 👆👆👆
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +21,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+// Import estático para H2 Console
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
 @Configuration
 @EnableWebSecurity
@@ -70,20 +70,35 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+                        // --- PÚBLICOS ---
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll() // Se estiver usando H2
+                        // .requestMatchers(toH2Console()).permitAll() // Alternativa para H2
+                        
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/funcionarios").permitAll() // Mantenha público por enquanto, proteja no Controller
+                        // .requestMatchers(HttpMethod.POST, "/api/funcionarios").permitAll() // Opcional: cadastro admin
+
+                        // Cardápio
                         .requestMatchers(HttpMethod.GET, "/api/produtos").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/produtos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categorias").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
+
+                        // Mesas
                         .requestMatchers(HttpMethod.GET, "/api/mesas").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/mesas/**").permitAll()
+
+                        // Comanda Visitante
                         .requestMatchers(HttpMethod.POST, "/api/comandas/visitante").permitAll()
+
+                        // Planos Fidelidade
                         .requestMatchers(HttpMethod.GET, "/api/planos-fidelidade").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/planos-fidelidade/**").permitAll()
+
+                        // --- PROTEGIDOS ---
+                        // O endpoint do QR Code é protegido (dono ou funcionário), então cai no .authenticated()
+                        // A verificação fina é feita pelo @PreAuthorize no Controller.
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
