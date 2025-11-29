@@ -1,8 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-//import { Router } from '@angular/router';
 
 import { formatError } from '../../utils/formatError';
 
@@ -10,7 +8,6 @@ import { Produto } from '../../models/produto.model';
 import { Categoria } from '../../models/categoria.model';
 import { CategoriaService } from '../../services/categoria/categoria.service';
 import { ProdutoService } from '../../services/produto/produto.service';
-import { error } from 'console';
 
 
 @Component({
@@ -23,13 +20,13 @@ import { error } from 'console';
 export class Cardapio {
   private categoriaService = inject(CategoriaService);
   private produtoService = inject(ProdutoService);
+  private cdr = inject(ChangeDetectorRef);
 
   produtos: Produto[] = [];
   categorias: Categoria[] = [];
   categoriaSelecionada: Categoria | 'Todos' = 'Todos';
   carrinho: { produto: Produto; quantidade: number }[] = [];
 
-  // private router = inject(Router);
 
   ngOnInit(): void {
     this.loadData();
@@ -39,9 +36,20 @@ export class Cardapio {
     if (this.categoriaSelecionada === 'Todos') {
       return this.produtos;
     }
-    return this.produtos.filter(
-      (p) => p.categoria === this.categoriaSelecionada
-    );
+
+    // Comparar por ID quando possível (produto.categoria pode ser objeto ou string)
+    const selectedIsCategoria = this.categoriaSelecionada as Categoria;
+    return this.produtos.filter((p) => {
+      const prodCat = (p as any).categoria;
+      // prodCat pode ser: { id, nome } ou apenas nome (string) ou id
+      const prodCatId = prodCat && typeof prodCat === 'object' ? prodCat.id : prodCat;
+      if (prodCatId != null && selectedIsCategoria && (selectedIsCategoria as any).id != null) {
+        return prodCatId === (selectedIsCategoria as any).id;
+      }
+      // fallback para comparar por nome/valor
+      const prodCatName = prodCat && typeof prodCat === 'object' ? prodCat.nome : prodCat;
+      return prodCatName === (selectedIsCategoria as any).nome || prodCatName === this.categoriaSelecionada;
+    });
   }
 
   filtrarPorCategoria(categoria: Categoria | 'Todos') {
@@ -106,6 +114,7 @@ export class Cardapio {
         this.produtoService.getProdutos().subscribe({
           next: (produtos) => {
             this.produtos = produtos;
+            this.cdr.markForCheck();
           },
           error: (error) => {
             alert(formatError(error));
