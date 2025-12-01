@@ -66,7 +66,7 @@ export class Relatorio {
   produtosVendidosBackend: ProdutoVendidoDTO[] = [];
 
   // Histórico do cliente (quando o usuário for CLIENTE)
-  meuHistoricoComandas: ComandaDetalhadaDTO [] | null = null;
+  meuHistoricoComandas: ComandaDetalhadaDTO [] | null = null [];
   meusPedidosHojeCount: number = 0;
   // Chart.js instance
   private hourlyChart: Chart | null = null;

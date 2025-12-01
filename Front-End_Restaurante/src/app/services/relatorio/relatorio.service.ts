@@ -107,12 +107,12 @@ export class RelatorioService {
   /**
    * Busca o histórico de comandas do cliente logado
    */
-  obterHistoricoCliente(): Observable<ComandaDetalhadaDTO[]> {
-    console.log('🔄 Chamando API via ApiService: /comandas/meu-historico');
-    return this.api.get<ComandaDetalhadaDTO[]>('/comandas/meu-historico').pipe(
-      timeout(8000)
-    );
-  }
+  // obterHistoricoCliente(): Observable<ComandaDetalhadaDTO[]> {
+  //  console.log('🔄 Chamando API via ApiService: /comandas/meu-historico');
+  //   return this.api.get<ComandaDetalhadaDTO[]>('/comandas/meu-historico').pipe(
+  //     timeout(8000)
+  //   );
+  // }
 
   /**
    * Calcula dados financeiros mensais a partir dos pedidos

@@ -1,11 +1,9 @@
 .relatorio-section {
-
   padding: 20px;
-  /* ADICIONE ESTA LINHA: Ajuste o valor conforme a altura do seu menu superior */
-  padding-top: 100px; 
+  /* ADICIONE/AUMENTE ISTO: */
+  padding-top: 120px !important; /* Força o conteúdo a descer */
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
-
 }
 
 .relatorio-container {

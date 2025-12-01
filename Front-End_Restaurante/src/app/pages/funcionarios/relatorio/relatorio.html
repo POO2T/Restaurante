@@ -38,11 +38,11 @@
     </div>
 
     <!-- Se o usuário for cliente, mostrar resumo pessoal de pedidos do dia -->
-    <div *ngIf="meusPedidosHojeCount >= 0 && meuHistoricoComandas?.length > 0" class="meu-resumo-cliente">
-      <h3>Seus pedidos hoje: <strong>{{ meusPedidosHojeCount }}</strong></h3>
-      <p *ngIf="meuHistoricoComandas?.length === 0">Você não tem pedidos registrados.</p>
-      <ul *ngIf="meuHistoricoComandas?.length > 0">
-        <li *ngFor="let comanda of meuHistoricoComandas">
+     <div *ngIf="meusPedidosHojeCount >= 0 && (meuHistoricoComandas?.length || 0) > 0" class="meu-resumo-cliente">
+        <h3>Seus pedidos hoje: <strong>{{ meusPedidosHojeCount }}</strong></h3>
+        <p *ngIf="(meuHistoricoComandas?.length || 0) === 0">Você não tem pedidos registrados.</p>
+        <ul *ngIf="(meuHistoricoComandas?.length || 0) > 0">
+          <li *ngFor="let comanda of meuHistoricoComandas">
           Comanda #{{ comanda.id }} — Pedidos: {{ comanda.pedidos?.length || 0 }} — Total: R$ {{ comanda.totalCalculado?.toFixed(2) || '0.00' }}
         </li>
       </ul>
