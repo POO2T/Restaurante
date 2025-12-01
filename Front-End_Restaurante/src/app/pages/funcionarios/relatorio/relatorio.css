@@ -1,0 +1,599 @@
+.relatorio-section {
+  padding: 20px;
+  /* ADICIONE/AUMENTE ISTO: */
+  padding-top: 120px !important; /* Força o conteúdo a descer */
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+.relatorio-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Carregando e Erro */
+.carregando-container,
+.erro-container {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.carregando-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #ecf0f1;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.carregando-container p {
+  font-size: 1.1rem;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.erro-container {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.erro-container h2 {
+  color: #e74c3c;
+  margin-bottom: 15px;
+}
+
+.erro-mensagem {
+  color: #7f8c8d;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  padding: 15px;
+  background: #fef5f5;
+  border-left: 4px solid #e74c3c;
+  border-radius: 4px;
+}
+
+.erro-dicas {
+  margin-bottom: 25px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.erro-dicas p {
+  color: #2c3e50;
+  margin: 0 0 10px 0;
+  font-weight: 500;
+}
+
+.erro-dicas ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #7f8c8d;
+}
+
+.erro-dicas li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.erro-dicas code {
+  background: #ecf0f1;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  color: #c0392b;
+}
+
+.btn-recarregar {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-recarregar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-recarregar:active {
+  transform: translateY(0);
+}
+
+/* Header */
+.relatorio-header {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #2c3e50;
+}
+
+.relatorio-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.relatorio-header p {
+  font-size: 1rem;
+  color: #7f8c8d;
+}
+
+/* Cards de Resumo */
+.resumo-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.card-header h2 {
+  font-size: 1.3rem;
+  margin: 0 0 5px 0;
+  font-weight: 600;
+}
+
+.card-header h3 {
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.card-header p {
+  margin: 5px 0 0 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.subtexto-header {
+  font-size: 0.8rem !important;
+  opacity: 0.85;
+  margin-top: 3px !important;
+}
+
+.card-body {
+  padding: 25px;
+}
+
+/* Resumo Card Específico */
+.resumo-card {
+  text-align: center;
+}
+
+.resumo-card .card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.resumo-card.receita .card-header {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.resumo-card.despesa .card-header {
+  background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+}
+
+.resumo-card.lucro .card-header {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.resumo-card.ticket .card-header {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.resumo-card.pedidos .card-header {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.resumo-card.itens .card-header {
+  background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+}
+
+.resumo-card .valor {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 10px 0;
+}
+
+.resumo-card .subtexto {
+  font-size: 0.9rem;
+  color: #95a5a6;
+  margin: 0;
+}
+
+/* Divisão Principal */
+.relatorio-divisao {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 1200px) {
+  .relatorio-divisao {
+    grid-template-columns: 1fr;
+  }
+}
+
+.secao-graficos,
+.secao-relatorio {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Gráfico de Barras */
+.grafico-container {
+  padding: 30px;
+}
+
+.grafico-barras {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 280px;
+  gap: 15px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #ecf0f1;
+  padding-bottom: 20px;
+}
+
+.barra-mes {
+  flex: 1;
+  text-align: center;
+}
+
+.mes-label {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-size: 0.95rem;
+}
+
+.barras-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  align-items: flex-end;
+  height: 200px;
+}
+
+.barra {
+  width: 30%;
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+  transition: opacity 0.3s ease;
+}
+
+.barra:hover {
+  opacity: 0.8;
+}
+
+.barra.receita-barra {
+  background: linear-gradient(180deg, #11998e 0%, #38ef7d 100%);
+}
+
+.barra.despesa-barra {
+  background: linear-gradient(180deg, #eb3349 0%, #f45c43 100%);
+}
+
+.valor-barra {
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding-bottom: 5px;
+}
+
+.lucro-label {
+  font-size: 0.8rem;
+  color: #7f8c8d;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.legenda-grafico {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 15px;
+}
+
+.legenda-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #2c3e50;
+}
+
+.legenda-cor {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+.legenda-cor.receita {
+  background: linear-gradient(180deg, #11998e 0%, #38ef7d 100%);
+}
+
+.legenda-cor.despesa {
+  background: linear-gradient(180deg, #eb3349 0%, #f45c43 100%);
+}
+
+/* Tabela */
+.tabela-evolucao {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabela-evolucao thead {
+  background: #ecf0f1;
+  border-bottom: 2px solid #bdc3c7;
+}
+
+.tabela-evolucao th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.tabela-evolucao td {
+  padding: 15px;
+  border-bottom: 1px solid #ecf0f1;
+  font-size: 0.95rem;
+}
+
+.tabela-evolucao tbody tr:hover {
+  background: #f9f9f9;
+}
+
+.mes-cell {
+  color: #2c3e50;
+  width: 12%;
+}
+
+.receita-cell {
+  color: #27ae60;
+  font-weight: 500;
+  width: 22%;
+}
+
+.despesa-cell {
+  color: #e74c3c;
+  font-weight: 500;
+  width: 22%;
+}
+
+.lucro-cell {
+  color: #8e44ad;
+  width: 22%;
+}
+
+.crescimento-cell {
+  text-align: right;
+  width: 22%;
+  font-weight: 600;
+}
+
+.crescimento-cell .positivo {
+  color: #27ae60;
+}
+
+.crescimento-cell .negativo {
+  color: #e74c3c;
+}
+
+/* Resumo Executivo */
+.resumo-executivo {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.resumo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+}
+
+.resumo-item .label {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.resumo-item .valor-destaque {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.resumo-item .valor-destaque.receita {
+  color: #27ae60;
+}
+
+.resumo-item .valor-destaque.despesa {
+  color: #e74c3c;
+}
+
+.resumo-item .valor-destaque.lucro {
+  color: #8e44ad;
+}
+
+.resumo-item .valor-destaque.margem {
+  color: #f39c12;
+}
+
+.resumo-item .valor-destaque.ticket {
+  color: #3498db;
+}
+
+/* Produtos Ranking */
+.produtos-ranking {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.produto-rank-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.produto-rank-item:hover {
+  background: #f0f1f2;
+}
+
+.rank-numero {
+  min-width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.rank-info {
+  flex: 1;
+}
+
+.rank-info h4 {
+  margin: 0 0 5px 0;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.rank-stats {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #95a5a6;
+}
+
+.rank-barra {
+  width: 150px;
+  height: 8px;
+  background: #ecf0f1;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rank-barra-preenchida {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.5s ease;
+}
+
+/* Performance Indicators */
+.performance-indicators {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+@media (max-width: 768px) {
+  .performance-indicators {
+    grid-template-columns: 1fr;
+  }
+}
+
+.indicator {
+  padding: 18px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.indicator-label {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.indicator-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .relatorio-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .resumo-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .relatorio-divisao {
+    grid-template-columns: 1fr;
+  }
+
+  .grafico-barras {
+    height: 200px;
+    overflow-x: auto;
+  }
+
+  .tabela-evolucao {
+    font-size: 0.85rem;
+  }
+
+  .tabela-evolucao th,
+  .tabela-evolucao td {
+    padding: 10px;
+  }
+}

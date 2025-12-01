@@ -14,6 +14,7 @@ import { LoginFuncionario } from './pages/login-funcionario/login-funcionario';
 import { Mesas } from './pages/funcionarios/mesas/mesas';
 import { Pedidos } from './pages/funcionarios/pedidos/pedidos';
 import { Usuarios } from './pages/funcionarios/usuarios/usuarios';
+import { Relatorio } from './pages/funcionarios/relatorio/relatorio';
 
 import { AuthGuard } from './guards/auth.guard';
 import { Produtos } from './pages/funcionarios/produtos/produtos';
@@ -54,6 +55,12 @@ export const routes: Routes = [
   {
     path: 'funcionario/produtos',
     component: Produtos,
+    canActivate: [AuthGuard],
+    data: { role: 'FUNCIONARIO' },
+  },
+  {
+    path: 'funcionario/relatorio',
+    component: Relatorio,
     canActivate: [AuthGuard],
     data: { role: 'FUNCIONARIO' },
   },
