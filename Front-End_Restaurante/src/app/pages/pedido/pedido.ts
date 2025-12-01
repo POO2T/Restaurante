@@ -178,7 +178,10 @@ export class Pedido {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.warn('Erro ao obter detalhes da comanda visitante via API:', err);
+        console.warn(
+          'Erro ao obter detalhes da comanda visitante via API:',
+          err
+        );
         // Tenta fallback local: se o JSON salvo existir, exibe-o como detalhes.
         try {
           const lastComandaStr = this.storageService.getItem('last_comanda');

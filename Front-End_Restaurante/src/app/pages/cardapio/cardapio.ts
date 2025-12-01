@@ -36,6 +36,7 @@ import { ComandaService } from '../../services/comanda/comanda.service';
 import { StorageService } from '../../services/storage.service';
 
 import { switchMap, tap } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Component({
   selector: 'app-cardapio',
@@ -44,7 +45,7 @@ import { switchMap, tap } from 'rxjs/operators';
   styleUrls: ['./cardapio.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Cardapio {
+export class Cardapio implements OnInit {
   private categoriaService = inject(CategoriaService);
   private comandaService = inject(ComandaService);
   private produtoService = inject(ProdutoService);
@@ -123,6 +124,7 @@ export class Cardapio {
 
   filtrarPorCategoria(categoria: Categoria | 'Todos') {
     this.categoriaSelecionada = categoria;
+    this.cdr.markForCheck();
   }
 
   adicionarAoCarrinho(produto: Produto) {
@@ -146,6 +148,115 @@ export class Cardapio {
     console.log('Carrinho atual:', this.carrinho);
     this.isLoading = false;
     this.cdr.markForCheck();
+  }
+
+  // Retorna a URL da imagem considerando possíveis formatos retornados pela API
+  imageFor(produto: Produto): string {
+    const p: any = produto as any;
+    // possíveis propriedades usadas pela API
+    const candidates = [
+      p.imagemUrl,
+      p.imagem,
+      p.imagem_url,
+      p.imagemURL,
+      p.imagem_base64,
+      p.imageUrl,
+      p.image,
+    ];
+    for (const c of candidates) {
+      if (!c) continue;
+      // se for base64
+      if (
+        typeof c === 'string' &&
+        c.length > 100 &&
+        /^[A-Za-z0-9+/=\s]+$/.test(c.trim())
+      ) {
+        const result = `data:image/png;base64,${c.trim()}`;
+        console.debug(`imageFor("${p.nome}"): base64 encontrado`);
+        return result;
+      }
+      console.debug(`imageFor("${p.nome}"): candidato URL: ${c}`);
+      return c;
+    }
+    // fallback para slug
+    const name = (p.nome || produto.nome || '').toString();
+    const slug = name
+      .normalize('NFD')
+      .replace(/\p{Diacritic}/gu, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+    if (slug) {
+      const result = `/assets/imgs/${slug}.png`;
+      console.debug(`imageFor("${p.nome}"): usando slug fallback: ${result}`);
+      return result;
+    }
+    console.debug(`imageFor("${p.nome}"): usando placeholder SVG`);
+    return 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120"><rect width="100%" height="100%" fill="%23f3f3f3"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23999" font-family="Arial,Helvetica" font-size="14">Sem imagem</text></svg>';
+  }
+
+  // Normaliza diferentes formatos de disponibilidade retornados pela API
+  isDisponivel(produto: Produto): boolean {
+    const p: any = produto as any;
+    if (typeof p.disponivel === 'boolean') return p.disponivel;
+    if (typeof p.disponibilidade === 'boolean') return p.disponibilidade;
+    if (typeof p.disponibilidade === 'string')
+      return (
+        p.disponibilidade.toUpperCase() === 'DISPONIVEL' ||
+        p.disponibilidade.toUpperCase() === 'DISPONÍVEL'
+      );
+    if (typeof p.disponivel === 'string')
+      return (
+        p.disponivel.toUpperCase() === 'DISPONIVEL' ||
+        p.disponivel.toUpperCase() === 'DISPONÍVEL'
+      );
+    return !!p.disponibilidade || !!p.disponivel;
+  }
+
+  onImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    if (!img) return;
+    img.onerror = null; // evitar loop
+
+    // tentar extensões alternativas se houver slug no data attribute
+    const slug = img.dataset['slug'];
+    if (slug) {
+      const attemptsKey = `img-attempts-${slug}`;
+      const attempts = this._imageAttempts.get(slug) || 0;
+      const exts = ['png', 'jpg', 'jpeg', 'webp', 'svg'];
+      if (attempts < exts.length - 1) {
+        const next = attempts + 1;
+        this._imageAttempts.set(slug, next);
+        img.src = `./svg/produtos/${slug}.${exts[next]}`;
+        return;
+      }
+    }
+
+    img.src =
+      'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120"><rect width="100%" height="100%" fill="%23f3f3f3"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23999" font-family="Arial,Helvetica" font-size="14">Sem imagem</text></svg>';
+  }
+
+  private _imageAttempts = new Map<string, number>();
+
+  slugFor(produto: Produto): string {
+    const p: any = produto as any;
+    const name = (p.nome || produto.nome || '').toString();
+    const slug = name
+      .normalize('NFD')
+      .replace(/\p{Diacritic}/gu, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+    return slug;
+  }
+
+  trackByProdutoId(index: number, produto: Produto): any {
+    // use id when available, otherwise use a stable slug derived from the name, fallback to index
+    const id = (produto as any).id;
+    if (id !== undefined && id !== null && id !== 0) return id;
+    const slug = this.slugFor(produto);
+    if (slug) return `slug:${slug}`;
+    return index;
   }
 
   get totalCarrinho() {
@@ -228,18 +339,28 @@ export class Cardapio {
     // atualizar flags de loading apenas quando a solicitação completar
     comanda$
       .pipe(
-        tap((comandaCriada) => {
+        switchMap((comandaCriada) => {
+          // Log rápido do token para diagnóstico (ajuda a identificar problemas de autenticação)
+          try {
+            const tk = this.storageService.getItem('auth_token');
+            console.debug('Token presente ao criar comanda?', !!tk);
+          } catch (e) {
+            console.debug('Não foi possível ler token do storage', e);
+          }
+
+          if (!comandaCriada || comandaCriada.id == null) {
+            return throwError(
+              () => new Error('Resposta de criação de comanda inválida')
+            );
+          }
+
           // Se for visitante, salva o id da comanda no localStorage para a página /pedido
           if (!cliente) {
             try {
-              // Salva apenas o ID para uso rápido na página /pedido
-              if (comandaCriada && comandaCriada.id != null) {
-                this.storageService.setItem(
-                  'last_comanda_id',
-                  String(comandaCriada.id)
-                );
-              }
-              // Salva também a comanda completa (serializada) para inspeção/diagnóstico
+              this.storageService.setItem(
+                'last_comanda_id',
+                String(comandaCriada.id)
+              );
               try {
                 this.storageService.setItem(
                   'last_comanda',
@@ -248,7 +369,6 @@ export class Cardapio {
               } catch (e) {
                 // não crítico
               }
-
               console.debug(
                 'Salvo last_comanda_id no storage:',
                 comandaCriada?.id
@@ -260,13 +380,33 @@ export class Cardapio {
               );
             }
           }
-        }),
-        switchMap((comandaCriada) =>
-          this.pedidoService.postPedido(comandaCriada, pedidoRequest)
-        )
+
+          // Primeiro cria o pedido; em seguida, busca os detalhes atualizados da comanda
+          return this.pedidoService
+            .postPedido(comandaCriada, pedidoRequest)
+            .pipe(
+              switchMap((pedidoCriado) =>
+                this.comandaService.getDetalhesComanda(comandaCriada.id).pipe(
+                  tap((detComanda) => {
+                    // Atualiza o fallback local com os detalhes mais recentes (útil para visitantes)
+                    if (!cliente) {
+                      try {
+                        this.storageService.setItem(
+                          'last_comanda',
+                          JSON.stringify(detComanda)
+                        );
+                      } catch (e) {
+                        // não crítico
+                      }
+                    }
+                  })
+                )
+              )
+            );
+        })
       )
       .subscribe({
-        next: (pedidoCriado) => {
+        next: (detComanda) => {
           alert('Pedido realizado com sucesso!');
           this.carrinho = [];
           this.closeOverlay();

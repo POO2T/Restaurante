@@ -52,8 +52,12 @@
 
           <div class="categoria-badge">{{ produto.categoria.nome || produto.categoria }}</div>
 
-          @if (!produto.disponibilidade) {
-          <div class="status-badge">Indisponível</div>
+          @if (!isDisponivel(produto)) {
+          <ng-container>
+            <div class="status-badge">
+              <span>Indisponível</span>
+            </div>
+          </ng-container>
           }
 
         </div>
@@ -64,9 +68,9 @@
 
           <div class="produto-footer">
             <span class="preco">R$ {{ produto.preco.toFixed(2) }}</span>
-            <button class="btn-adicionar" [disabled]="!produto.disponibilidade" (click)="adicionarAoCarrinho(produto)">
+            <button class="btn-adicionar" [disabled]="!isDisponivel(produto)" (click)="adicionarAoCarrinho(produto)">
 
-              @if (produto.disponibilidade) {
+              @if (isDisponivel(produto)) {
               <span>🛒 Adicionar</span>
               }
               @else {
@@ -77,9 +81,7 @@
           </div>
         </div>
       </div>
-
       }
-
     </div>
 
     <!-- Carrinho Resumo -->
