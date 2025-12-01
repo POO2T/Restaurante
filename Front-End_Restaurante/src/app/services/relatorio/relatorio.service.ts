@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { timeout } from 'rxjs/operators';
+import { ApiService } from '../api';
 
 export interface PedidoAPI {
   id: number;
@@ -30,19 +31,87 @@ export interface ProdutoTop {
   receita: number;
 }
 
+// Tipos retornados pelos endpoints de relatórios do backend
+export interface DashboardResumoDTO {
+  totalPedidosHoje: number;
+  faturamentoHoje: number;
+  mesasOcupadasAgora: number;
+}
+
+export interface ProdutoVendidoDTO {
+  nomeProduto: string;
+  quantidadeTotal: number;
+  valorTotal: number;
+}
+
+// Comanda detalhada retornada pelo backend (cliente)
+export interface PedidoResponseDTO {
+  id: number;
+  dataHora: string; // ISO datetime
+  status: string;
+  itens: Array<{ id: number; nomeProduto?: string; quantidade: number; precoUnitario?: number }>;
+  totalPedido?: number;
+}
+
+export interface ComandaDetalhadaDTO {
+  id: number;
+  dataAbertura?: string;
+  dataFechamento?: string | null;
+  status?: string;
+  nomeMesa?: string;
+  numeroMesa?: number;
+  nomeCliente?: string | null;
+  pedidos: PedidoResponseDTO[];
+  totalCalculado?: number;
+  totalPago?: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class RelatorioService {
-  private apiUrl = 'http://localhost:8080/api';
+  private api = inject(ApiService);
 
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
   /**
    * Busca todos os pedidos da API
    */
   obterPedidos(): Observable<PedidoAPI[]> {
-    return this.http.get<PedidoAPI[]>(`${this.apiUrl}/pedidos`);
+    console.log('🔄 Chamando API via ApiService: /pedidos');
+    return this.api.get<PedidoAPI[]>('/pedidos').pipe(
+      timeout(10000) // 10 segundos de timeout
+    );
+  }
+
+  /**
+   * Busca o resumo do dia (dashboard) do backend
+   */
+  obterDashboard(): Observable<DashboardResumoDTO> {
+    console.log('🔄 Chamando API via ApiService: /relatorios/dashboard');
+    return this.api.get<DashboardResumoDTO>('/relatorios/dashboard').pipe(
+      timeout(8000)
+    );
+  }
+
+  /**
+   * Busca top produtos já calculados pelo backend
+   */
+  obterTopProdutos(): Observable<ProdutoVendidoDTO[]> {
+    console.log('🔄 Chamando API via ApiService: /relatorios/produtos-mais-vendidos');
+    return this.api.get<ProdutoVendidoDTO[]>('/relatorios/produtos-mais-vendidos').pipe(
+      timeout(8000)
+    );
+  }
+
+  /**
+   * Busca o histórico de comandas do cliente logado
+   */
+  obterHistoricoCliente(): Observable<ComandaDetalhadaDTO[]> {
+    console.log('🔄 Chamando API via ApiService: /comandas/meu-historico');
+    return this.api.get<ComandaDetalhadaDTO[]>('/comandas/meu-historico').pipe(
+      timeout(8000)
+    );
   }
 
   /**

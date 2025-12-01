@@ -1,7 +1,11 @@
 .relatorio-section {
+
   padding: 20px;
+  /* ADICIONE ESTA LINHA: Ajuste o valor conforme a altura do seu menu superior */
+  padding-top: 100px; 
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
+
 }
 
 .relatorio-container {
@@ -55,10 +59,46 @@
   margin-bottom: 15px;
 }
 
-.erro-container p {
+.erro-mensagem {
   color: #7f8c8d;
   margin-bottom: 20px;
   font-size: 0.95rem;
+  padding: 15px;
+  background: #fef5f5;
+  border-left: 4px solid #e74c3c;
+  border-radius: 4px;
+}
+
+.erro-dicas {
+  margin-bottom: 25px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.erro-dicas p {
+  color: #2c3e50;
+  margin: 0 0 10px 0;
+  font-weight: 500;
+}
+
+.erro-dicas ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #7f8c8d;
+}
+
+.erro-dicas li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.erro-dicas code {
+  background: #ecf0f1;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  color: #c0392b;
 }
 
 .btn-recarregar {

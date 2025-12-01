@@ -10,7 +10,16 @@
     <!-- Mensagem de Erro -->
     <div *ngIf="erro && !carregando" class="erro-container">
       <h2>⚠️ Erro ao Carregar Dados</h2>
-      <p>{{ erro }}</p>
+      <p class="erro-mensagem">{{ erro }}</p>
+      <div class="erro-dicas">
+        <p><strong>Verifique:</strong></p>
+        <ul>
+          <li>Se o backend está rodando em <code>http://localhost:8080</code></li>
+          <li>Se há dados de pedidos no banco de dados</li>
+          <li>Se você tem permissão para acessar o endpoint <code>/api/pedidos</code></li>
+          <li>O console do navegador (F12) para mais detalhes</li>
+        </ul>
+      </div>
       <button class="btn-recarregar" (click)="recarregar()">🔄 Tentar Novamente</button>
     </div>
 
@@ -19,6 +28,24 @@
     <div class="relatorio-header">
       <h1>📊 Relatório Financeiro</h1>
       <p>Análise de receitas, despesas e desempenho</p>
+    </div>
+
+    <!-- Resumo do Dia (Dashboard) vindo do backend -->
+    <div *ngIf="dashboardResumo" class="dashboard-dia">
+      <div class="dash-item">Hoje: <strong>{{ dashboardResumo?.totalPedidosHoje }}</strong> pedidos</div>
+      <div class="dash-item">Faturamento hoje: <strong>R$ {{ dashboardResumo?.faturamentoHoje?.toFixed(2) }}</strong></div>
+      <div class="dash-item">Mesas ocupadas agora: <strong>{{ dashboardResumo?.mesasOcupadasAgora }}</strong></div>
+    </div>
+
+    <!-- Se o usuário for cliente, mostrar resumo pessoal de pedidos do dia -->
+    <div *ngIf="meusPedidosHojeCount >= 0 && meuHistoricoComandas?.length > 0" class="meu-resumo-cliente">
+      <h3>Seus pedidos hoje: <strong>{{ meusPedidosHojeCount }}</strong></h3>
+      <p *ngIf="meuHistoricoComandas?.length === 0">Você não tem pedidos registrados.</p>
+      <ul *ngIf="meuHistoricoComandas?.length > 0">
+        <li *ngFor="let comanda of meuHistoricoComandas">
+          Comanda #{{ comanda.id }} — Pedidos: {{ comanda.pedidos?.length || 0 }} — Total: R$ {{ comanda.totalCalculado?.toFixed(2) || '0.00' }}
+        </li>
+      </ul>
     </div>
 
     <!-- Cards de Resumo -->
@@ -33,6 +60,17 @@
           <p class="subtexto">{{ totalPedidosRealizados }} pedidos com {{ totalProdutosVendidos }} itens</p>
         </div>
       </div>
+
+        <!-- Gráfico: Vendas por Hora (Hoje) -->
+        <div class="card">
+          <div class="card-header">
+            <h2>🕒 Vendas por Hora (Hoje)</h2>
+            <p class="subtexto">Total vendido por cada hora do dia</p>
+          </div>
+          <div class="card-body" style="height:320px;">
+            <canvas id="hourlyChart" #hourlyCanvas></canvas>
+          </div>
+        </div>
 
       <div class="card resumo-card despesa">
         <div class="card-header">
