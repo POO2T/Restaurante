@@ -31,4 +31,7 @@ public interface ComandaRepository extends JpaRepository<Comanda, Long> {
     // Soma o total de pagamentos recebidos em comandas fechadas no período
     @Query("SELECT COALESCE(SUM(p.valor), 0.0) FROM Pagamento p WHERE p.comanda.status = 'FECHADA' AND p.dataPagamento BETWEEN :inicio AND :fim")
     Double sumFaturamentoNoPeriodo(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
+
+    // Busca comandas por status (ex: ABERTA)
+    List<Comanda> findByStatus(StatusComanda status);
 }

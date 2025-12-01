@@ -51,6 +51,15 @@ public class ComandaController {
         return ResponseEntity.ok(detalhes);
     }
 
+    // Endpoint para listar comandas abertas — usado pela interface da
+    // cozinha/funcionários
+    @GetMapping("/abertas")
+    @PreAuthorize("hasAnyRole('GARCOM', 'COZINHEIRO', 'GERENTE', 'ADMINISTRADOR')")
+    public ResponseEntity<List<ComandaDetalhadaDTO>> getComandasAbertas() {
+        List<ComandaDetalhadaDTO> abertas = comandaService.listarComandasAbertas();
+        return ResponseEntity.ok(abertas);
+    }
+
     // ... (Endpoint Pagar MANTIDO) ...
     @PostMapping("/{comandaId}/pagar")
     @PreAuthorize("hasAnyRole('GARCOM', 'GERENTE', 'ADMINISTRADOR') or @comandaSecurity.checkClienteIsComandaOwner(#comandaId)")

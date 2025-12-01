@@ -69,10 +69,12 @@ export class Pedidos implements OnInit {
 
   private loadPedidosPendentes(): void {
     this.erro = null;
-    console.log('Carregando pedidos pendentes para funcionários...');
+    console.log(
+      'Carregando comandas abertas (detalhadas) para funcionários...'
+    );
     this.isLoading = true;
     this.pedidoService
-      .getPedidosPendentes()
+      .getComandasAbertas()
       .pipe(
         finalize(() => {
           this.isLoading = false;
@@ -81,110 +83,75 @@ export class Pedidos implements OnInit {
       )
       .subscribe({
         next: (arr) => {
-          // O backend retorna PedidoCozinhaDTO com { pedidoId, dataHora, nomeMesa, numeroMesa, itens }
-          // Mapear DTOs para objetos tipados
+          // Backend retorna ComandaDetalhadaDTO com pedidos, pagamentos e totais
           console.log(
-            'GET /api/pedidos/pendentes -> quantidade:',
+            'GET /api/comandas/abertas -> quantidade:',
             (arr || []).length,
             arr
           );
-          this.pedidos = (arr || []).map((p: any) => {
-            const pedidoObj = {} as Pedido;
-
-            const itens: ItemPedido[] = (p.itens || []).map(
-              (it: any, idx: number) => {
-                const produto: Produto = {
-                  id: it.produtoId ?? (null as any),
-                  nome: it.nomeProduto || it.nome || '',
-                  descricao: it.descricao || '',
-                  preco: it.preco ?? it.precoUnitario ?? it.valorUnitario ?? 0,
-                  quantidadeEstoque: 0,
-                  disponibilidade: null as any,
-                  categoria: null as any,
-                  imagemUrl: undefined,
-                };
-
-                const item: ItemPedido = {
-                  id: idx + 1,
-                  quantidade: it.quantidade ?? 1,
-                  precoUnitario:
-                    (it.precoUnitario ??
-                      it.preco ??
-                      it.valorUnitario ??
-                      produto.preco) ||
-                    0,
-                  pedido: pedidoObj,
-                  produto,
-                } as ItemPedido;
-                return item;
-              }
-            );
-
-            pedidoObj.id = p.pedidoId;
-            pedidoObj.dataHora = p.dataHora ? new Date(p.dataHora) : new Date();
-            pedidoObj.status = (p.status ?? 'PENDENTE')
-              .toString()
-              .toUpperCase() as any;
-            pedidoObj.comanda = {
-              id: null as any,
-              dataAbertura: null,
-              dataFechamento: null,
-              status: null as any,
+          this.comandas = (arr || []).map((c: any) => {
+            const comanda: Comanda = {
+              id: c.id ?? (null as any),
+              dataAbertura: c.dataAbertura ? new Date(c.dataAbertura) : null,
+              dataFechamento: c.dataFechamento
+                ? new Date(c.dataFechamento)
+                : null,
+              status: (c.status ?? null) as any,
               cliente: null,
               mesa: {
                 id: null as any,
-                numero: p.numeroMesa ?? null,
-                nome: p.nomeMesa ?? null,
+                numero: c.numeroMesa ?? null,
+                nome: c.nomeMesa ?? null,
                 status: null as any,
               } as any,
               pedidos: [],
-              total: 0,
+              total: (c.totalCalculado ?? c.total ?? 0) as number,
             } as Comanda;
-            pedidoObj.itens = itens;
-            // calcular total do pedido a partir dos itens
-            pedidoObj.total = itens.reduce(
-              (sum, it) => sum + (it.precoUnitario || 0) * (it.quantidade || 1),
-              0
-            );
 
-            // vincula cada item ao pedido tipado
-            for (const it of itens) {
-              it.pedido = pedidoObj;
-            }
+            comanda.pedidos = (c.pedidos || []).map((p: any) => {
+              const pedido: Pedido = {
+                id: p.id ?? (null as any),
+                dataHora: p.dataHora ? new Date(p.dataHora) : new Date(),
+                status: (p.status ?? 'PENDENTE')
+                  .toString()
+                  .toUpperCase() as any,
+                comanda,
+                itens: (p.itens || []).map((it: any, idx: number) => {
+                  const produto: Produto = {
+                    id: it.id ?? (null as any),
+                    nome: it.nomeProduto || it.nome || '',
+                    descricao: it.descricao || '',
+                    preco: it.precoUnitario ?? it.preco ?? 0,
+                    quantidadeEstoque: 0,
+                    disponibilidade: null as any,
+                    categoria: null as any,
+                    imagemUrl: undefined,
+                  };
+                  const item: ItemPedido = {
+                    id: it.id ?? idx + 1,
+                    quantidade: it.quantidade ?? 1,
+                    precoUnitario:
+                      it.precoUnitario ?? it.preco ?? produto.preco ?? 0,
+                    pedido: null as any,
+                    produto,
+                  } as ItemPedido;
+                  return item;
+                }),
+                total: p.totalPedido ?? p.total ?? 0,
+              } as Pedido;
+              // vincular pedido na referência dos itens
+              for (const it of pedido.itens) {
+                it.pedido = pedido;
+              }
+              return pedido;
+            });
 
-            return pedidoObj;
+            return comanda;
           });
-
-          // Agrupa por comanda (mesa) para exibir comandas com pedidos aninhados
-          const map = new Map<string, Comanda>();
-          for (const ped of this.pedidos) {
-            const key = `${ped.comanda.mesa?.nome || 'Mesa'}::${
-              ped.comanda.mesa?.numero ?? ''
-            }`;
-            if (!map.has(key)) {
-              const cmd: Comanda = {
-                id: null as any,
-                dataAbertura: null,
-                dataFechamento: null,
-                status: null as any,
-                cliente: null,
-                mesa: ped.comanda.mesa,
-                pedidos: [],
-                total: 0,
-              };
-              map.set(key, cmd);
-            }
-            const cmd = map.get(key)!;
-            cmd.pedidos.push(ped);
-            // atualizar referência de comanda do pedido para o objeto agrupado
-            ped.comanda = cmd;
-          }
-
-          this.comandas = Array.from(map.values());
         },
         error: (err) => {
-          console.error('Erro ao carregar pedidos pendentes:', err);
-          this.erro = 'Falha ao carregar pedidos pendentes';
+          console.error('Erro ao carregar comandas abertas:', err);
+          this.erro = 'Falha ao carregar comandas abertas';
         },
       });
   }

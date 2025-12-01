@@ -92,6 +92,35 @@
             }
 
           </div>
+
+          <div class="pedido-actions">
+            <h3>Adicionar Pedido / Finalizar</h3>
+
+            <div class="adicionar-pedido">
+              <label>Produto (ID): <input type="number" #newProdutoId min="1" /></label>
+              <label>Quantidade: <input type="number" #newQuantidade min="1" value="1" /></label>
+              <button
+                (click)="finalizarPedido({ itens: [{ produtoId: +newProdutoId.value, quantidade: +newQuantidade.value }] })">
+                Adicionar e Finalizar Pedido
+              </button>
+            </div>
+
+            <h3>Pagamento</h3>
+            <div class="pagamento-pedido">
+              <label>Forma:
+                <select #formaPagamento>
+                  <option value="DINHEIRO">DINHEIRO</option>
+                  <option value="DEBITO">DÉBITO</option>
+                  <option value="CREDITO">CRÉDITO</option>
+                  <option value="PIX">PIX</option>
+                </select>
+              </label>
+              <label>Valor (R$): <input type="number" #valorPago step="0.01" min="0" /></label>
+              <button (click)="pagarComanda(comandaSelecionada, formaPagamento.value, +valorPago.value)">
+                Pagar Comanda
+              </button>
+            </div>
+          </div>
         </div>
         }
 

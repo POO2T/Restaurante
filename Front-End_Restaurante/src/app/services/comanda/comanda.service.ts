@@ -47,6 +47,23 @@ export class ComandaService {
       );
   }
 
+  // Realiza o pagamento e fecha a comanda
+  pagarComanda(
+    comandaId: number,
+    pagamento: { formaPagamento: string; valorPago: number }
+  ): Observable<Comanda> {
+    return this.apiService
+      .post<any, any>(`${this.endpoint}/${comandaId}/pagar`, pagamento)
+      .pipe(
+        map((dto) => this.mapDetalhadaDtoToComanda(dto)),
+        tap((c) => console.debug('Comanda fechada e mapeada:', c)),
+        catchError((err) => {
+          console.error('Erro ao pagar/fechar comanda:', err);
+          return throwError(() => err);
+        })
+      );
+  }
+
   postComandaVisitante(
     comandaRequest: ComandaAberturaRequest
   ): Observable<Comanda> {

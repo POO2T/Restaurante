@@ -25,6 +25,17 @@ export class PedidoService {
     );
   }
 
+  // Busca comandas abertas com detalhes (inclui totais) — usado pela tela de pedidos/funcionários
+  getComandasAbertas(): Observable<any[]> {
+    return this.apiService.get<any[]>(`/comandas/abertas`).pipe(
+      tap((arr) => console.debug('Comandas abertas recebidas:', arr)),
+      catchError((err) => {
+        console.error('Erro ao buscar comandas abertas:', err);
+        return throwError(() => err);
+      })
+    );
+  }
+
   postPedido(
     comanda: Comanda,
     pedidoRequest: PedidoRequest

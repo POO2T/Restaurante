@@ -8,6 +8,8 @@ import { Comanda } from '../../models/comanda.model';
 import { AuthService } from '../../services/auth/auth.service';
 import { ComandaService } from '../../services/comanda/comanda.service';
 import { StorageService } from '../../services/storage.service';
+import { PedidoService } from '../../services/pedido/pedido.service';
+import { PedidoRequest } from '../../models/pedido.model';
 
 @Component({
   selector: 'app-pedido',
@@ -17,6 +19,7 @@ import { StorageService } from '../../services/storage.service';
 })
 export class Pedido {
   private comandaService = inject(ComandaService);
+  private pedidoService = inject(PedidoService);
   private storageService = inject(StorageService);
   public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
@@ -225,6 +228,90 @@ export class Pedido {
             console.warn('Falha no fallback local da comanda visitante:', ex);
           }
           this.isLoading = false;
+        },
+      });
+  }
+
+  // Finaliza (envia) um pedido para a comanda selecionada
+  finalizarPedido(pedidoRequest: PedidoRequest): void {
+    if (!this.comandaSelecionada) {
+      console.warn('Nenhuma comanda selecionada para finalizar o pedido');
+      return;
+    }
+    this.isLoading = true;
+    this.pedidoService
+      .postPedido(this.comandaSelecionada, pedidoRequest)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (pedido) => {
+          console.debug('Pedido finalizado:', pedido);
+          // Recarrega os detalhes da comanda para refletir o novo pedido
+          if (this.comandaSelecionada && this.comandaSelecionada.id) {
+            this.comandaService
+              .getDetalhesComanda(this.comandaSelecionada.id)
+              .subscribe({
+                next: (det) => {
+                  // Atualiza histórico/seleção com a versão mais recente
+                  this.comandaSelecionada = det;
+                  // Atualiza também a lista de histórico (substitui a comanda antiga)
+                  this.historico = this.historico.map((c) =>
+                    c.id === det.id ? det : c
+                  );
+                  this.cdr.detectChanges();
+                },
+                error: (err) =>
+                  console.warn(
+                    'Erro ao atualizar detalhes da comanda após pedido:',
+                    err
+                  ),
+              });
+          }
+        },
+        error: (err) => {
+          console.error('Erro ao enviar pedido:', err);
+        },
+      });
+  }
+
+  // Realiza pagamento e fecha a comanda (valor em number, formaPagamento string)
+  pagarComanda(
+    comanda: Comanda,
+    formaPagamento: string,
+    valorPago: number
+  ): void {
+    if (!comanda || !comanda.id) {
+      console.warn('Comanda inválida para pagamento');
+      return;
+    }
+    this.isLoading = true;
+    const payload = { formaPagamento: formaPagamento, valorPago: valorPago };
+    this.comandaService
+      .pagarComanda(comanda.id, payload)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (det) => {
+          console.debug('Comanda paga e fechada:', det);
+          // Atualiza seleção e histórico local com comanda fechada (retorno do backend)
+          this.comandaSelecionada = det;
+          // Substitui na lista de histórico (se presente)
+          this.historico = this.historico.map((c) =>
+            c.id === det.id ? det : c
+          );
+          // Opcional: remover a comanda das opções do cliente se preferir
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Erro ao processar pagamento da comanda:', err);
         },
       });
   }

@@ -62,6 +62,16 @@ public class ComandaService {
         return converterParaDetalhadaDTO(comanda);
     }
 
+    // Lista todas as comandas com status ABERTA (usado pela tela de
+    // pedidos/cozinha)
+    @Transactional(readOnly = true)
+    public List<ComandaDetalhadaDTO> listarComandasAbertas() {
+        return comandaRepository.findByStatus(StatusComanda.ABERTA)
+                .stream()
+                .map(this::converterParaDetalhadaDTO)
+                .collect(Collectors.toList());
+    }
+
     // --- NOVO: LISTAR HISTÓRICO DO CLIENTE ---
     @Transactional(readOnly = true)
     public List<ComandaDetalhadaDTO> listarHistoricoCliente(String emailCliente) {
@@ -125,7 +135,9 @@ public class ComandaService {
 
     // ... (Métodos helpers e conversores MANTIDOS IGUAIS) ...
     private Mesa buscarEMudarStatusMesa(Long mesaId) {
-        if (mesaId == null) { throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O ID da mesa é obrigatório"); }
+        if (mesaId == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O ID da mesa é obrigatório");
+        }
         Mesa mesa = mesaRepository.findById(mesaId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Mesa não encontrada"));
         if (mesa.getStatus() != StatusMesa.DISPONIVEL) {
@@ -135,15 +147,17 @@ public class ComandaService {
         mesaRepository.save(mesa);
         return mesa;
     }
+
     private ComandaResponseDTO converterParaResponseDTO(Comanda comanda) {
         Long clienteId = (comanda.getCliente() != null) ? comanda.getCliente().getId() : null;
         return new ComandaResponseDTO(
                 comanda.getId(), comanda.getStatus().name(), comanda.getDataAbertura(),
-                comanda.getMesa().getId(), clienteId, comanda.getMesa().getNumero()
-        );
+                comanda.getMesa().getId(), clienteId, comanda.getMesa().getNumero());
     }
+
     private Double calcularTotalComanda(Comanda comanda) {
-        if (comanda.getPedidos() == null) return 0.0;
+        if (comanda.getPedidos() == null)
+            return 0.0;
         double total = 0.0;
         for (Pedido pedido : comanda.getPedidos()) {
             if (pedido.getItens() != null) {
@@ -154,6 +168,7 @@ public class ComandaService {
         }
         return total;
     }
+
     private ComandaDetalhadaDTO converterParaDetalhadaDTO(Comanda comanda) {
         ComandaDetalhadaDTO dto = new ComandaDetalhadaDTO();
         dto.setId(comanda.getId());
@@ -173,10 +188,13 @@ public class ComandaService {
         dto.setTotalPago(totalPago);
         dto.setSaldoPendente(totalCalculado - totalPago);
 
-        dto.setPedidos(comanda.getPedidos().stream().map(this::converterPedidoParaResponseDTO).collect(Collectors.toList()));
-        dto.setPagamentos(comanda.getPagamentos().stream().map(this::converterPagamentoParaResponseDTO).collect(Collectors.toList()));
+        dto.setPedidos(
+                comanda.getPedidos().stream().map(this::converterPedidoParaResponseDTO).collect(Collectors.toList()));
+        dto.setPagamentos(comanda.getPagamentos().stream().map(this::converterPagamentoParaResponseDTO)
+                .collect(Collectors.toList()));
         return dto;
     }
+
     private PedidoResponseDTO converterPedidoParaResponseDTO(Pedido pedido) {
         PedidoResponseDTO response = new PedidoResponseDTO();
         response.setId(pedido.getId());
@@ -194,6 +212,7 @@ public class ComandaService {
         response.setItens(itensDTO);
         return response;
     }
+
     private PagamentoResponseDTO converterPagamentoParaResponseDTO(Pagamento pagamento) {
         PagamentoResponseDTO dto = new PagamentoResponseDTO();
         dto.setId(pagamento.getId());
