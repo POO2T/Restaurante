@@ -43,8 +43,8 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder =
-                http.getSharedObject(AuthenticationManagerBuilder.class);
+        AuthenticationManagerBuilder authenticationManagerBuilder = http
+                .getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder
                 .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder());
@@ -74,7 +74,9 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/funcionarios").permitAll() // Mantenha público por enquanto, proteja no Controller
+                        .requestMatchers(HttpMethod.POST, "/api/funcionarios").permitAll() // Mantenha público por
+                                                                                           // enquanto, proteja no
+                                                                                           // Controller
                         .requestMatchers(HttpMethod.GET, "/api/produtos").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/produtos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categorias").permitAll()
@@ -82,10 +84,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/mesas").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/mesas/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/comandas/visitante").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/comandas/*/detalhes").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/comandas/*/pedidos").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/planos-fidelidade").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/planos-fidelidade/**").permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

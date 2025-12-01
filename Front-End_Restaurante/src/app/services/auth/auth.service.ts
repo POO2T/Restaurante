@@ -3,7 +3,12 @@ import { Observable, tap, catchError, throwError } from 'rxjs'; // Importe throw
 import { signalToObservable } from '../../utils/signal-observable';
 import { ApiService } from '../api'; // Seu serviço base para chamadas HTTP
 import { StorageService } from '../storage.service';
-import { LoginRequest, LoginResponse, RegisterClienteRequest, RegisterFuncionarioRequest } from '../../models/auth.model'; // Seus modelos
+import {
+  LoginRequest,
+  LoginResponse,
+  RegisterClienteRequest,
+  RegisterFuncionarioRequest,
+} from '../../models/auth.model'; // Seus modelos
 import { Usuario } from '../../models/user.model'; // Seu modelo base de usuário
 
 @Injectable({
@@ -16,7 +21,7 @@ export class AuthService {
   userType = signal<'CLIENTE' | 'FUNCIONARIO' | null>(null);
 
   private apiService = inject(ApiService);
-  private storage = new StorageService();
+  private storageService = inject(StorageService);
 
   // Effects can run side effects as signals change; keep a noop effect to retain reactivity
   private _noopSync = effect(() => {
@@ -26,7 +31,7 @@ export class AuthService {
 
   // Tenta carregar o estado de autenticação ao iniciar o serviço
   init() {
-    if (this.storage.isBrowser()) {
+    if (this.storageService.isBrowser()) {
       this.checkAuthStatus();
     }
   }
@@ -35,57 +40,67 @@ export class AuthService {
   // Usado por ambas as páginas (login-cliente e login-funcionario)
   login(credentials: LoginRequest): Observable<LoginResponse> {
     const loginEndpoint = '/auth/login'; // SEU ENDPOINT UNIFICADO
-    return this.apiService
-      .post<LoginResponse>(loginEndpoint, credentials)
-      .pipe(
-        tap((response) => {
-          console.log('Login success response:', response);
+    return this.apiService.post<LoginResponse>(loginEndpoint, credentials).pipe(
+      tap((response) => {
+        console.log('Login success response:', response);
 
-          if (!response) {
-            throw new Error('Resposta de login inválida do servidor.');
+        if (!response) {
+          throw new Error('Resposta de login inválida do servidor.');
+        }
+
+        // Determinar tipo de usuário baseado na resposta (defensivo)
+        let tipo: 'CLIENTE' | 'FUNCIONARIO' | null = null;
+        try {
+          const respTipoRaw = (response as any)?.tipoUsuario;
+          if (respTipoRaw) {
+            const up = String(respTipoRaw).toUpperCase();
+            if (up === 'FUNCIONARIO') tipo = 'FUNCIONARIO';
+            if (up === 'CLIENTE') tipo = 'CLIENTE';
           }
+        } catch (e) {
+          // não deve acontecer, mas não queremos quebrar o fluxo
+          console.warn('Erro ao ler tipoUsuario do response:', e);
+          tipo = null;
+        }
 
-          // Determinar tipo de usuário baseado na resposta (defensivo)
-          let tipo: 'CLIENTE' | 'FUNCIONARIO' | null = null;
-          try {
-            const respTipoRaw = (response as any)?.tipoUsuario;
-            if (respTipoRaw) {
-              const up = String(respTipoRaw).toUpperCase();
-              if (up === 'FUNCIONARIO') tipo = 'FUNCIONARIO';
-              if (up === 'CLIENTE') tipo = 'CLIENTE';
+        if (!tipo) {
+          const u =
+            (response as any).dadosUsuario ??
+            ((response as LoginResponse).usuario as any);
+          if (u) {
+            // Verificar campos específicos para determinar tipo
+            if (u.telefone && !u.cargo && !u.salario) {
+              tipo = 'CLIENTE';
+            } else if (u.cargo || u.salario) {
+              tipo = 'FUNCIONARIO';
+            } else {
+              console.warn(
+                'TIPO DE USUÁRIO NÃO PÔDE SER DETERMINADO PELOS CAMPOS DO USUÁRIO.'
+              );
             }
-          } catch (e) {
-            // não deve acontecer, mas não queremos quebrar o fluxo
-            console.warn('Erro ao ler tipoUsuario do response:', e);
-            tipo = null;
           }
+        }
 
-          if (!tipo) {
-            const u = (response as any).dadosUsuario ?? (response as LoginResponse).usuario as any;
-            if (u) {
-              // Verificar campos específicos para determinar tipo
-              if (u.telefone && !u.cargo && !u.salario) {
-                tipo = 'CLIENTE';
-              } else if (u.cargo || u.salario) {
-                tipo = 'FUNCIONARIO';
-              } else {
-                console.warn('TIPO DE USUÁRIO NÃO PÔDE SER DETERMINADO PELOS CAMPOS DO USUÁRIO.');
-              }
-            }
-          }
+        // Fallback: assumir CLIENTE se não conseguir determinar
+        if (!tipo) {
+          console.warn(
+            'Não foi possível determinar tipo de usuário; assumindo CLIENTE. Response:',
+            response
+          );
+          tipo = 'CLIENTE';
+        } else {
+          console.log(
+            'Tipo de usuário inferido no frontend:',
+            tipo,
+            'Resposta do login:',
+            response
+          );
+        }
 
-          // Fallback: assumir CLIENTE se não conseguir determinar
-          if (!tipo) {
-            console.warn('Não foi possível determinar tipo de usuário; assumindo CLIENTE. Response:', response);
-            tipo = 'CLIENTE';
-          } else {
-            console.log('Tipo de usuário inferido no frontend:', tipo, 'Resposta do login:', response);
-          }
-
-          this.handleLoginSuccess(response, tipo);
-        }),
-        catchError(this.handleError) // Propaga o erro
-      );
+        this.handleLoginSuccess(response, tipo);
+      }),
+      catchError(this.handleError) // Propaga o erro
+    );
   }
 
   // --- MÉTODOS DE REGISTRO ---
@@ -105,39 +120,49 @@ export class AuthService {
 
   // --- MÉTODOS DE LOGIN ESPECÍFICOS (para compatibilidade) ---
   // Ambos usam o mesmo endpoint /auth/login
-  loginCliente(credentials: { email: string; senha: string }): Observable<LoginResponse> {
+  loginCliente(credentials: {
+    email: string;
+    senha: string;
+  }): Observable<LoginResponse> {
     const loginRequest: LoginRequest = {
       ...credentials,
-      tipoUsuario: 'CLIENTE'
+      tipoUsuario: 'CLIENTE',
     };
 
     // Fazer chamada diretamente e forçar o tipo CLIENTE no handleLoginSuccess
-    return this.apiService.post<LoginResponse>('/auth/login', loginRequest).pipe(
-      tap((response) => this.handleLoginSuccess(response, 'CLIENTE')),
-      catchError(this.handleError)
-    );
+    return this.apiService
+      .post<LoginResponse>('/auth/login', loginRequest)
+      .pipe(
+        tap((response) => this.handleLoginSuccess(response, 'CLIENTE')),
+        catchError(this.handleError)
+      );
   }
 
-  loginFuncionario(credentials: { email: string; senha: string }): Observable<LoginResponse> {
+  loginFuncionario(credentials: {
+    email: string;
+    senha: string;
+  }): Observable<LoginResponse> {
     const loginRequest: LoginRequest = {
       ...credentials,
-      tipoUsuario: 'FUNCIONARIO'
+      tipoUsuario: 'FUNCIONARIO',
     };
 
     // Fazer chamada diretamente e forçar o tipo FUNCIONARIO no handleLoginSuccess
-    return this.apiService.post<LoginResponse>('/auth/login', loginRequest).pipe(
-      tap((response) => this.handleLoginSuccess(response, 'FUNCIONARIO')),
-      catchError(this.handleError)
-    );
+    return this.apiService
+      .post<LoginResponse>('/auth/login', loginRequest)
+      .pipe(
+        tap((response) => this.handleLoginSuccess(response, 'FUNCIONARIO')),
+        catchError(this.handleError)
+      );
   }
 
   // --- LOGOUT ---
   logout(): void {
     // Remove tokens e dados do localStorage
-    this.storage.removeItem('auth_token');
-    this.storage.removeItem('user_data');
-    this.storage.removeItem('user_type');
-    this.storage.removeItem('isLoggedIn');
+    this.storageService.removeItem('auth_token');
+    this.storageService.removeItem('user_data');
+    this.storageService.removeItem('user_type');
+    this.storageService.removeItem('isLoggedIn');
 
     // Reseta o estado nos signals
     this.currentUser.set(null);
@@ -147,7 +172,7 @@ export class AuthService {
 
   // Obter token JWT
   getToken(): string | null {
-    return this.storage.getItem('auth_token');
+    return this.storageService.getItem('auth_token');
   }
 
   // Verificar se token é válido
@@ -168,7 +193,7 @@ export class AuthService {
       if (parts.length !== 3) {
         throw new Error('Token JWT inválido');
       }
-      
+
       const payload = parts[1];
       const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
       return JSON.parse(decoded);
@@ -179,10 +204,13 @@ export class AuthService {
 
   // --- VERIFICAR STATUS ---
   private checkAuthStatus(): void {
-    const token = this.storage.getItem('auth_token');
-    const userData = this.storage.getItem('user_data');
-    const userType = this.storage.getItem('user_type') as 'CLIENTE' | 'FUNCIONARIO' | null;
-    const isLoggedIn = this.storage.getItem('isLoggedIn') === 'true';
+    const token = this.storageService.getItem('auth_token');
+    const userData = this.storageService.getItem('user_data');
+    const userType = this.storageService.getItem('user_type') as
+      | 'CLIENTE'
+      | 'FUNCIONARIO'
+      | null;
+    const isLoggedIn = this.storageService.getItem('isLoggedIn') === 'true';
 
     if (token && isLoggedIn && userData && userType) {
       // Verificar se token ainda é válido
@@ -217,19 +245,23 @@ export class AuthService {
   }
 
   // --- TRATAR SUCESSO DO LOGIN ---
-  private handleLoginSuccess(response: LoginResponse, type: 'CLIENTE' | 'FUNCIONARIO'): void {
+  private handleLoginSuccess(
+    response: LoginResponse,
+    type: 'CLIENTE' | 'FUNCIONARIO'
+  ): void {
     console.log('Processando login success:', { response, type });
 
     // Salvar token JWT se presente
     if ((response as any).token) {
-      this.storage.setItem('auth_token', (response as any).token);
+      this.storageService.setItem('auth_token', (response as any).token);
     }
 
-  // Salvar dados do usuário (aceita 'dadosUsuario' vindo do backend ou 'usuario' por compatibilidade)
-  const user = (response as any).dadosUsuario ?? (response as LoginResponse).usuario;
-    this.storage.setItem('user_data', JSON.stringify(user));
-    this.storage.setItem('user_type', type);
-    this.storage.setItem('isLoggedIn', 'true'); // Marca como logado
+    // Salvar dados do usuário (aceita 'dadosUsuario' vindo do backend ou 'usuario' por compatibilidade)
+    const user =
+      (response as any).dadosUsuario ?? (response as LoginResponse).usuario;
+    this.storageService.setItem('user_data', JSON.stringify(user));
+    this.storageService.setItem('user_type', type);
+    this.storageService.setItem('isLoggedIn', 'true'); // Marca como logado
 
     // Atualizar signals
     this.currentUser.set(user);
@@ -246,9 +278,14 @@ export class AuthService {
   // --- Observables (created during service construction / field initialization)
   // Creating these as fields ensures `effect()` inside signalToObservable runs
   // within an injection context (field initializers are run during DI construction).
-  readonly currentUser$: Observable<Usuario | null> = signalToObservable(this.currentUser);
-  readonly isAuthenticated$: Observable<boolean> = signalToObservable(this.isAuthenticated);
-  readonly userType$: Observable<'CLIENTE' | 'FUNCIONARIO' | null> = signalToObservable(this.userType);
+  readonly currentUser$: Observable<Usuario | null> = signalToObservable(
+    this.currentUser
+  );
+  readonly isAuthenticated$: Observable<boolean> = signalToObservable(
+    this.isAuthenticated
+  );
+  readonly userType$: Observable<'CLIENTE' | 'FUNCIONARIO' | null> =
+    signalToObservable(this.userType);
 
   // --- VERIFICAÇÕES DE TIPO ---
   isAdmin(): boolean {

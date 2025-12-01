@@ -11,9 +11,11 @@
         <div class="header-nav">
 
           @if (quantidadeItensCarrinho > 0) {
-          <div class="carrinho-info">
-            🛒 {{ quantidadeItensCarrinho }} itens - R$ {{ totalCarrinho.toFixed(2) }}
-          </div>
+          <ng-container>
+            <div class="carrinho-info">
+              🛒 {{ quantidadeItensCarrinho }} itens - R$ {{ totalCarrinho.toFixed(2) }}
+            </div>
+          </ng-container>
           }
 
         </div>
@@ -23,11 +25,10 @@
     <!-- Filtros por Categoria -->
     <div class="categorias-filter">
 
-      @for (categoria of categorias; track categoria) {
+      @for (categoria of categorias; track categoria.id) {
       <button [class.active]="categoria === categoriaSelecionada" (click)="filtrarPorCategoria(categoria)"
         class="btn-categoria">
-
-        {{ categoria }}
+        {{ categoria.nome || 'Todos' }}
       </button>
       }
 
@@ -36,13 +37,20 @@
     <!-- Grid de Produtos -->
     <div class="grid-cardapio">
 
-      @for (produto of produtosFiltrados; track produto) {
+      @for (produto of produtosFiltrados; track produto.id) {
 
       <div class="card-produto" [class.indisponivel]="!produto.disponibilidade">
 
         <div class="produto-imagem">
+
+          @if (produto.imagemUrl) {
           <img [src]="produto.imagemUrl" [alt]="produto.nome">
-          <div class="categoria-badge">{{ produto.categoria }}</div>
+          }
+          @else {
+          <span>Imagem Indisponível</span>
+          }
+
+          <div class="categoria-badge">{{ produto.categoria.nome || produto.categoria }}</div>
 
           @if (!produto.disponibilidade) {
           <div class="status-badge">Indisponível</div>
@@ -77,13 +85,13 @@
     <!-- Carrinho Resumo -->
     @if (carrinho.length > 0) {
     <div class="carrinho-resumo">
-      <h3>Seu Pedido</h3> 
+      <h3>Seu Pedido</h3>
       <div class="carrinho-items">
-        @for (item of carrinho; track item) {
+        @for (item of carrinho; track item.produto.id) {
         <div class="carrinho-item">
           <span>{{ item.produto.nome }}</span>
           <span>{{ item.quantidade }}x</span>
-          <span>R$ {{ (item.produto.preco * item.quantidade).toFixed(2) }}</span>
+          <span>R$ {{ (item.precoUnitario).toFixed(2) }}</span>
         </div>
         }
       </div>
@@ -96,4 +104,67 @@
 
   </div>
 
-</section> 
+  <div class="comanda-modal" [class.active]="mostrarComanda">
+
+    <div class="pedido-resumo">
+      <h2>Resumo do Pedido</h2>
+      @for (item of carrinho; track item.produto.id) {
+      <div class="pedido-item">
+        <span>{{ item.produto.nome }}</span>
+        <span>{{ item.quantidade }}x</span>
+        <span>R$ {{ (item.precoUnitario).toFixed(2) }}</span>
+      </div>
+      }
+      <div class="pedido-total">
+        <strong>Total: R$ {{ totalCarrinho.toFixed(2) }}</strong>
+      </div>
+
+      <button class="btn btn-edit-comanda" (click)="toggleComanda(); toggleOverlay()">Adicionar mais itens</button>
+    </div>
+
+    <form class="form form-comanda" (ngSubmit)="onSubmitComanda()" [formGroup]="comandaForm">
+      <h2>Finalizar Pedido</h2>
+
+      <div class="form-group">
+        <label for="mesa">Selecione sua Mesa</label>
+        <select name="mesa" id="mesa" formControlName="mesa">
+          <option value="" disabled selected>Selecione sua Mesa atual</option>
+          @for (mesa of mesas; track mesa.id) {
+          <ng-container>
+
+            @if (mesa.status === 'OCUPADA') {
+            <option [value]="mesa.id" disabled>Mesa {{ mesa.numero }} (Ocupada)</option>
+            }
+            @else {
+            <option [value]="mesa.id">Mesa {{ mesa.numero }}</option>
+            }
+
+          </ng-container>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="pagamento">Forma de Pagamento</label>
+        <select name="pagamento" id="pagamento" formControlName="pagamento">
+          <option value="" disabled selected>Selecione a forma de pagamento</option>
+          @for (metodo of formasPagamento; track $index) {
+          <ng-container>
+            <option [value]="metodo">{{ metodo.toString() }}</option>
+          </ng-container>
+          }
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-confirmar" [disabled]="comandaForm.invalid">
+          {{comandaForm.invalid ? 'Selecione os campos obrigatórios' : 'Confirmar Pedido'}}
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+
+</section>
+<div class="overlay" [class.active]="isOverlayVisible" (click)="closeOverlay()"></div>

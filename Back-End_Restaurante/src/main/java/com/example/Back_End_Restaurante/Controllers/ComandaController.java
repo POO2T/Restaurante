@@ -34,7 +34,8 @@ public class ComandaController {
 
     @PostMapping("/autenticada")
     @PreAuthorize("hasRole('CLIENTE')")
-    public ResponseEntity<ComandaResponseDTO> abrirComandaAutenticada(@RequestBody ComandaAberturaRequestDTO request, Authentication authentication) {
+    public ResponseEntity<ComandaResponseDTO> abrirComandaAutenticada(@RequestBody ComandaAberturaRequestDTO request,
+            Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String emailCliente = userDetails.getUsername();
         ComandaResponseDTO response = comandaService.abrirComandaAutenticada(request, emailCliente);
@@ -44,7 +45,7 @@ public class ComandaController {
 
     // ... (Endpoint Detalhes MANTIDO) ...
     @GetMapping("/{comandaId}/detalhes")
-    @PreAuthorize("hasAnyRole('GARCOM', 'GERENTE', 'ADMINISTRADOR') or @comandaSecurity.checkClienteIsComandaOwner(#comandaId)")
+    @PreAuthorize("hasAnyRole('GARCOM', 'GERENTE', 'ADMINISTRADOR', null) or @comandaSecurity.checkClienteIsComandaOwner(#comandaId)")
     public ResponseEntity<ComandaDetalhadaDTO> getDetalhesDaComanda(@PathVariable Long comandaId) {
         ComandaDetalhadaDTO detalhes = comandaService.getDetalhesComanda(comandaId);
         return ResponseEntity.ok(detalhes);
@@ -53,7 +54,8 @@ public class ComandaController {
     // ... (Endpoint Pagar MANTIDO) ...
     @PostMapping("/{comandaId}/pagar")
     @PreAuthorize("hasAnyRole('GARCOM', 'GERENTE', 'ADMINISTRADOR') or @comandaSecurity.checkClienteIsComandaOwner(#comandaId)")
-    public ResponseEntity<ComandaDetalhadaDTO> fecharComanda(@PathVariable Long comandaId, @RequestBody PagamentoRequestDTO pagamentoRequest) {
+    public ResponseEntity<ComandaDetalhadaDTO> fecharComanda(@PathVariable Long comandaId,
+            @RequestBody PagamentoRequestDTO pagamentoRequest) {
         ComandaDetalhadaDTO comandaFechada = comandaService.fecharComanda(comandaId, pagamentoRequest);
         return ResponseEntity.ok(comandaFechada);
     }

@@ -85,7 +85,18 @@ public class PedidoService {
         // 8. Salvar o pedido (que, por cascata, salvará os itens)
         Pedido pedidoSalvo = pedidoRepository.save(novoPedido);
 
-        // 9. Converter para DTO de resposta
+        // 9. Garantir que a comanda em memória contém o pedido salvo
+        //    (mantém consistência caso a mesma instância de Comanda seja usada
+        //     por outros componentes na mesma transação/executação)
+        List<Pedido> pedidosDaComanda = comanda.getPedidos();
+        if (pedidosDaComanda == null) {
+            pedidosDaComanda = new ArrayList<>();
+            comanda.setPedidos(pedidosDaComanda);
+        }
+        pedidosDaComanda.add(pedidoSalvo);
+        comandaRepository.save(comanda);
+
+        // 10. Converter para DTO de resposta
         return converterPedidoParaResponseDTO(pedidoSalvo, totalPedido);
     }
 

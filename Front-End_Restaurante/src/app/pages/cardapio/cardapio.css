@@ -2,7 +2,7 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Header */
@@ -96,8 +96,6 @@
   font-weight: 600;
   transition: all 0.3s ease;
   font-size: 14px;
-
-
 }
 
 .btn-categoria:hover {
@@ -124,17 +122,16 @@
 }
 
 .card-produto {
-  background: white;
-  border-radius: 20px;
+  background: var(--card-bg);
+  border-radius: var(--card-border-radius);
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--card-box-shadow);
   transition: all 0.3s ease;
   position: relative;
 }
-
 .card-produto:hover {
   transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--card-box-shadow-hover);
 }
 
 .card-produto.indisponivel {
@@ -143,8 +140,12 @@
 }
 
 .produto-imagem {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
-  height: 250px;
+  width: 100%;
+  height: 200px;
   overflow: hidden;
 }
 
@@ -153,6 +154,12 @@
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
+}
+
+.produto-imagem span {
+  font-size: 2.5rem;
+  color: #999;
+  padding: 10px 15px;
 }
 
 .card-produto:hover .produto-imagem img {
@@ -166,7 +173,7 @@
   background-color: var(--btn-secondary-color);
   color: var(--primary-color);
   padding: 6px 12px;
-  border-radius: 15px;
+  border-radius: var(--badge-border-radius);
   font-size: 12px;
   font-weight: 600;
 }
@@ -210,15 +217,15 @@
 .preco {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #28a745;
+  color: var(--success-gradient-start);
 }
 
 .btn-adicionar {
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  background: var(--success-gradient);
   color: white;
   border: none;
   padding: 12px 20px;
-  border-radius: 25px;
+  border-radius: var(--radius-lg);
   cursor: pointer;
   font-weight: 600;
   transition: all 0.3s ease;
@@ -227,11 +234,11 @@
 
 .btn-adicionar:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-adicionar:disabled {
-  background: #6c757d;
+  background: var(--btn-disabled-background);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -242,10 +249,10 @@
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: white;
-  border-radius: 15px;
+  background: var(--card-bg);
+  border-radius: var(--radius-md);
   padding: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-lg);
   max-width: 300px;
   z-index: 1000;
 }
@@ -301,29 +308,76 @@
   box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
+.comanda-modal {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--background-color);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 2000;
+}
+
+.comanda-modal.active {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--overlay-bg);
+  z-index: 1500;
+}
+.overlay.active {
+  display: block;
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
   .header-content {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .categorias-filter {
     padding: 20px;
   }
-  
+
   .grid-cardapio {
     grid-template-columns: 1fr;
     padding: 0 15px 40px;
   }
-  
+
   .carrinho-resumo {
     position: static;
     margin: 20px;
     max-width: none;
   }
-  
+
   .header-text h1 {
     font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-nav,
+  .btn-categoria,
+  .btn-adicionar {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .produto-imagem {
+    height: 150px;
   }
 }

@@ -1,9 +1,14 @@
-import { inject, InjectionToken } from '@angular/core';
+import { inject, InjectionToken, Injectable } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 
+@Injectable({
+  providedIn: 'root',
+})
 export class StorageService {
-  private platformId: Object = inject(PLATFORM_ID as unknown as InjectionToken<Object>);
+  private platformId: Object = inject(
+    PLATFORM_ID as unknown as InjectionToken<Object>
+  );
 
   isBrowser(): boolean {
     return isPlatformBrowser(this.platformId);

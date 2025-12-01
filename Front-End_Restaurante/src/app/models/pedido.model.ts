@@ -1,5 +1,5 @@
 import { Comanda } from './comanda.model';
-import { ItemPedido } from './itemPedido.model';
+import { ItemPedido, ItemPedidoRequest } from './itemPedido.model';
 import { statusPedido } from '../enums/statusPedido';
 
 export interface Pedido {
@@ -9,4 +9,8 @@ export interface Pedido {
   comanda: Comanda;
   itens: ItemPedido[];
   total: number;
+}
+
+export interface PedidoRequest {
+  itens: ItemPedidoRequest[];
 }

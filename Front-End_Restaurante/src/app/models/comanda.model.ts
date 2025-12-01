@@ -14,3 +14,7 @@ export interface Comanda {
   pedidos: Pedido[];
   total: number;
 }
+
+export interface ComandaAberturaRequest {
+  mesaId: number;
+}

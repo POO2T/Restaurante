@@ -7,6 +7,7 @@ import { SeletorLogin } from './pages/seletor-login/seletor-login';
 
 // ROTAS DE CLIENTES
 import { LoginCliente } from './pages/login-cliente/login-cliente';
+import { Pedido } from './pages/pedido/pedido';
 
 // ROTAS DE FUNCIONÁRIOS
 import { LoginFuncionario } from './pages/login-funcionario/login-funcionario';
@@ -18,17 +19,44 @@ import { AuthGuard } from './guards/auth.guard';
 import { Produtos } from './pages/funcionarios/produtos/produtos';
 
 export const routes: Routes = [
-    { path: "", component: Home },
-    { path: "cardapio", component: Cardapio },
-    { path: "seletor-login", component: SeletorLogin },
+  { path: '', component: Home },
+  { path: 'cardapio', component: Cardapio },
+  { path: 'seletor-login', component: SeletorLogin },
 
-    { path: "login-cliente", component: LoginCliente },
+  // ROTAS DE CLIENTES
+  { path: 'login-cliente', component: LoginCliente },
+  {
+    path: 'pedido',
+    component: Pedido,
+    /* canActivate: [AuthGuard]  data: { role: 'CLIENTE' } ,*/
+  },
 
-    { path: "login-funcionario", component: LoginFuncionario },
-    { path: "funcionario/pedidos", component: Pedidos, canActivate: [AuthGuard], data: { role: 'FUNCIONARIO' } },
-    { path: "funcionario/mesas", component: Mesas, canActivate: [AuthGuard], data: { role: 'FUNCIONARIO' } },
-    { path: "funcionario/usuarios", component: Usuarios, canActivate: [AuthGuard], data: { role: 'FUNCIONARIO' } },
-    { path: "funcionario/produtos", component: Produtos, canActivate: [AuthGuard], data: { role: 'FUNCIONARIO' } },
+  // ROTAS DE FUNCIONÁRIOS
+  { path: 'login-funcionario', component: LoginFuncionario },
+  {
+    path: 'funcionario/pedidos',
+    component: Pedidos,
+    canActivate: [AuthGuard],
+    data: { role: 'FUNCIONARIO' },
+  },
+  {
+    path: 'funcionario/mesas',
+    component: Mesas,
+    canActivate: [AuthGuard],
+    data: { role: 'FUNCIONARIO' },
+  },
+  {
+    path: 'funcionario/usuarios',
+    component: Usuarios,
+    canActivate: [AuthGuard],
+    data: { role: 'FUNCIONARIO' },
+  },
+  {
+    path: 'funcionario/produtos',
+    component: Produtos,
+    canActivate: [AuthGuard],
+    data: { role: 'FUNCIONARIO' },
+  },
 
-    { path: "**", redirectTo: "", pathMatch: "full" } // Rota coringa para páginas não encontradas
+  { path: '**', redirectTo: '', pathMatch: 'full' }, // Rota coringa para páginas não encontradas
 ];

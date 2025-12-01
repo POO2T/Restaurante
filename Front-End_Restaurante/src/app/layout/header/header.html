@@ -12,45 +12,45 @@
   </div>
 
   @if (userRole() != 'FUNCIONARIO') {
-  
-    <ng-container>
-      <nav class="main-nav">
-        <ul>
-    
-          <li>
-            <a [routerLink]="[userRole() === 'CLIENTE' ? '/pedidos' : '/funcionario/pedidos']">
-              Pedidos
-            </a>
-          </li>
-    
-          <li>
-            <a routerLink="/cardapio">
-              Cardápio
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </ng-container>
-  
+
+  <ng-container>
+    <nav class="main-nav">
+      <ul>
+
+        <li>
+          <a routerLink="/pedido" routerLinkActive="active">
+            Pedidos
+          </a>
+        </li>
+
+        <li>
+          <a routerLink="/cardapio" routerLinkActive="active">
+            Cardápio
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </ng-container>
+
   }
 
-  
+
 
   <div class="login-button">
 
     <ng-container>
 
       @if (isAuthenticated()) {
-        <a (click)="logout()" class="btn btn-logout">
-          <img class="user-icon" src="./svg/icons/logout-icon.svg" alt="Ícone de logout" />
-          <span>Logout</span>
-        </a>
+      <a (click)="logout()" class="btn btn-logout">
+        <img class="user-icon" src="./svg/icons/logout-icon.svg" alt="Ícone de logout" />
+        <span>Logout</span>
+      </a>
       }
       @else {
-        <a routerLink="/seletor-login" class="btn btn-login">
-          <img class="user-icon" src="./svg/icons/user-icon.svg" alt="Ícone do usuário" />
-          <span>Login</span>
-        </a>
+      <a routerLink="/seletor-login" class="btn btn-login">
+        <img class="user-icon" src="./svg/icons/user-icon.svg" alt="Ícone do usuário" />
+        <span>Login</span>
+      </a>
       }
 
     </ng-container>

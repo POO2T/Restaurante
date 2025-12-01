@@ -1,97 +1,143 @@
 /** Global Styles **/
 /** IMPORTAR FONTES ROBOTO E INTER **/
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
 
 /** 
 **  DEFINIÇÃO DE VARIÁVEIS CSS
 **/
 :root {
-    /* CORES PRINCIPAIS */
-    --primary-color: #401820;
-    --secondary-color: #dfaf68;
-    --warn-color: #f6ad55;
-    --danger-color: #c53030;
-    
+  /* CORES PRINCIPAIS */
+  --primary-color: #401820;
+  --secondary-color: #dfaf68;
+  --warn-color: #f6ad55;
+  --danger-color: #c53030;
 
-    /* CORES DE FUNDO E TEXTO */
-    --background-color: #DFDFDF;
-    --background-gradient-color: linear-gradient(135deg, #DFDFDF 0%, #401820 50%);
+  /* CORES DE FUNDO E TEXTO */
+  --background-color: #dfdfdf;
+  --background-gradient-color: linear-gradient(135deg, #dfdfdf 0%, #401820 50%);
 
-    --text-color: #000000;
-    --text-link-color: #401820;
-    --text-link-color-hover: #dfaf68; 
-    --font-family: 'Inter', 'Roboto', sans-serif;
+  --text-color: #000000;
+  --text-link-color: #401820;
+  --text-link-color-hover: #dfaf68;
+  --font-family: "Inter", "Roboto", sans-serif;
 
+  /* BOTÃO PRIMÁRIO */
+  --btn-primary-background: #401820;
+  --btn-primary-color: #ffffff;
+  --btn-primary-background-hover: #ffffff; /*  BACKGROUND NO HOVER */
+  --btn-primary-color-hover: #401820;
 
-    /* BOTÃO PRIMÁRIO */
-    --btn-primary-background: #401820;
-    --btn-primary-color: #FFFFFF;
-    --btn-primary-background-hover: #ffffff; /*  BACKGROUND NO HOVER */
-    --btn-primary-color-hover: #401820;
+  /* BOTÃO SECUNDÁRIO */
+  --btn-secondary-background: #ffffff; /*  BACKGROUND NORMALMENTE TRANSPARENTE */
+  --btn-secondary-color: #dfaf68;
+  --btn-secondary-background-hover: #dfaf68;
+  --btn-secondary-color-hover: #401820;
 
+  /* BOTÃO DE AVISO */
+  --btn-warn-background: #f6ad55;
+  --btn-warn-color: #ffffff;
+  --btn-warn-background-hover: #ffffff;
+  --btn-warn-color-hover: #f6ad55;
 
-    /* BOTÃO SECUNDÁRIO */
-    --btn-secondary-background: #ffffff; /*  BACKGROUND NORMALMENTE TRANSPARENTE */
-    --btn-secondary-color: #dfaf68;
-    --btn-secondary-background-hover: #dfaf68;
-    --btn-secondary-color-hover: #401820;
+  /* BOTÃO DE PERIGO */
+  --btn-danger-background: #c53030;
+  --btn-danger-color: #ffffff;
+  --btn-danger-background-hover: #ffffff;
+  --btn-danger-color-hover: #c53030;
 
-    /* BOTÃO DE AVISO */
-    --btn-warn-background: #f6ad55;
-    --btn-warn-color: #FFFFFF;
-    --btn-warn-background-hover: #ffffff;
-    --btn-warn-color-hover: #f6ad55;
+  /* BOTÃO DESABILITADO */
+  --btn-disabled-background: #a0a0a0;
+  --btn-disabled-color: #666666;
 
-    /* BOTÃO DE PERIGO */
-    --btn-danger-background: #c53030;
-    --btn-danger-color: #FFFFFF;
-    --btn-danger-background-hover: #FFFFFF;
-    --btn-danger-color-hover: #c53030;
+  /* ESTILIZAÇÃO COMUM AOS BOTÕES */
+  --btn-shadow: 0 2px 8px rgba(64, 24, 32, 0.1);
+  --btn-shadow-hover: 0 4px 16px rgba(64, 24, 32, 0.2);
+  --btn-text-color: #f4f4f4;
 
-    /* BOTÃO DESABILITADO */
-    --btn-disabled-background: #a0a0a0;
-    --btn-disabled-color: #666666;
+  /* OVERLAY */
+  --overlay-bg: rgba(0, 0, 0, 0.5);
 
-    /* ESTILIZAÇÃO COMUM AOS BOTÕES */
-    --btn-shadow: 0 2px 8px rgba(64, 24, 32, 0.1);
-    --btn-shadow-hover: 0 4px 16px rgba(64, 24, 32, 0.2);
-    --btn-text-color: #f4f4f4;
+  /* CARTÕES / PRODUTOS */
+  --card-bg: #ffffff;
+  --card-border-radius: 16px;
+  --card-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --card-box-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+
+  /* BADGES */
+  --badge-border-radius: 15px;
+
+  /* SUCCESS / AÇÃO */
+  --success-gradient-start: #28a745;
+  --success-gradient-end: #20c997;
+  --success-gradient: linear-gradient(
+    135deg,
+    var(--success-gradient-start) 0%,
+    var(--success-gradient-end) 100%
+  );
+
+  /* COMMON RADII */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 25px;
+
+  /* COMMON SHADOWS */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.2);
+
+  /* FORM ELEMENTS (inputs, selects, textareas) */
+  --input-padding: 12px 15px;
+  --input-padding-lg: 15px 20px;
+  --input-border: 1px solid rgba(0, 0, 0, 0.12);
+  --input-border-strong: 2px solid rgba(225, 229, 233, 1);
+  --input-border-error: 1px solid #fcc;
+  --input-bg: #ffffff;
+  --input-border-radius: var(--radius-sm);
+  --input-focus-border-color: var(--primary-color);
+  --input-focus-box-shadow: var(--shadow-sm);
+  --input-font-size: 16px;
+
+  /* CARD / FORM CONTAINERS */
+  --card-padding: 15px 20px;
+  --card-border: 1px solid #ccc;
+  --card-background: var(--card-bg);
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: var(--font-family);
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-family);
 }
 
-html, body {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    height: 100%;
-    width: 100%;
-    overflow-x: hidden;
-    scroll-behavior: smooth;
+html,
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 /* Garantir que o app-root também use a altura completa */
 app-root {
-    display: block;
-    min-height: 100vh;
-    width: 100vw;
+  display: block;
+  min-height: 100vh;
+  width: 100vw;
 }
 
 * a {
-    color: var(--text-link-color);
-    font-weight: bold;
-    text-decoration: none;
-    cursor: pointer;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
+  color: var(--text-link-color);
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
 }
 * a:hover {
-    color: var(--text-link-hover-color);
-    transition: .2s;
+  color: var(--text-link-hover-color);
+  transition: 0.2s;
 }

@@ -1,3 +1,57 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive"
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.tabSize": 2,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features",
+    "editor.tabSize": 2
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "prettier.singleQuote": true,
+  "prettier.semi": true,
+  "prettier.printWidth": 120,
+  "prettier.tabWidth": 2,
+  "eslint.validate": ["javascript", "typescript", "html"],
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "eslint.nodePath": "node_modules",
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/target": true,
+    "**/dist": true,
+    "Back-End_Restaurante/target": true,
+    "Front-End_Restaurante/node_modules": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/target": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/target/**": true
+  },
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+  "terminal.integrated.profiles.windows": {
+    "Command Prompt": {
+      "path": [
+        "${env:windir}\\System32\\cmd.exe"
+      ],
+      "args": []
+    }
+  }
 }

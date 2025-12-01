@@ -4,12 +4,12 @@ import { Observable } from 'rxjs';
 import { StorageService } from './storage.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
   private baseUrl = 'http://localhost:8080/api'; // Ajuste conforme seu backend
   private http = inject(HttpClient);
-  private storage = new StorageService();
+  private storage = inject(StorageService);
 
   private getHeaders(): HttpHeaders {
     let token = this.storage.getItem('auth_token');
@@ -23,35 +23,39 @@ export class ApiService {
     }
 
     // Debug: log presence of token and a short redacted preview (do not leak full token)
-    console.debug('ApiService.getHeaders token present?', !!token, token ? `${token.substring(0, 10)}...` : null);
+    console.debug(
+      'ApiService.getHeaders token present?',
+      !!token,
+      token ? `${token.substring(0, 10)}...` : null
+    );
 
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     });
   }
 
   get<T>(endpoint: string): Observable<T> {
-    return this.http.get<T>(`${this.baseUrl}${endpoint}`, { 
-      headers: this.getHeaders() 
+    return this.http.get<T>(`${this.baseUrl}${endpoint}`, {
+      headers: this.getHeaders(),
     });
   }
 
   post<T, B = unknown>(endpoint: string, data: B): Observable<T> {
     return this.http.post<T>(`${this.baseUrl}${endpoint}`, data, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
   }
 
   put<T, B = unknown>(endpoint: string, data: B): Observable<T> {
     return this.http.put<T>(`${this.baseUrl}${endpoint}`, data, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
   }
 
   delete<T>(endpoint: string): Observable<T> {
-    return this.http.delete<T>(`${this.baseUrl}${endpoint}`, { 
-      headers: this.getHeaders() 
+    return this.http.delete<T>(`${this.baseUrl}${endpoint}`, {
+      headers: this.getHeaders(),
     });
   }
 }
