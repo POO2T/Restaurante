@@ -74,7 +74,8 @@ public class DataInitializer implements CommandLineRunner {
         long prodCount = produtoRepository.count();
 
         if (catCount > 0 && prodCount > 0) {
-            System.out.println("DataInitializer: Categorias e produtos já existem (cat=" + catCount + ", prod=" + prodCount + ")");
+            System.out.println(
+                    "DataInitializer: Categorias e produtos já existem (cat=" + catCount + ", prod=" + prodCount + ")");
             return;
         }
 

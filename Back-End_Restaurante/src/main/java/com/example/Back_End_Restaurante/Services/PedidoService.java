@@ -1,5 +1,7 @@
 package com.example.Back_End_Restaurante.Services;
-
+import com.example.Back_End_Restaurante.Dto.PedidoResponseDTO;
+import java.util.List;
+import java.util.stream.Collectors; // Se usar java 8 ou se .toList() der erro
 import com.example.Back_End_Restaurante.Dto.*; // Importa todos os DTOs
 import com.example.Back_End_Restaurante.Enums.StatusComanda;
 import com.example.Back_End_Restaurante.Enums.StatusPedido;

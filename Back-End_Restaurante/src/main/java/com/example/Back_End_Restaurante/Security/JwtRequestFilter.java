@@ -43,29 +43,36 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 logger.warn("Erro ao processar token JWT: " + e.getMessage());
             }
         } else {
+            // Não loga warnings para endpoints públicos comuns
             if (!request.getRequestURI().equals("/api/auth/login") && // Não loga para o login
                     !request.getRequestURI().equals("/api/clientes") && // Não loga para cadastro
                     !request.getRequestURI().startsWith("/api/mesas") && // Não loga para ver mesas
-                    !request.getRequestURI().startsWith("/api/produtos")) // Não loga para ver produtos
+                    !request.getRequestURI().startsWith("/api/produtos") && // Não loga para ver produtos
+                    !request.getRequestURI().startsWith("/api/categorias")) // Não loga para ver categorias
             {
-                logger.warn("Header Authorization não encontrado ou não começa com Bearer (Path: " + request.getRequestURI() + ")");
+                logger.warn("Header Authorization não encontrado ou não começa com Bearer (Path: "
+                        + request.getRequestURI() + ")");
             }
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            try {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                if (jwtUtil.validateToken(jwt, userDetails)) {
+                    logger.debug("Token JWT VÁLIDO para usuário: " + username + ". Configurando autenticação...");
 
-            if (jwtUtil.validateToken(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                System.out.println("Token JWT VÁLIDO para usuário: " + username + ". Configurando autenticação...");
-
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                // Coloca o usuário no Contexto de Segurança!
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    // Coloca o usuário no Contexto de Segurança
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
+            } catch (org.springframework.security.core.userdetails.UsernameNotFoundException ex) {
+                logger.warn("Usuário do token não foi encontrado: " + username);
+            } catch (Exception ex) {
+                logger.warn("Erro ao validar token JWT para usuário " + username + ": " + ex.getMessage());
             }
         }
 

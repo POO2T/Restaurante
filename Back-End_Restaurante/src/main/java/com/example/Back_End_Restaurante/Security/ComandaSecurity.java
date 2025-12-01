@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component("comandaSecurity")
 public class ComandaSecurity {
@@ -16,6 +17,7 @@ public class ComandaSecurity {
     @Autowired
     private ComandaRepository comandaRepository;
 
+    @Transactional(readOnly = true)
     public boolean checkClienteIsComandaOwner(Long comandaId) {
         // First, try to load the comanda. If it does not exist, deny access.
         Optional<Comanda> comandaOpt = comandaRepository.findById(comandaId);
