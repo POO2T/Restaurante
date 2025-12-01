@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { finalize } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -40,24 +41,28 @@ export class Pedido {
     console.debug('Carregando histórico de comandas do cliente');
 
     this.isLoading = true;
-    this.comandaService.getHistoricoCliente().subscribe({
-      next: (hist) => {
-        this.historico = (hist || []).sort((a, b) => {
-          const ad = a.dataAbertura ? new Date(a.dataAbertura).getTime() : 0;
-          const bd = b.dataAbertura ? new Date(b.dataAbertura).getTime() : 0;
-          return bd - ad;
-        });
-        // Não selecionar automaticamente a primeira comanda; seleção ocorre
-        // apenas quando o usuário clicar em "Ver detalhes".
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Erro ao carregar histórico do cliente:', err);
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      },
-    });
+    this.comandaService
+      .getHistoricoCliente()
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (hist) => {
+          this.historico = (hist || []).sort((a, b) => {
+            const ad = a.dataAbertura ? new Date(a.dataAbertura).getTime() : 0;
+            const bd = b.dataAbertura ? new Date(b.dataAbertura).getTime() : 0;
+            return bd - ad;
+          });
+          // Não selecionar automaticamente a primeira comanda; seleção ocorre
+          // apenas quando o usuário clicar em "Ver detalhes".
+        },
+        error: (err) => {
+          console.error('Erro ao carregar histórico do cliente:', err);
+        },
+      });
   }
 
   private loadComandaVisitante(): void {
@@ -75,24 +80,30 @@ export class Pedido {
             idNum,
             ')'
           );
-          this.comandaService.getDetalhesComanda(idNum).subscribe({
-            next: (det) => {
-              // Preenche o histórico do visitante, mas não seleciona automaticamente.
-              this.historico = [det];
-              this.isLoading = false;
-              this.cdr.detectChanges();
-            },
-            error: (err) => {
-              console.warn(
-                'Falha ao buscar detalhes da comanda via API, fazendo fallback para storage JSON',
-                err
-              );
-              this.isLoading = false;
-              this.cdr.detectChanges();
-              // fallback para o JSON salvo (menos completo)
-              this.loadComandaVisitanteFromJsonFallback();
-            },
-          });
+          this.comandaService
+            .getDetalhesComanda(idNum)
+            .pipe(
+              finalize(() => {
+                this.isLoading = false;
+                this.cdr.detectChanges();
+              })
+            )
+            .subscribe({
+              next: (det) => {
+                // Preenche o histórico do visitante, mas não seleciona automaticamente.
+                this.historico = [det];
+                this.isLoading = false;
+              },
+              error: (err) => {
+                console.warn(
+                  'Falha ao buscar detalhes da comanda via API, fazendo fallback para storage JSON',
+                  err
+                );
+                this.isLoading = false;
+                // fallback para o JSON salvo (menos completo)
+                this.loadComandaVisitanteFromJsonFallback();
+              },
+            });
           return; // já disparou a requisição
         } else {
           console.warn('last_comanda_id inválido no storage:', lastIdStr);
@@ -141,20 +152,31 @@ export class Pedido {
 
   verDetalhes(comanda: Comanda): void {
     // Clientes autenticados podem ver qualquer comanda do histórico
+
+    if (this.comandaSelecionada && this.comandaSelecionada.id === comanda.id) {
+      this.comandaSelecionada = null;
+      this.cdr.detectChanges();
+      return;
+    }
+
     if (this.authService.isCliente()) {
       this.isLoading = true;
-      this.comandaService.getDetalhesComanda(comanda.id).subscribe({
-        next: (det) => {
-          this.comandaSelecionada = det;
-          this.isLoading = false;
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error('Erro ao obter detalhes da comanda:', err);
-          this.isLoading = false;
-          this.cdr.detectChanges();
-        },
-      });
+      this.comandaService
+        .getDetalhesComanda(comanda.id)
+        .pipe(
+          finalize(() => {
+            this.isLoading = false;
+            this.cdr.detectChanges();
+          })
+        )
+        .subscribe({
+          next: (det) => {
+            this.comandaSelecionada = det;
+          },
+          error: (err) => {
+            console.error('Erro ao obter detalhes da comanda:', err);
+          },
+        });
       return;
     }
 
@@ -171,34 +193,40 @@ export class Pedido {
     }
 
     this.isLoading = true;
-    this.comandaService.getDetalhesComanda(idNum).subscribe({
-      next: (det) => {
-        this.comandaSelecionada = det;
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.warn(
-          'Erro ao obter detalhes da comanda visitante via API:',
-          err
-        );
-        // Tenta fallback local: se o JSON salvo existir, exibe-o como detalhes.
-        try {
-          const lastComandaStr = this.storageService.getItem('last_comanda');
-          if (lastComandaStr) {
-            const comandaObj = JSON.parse(lastComandaStr) as Comanda;
-            // Apenas usa o fallback se o ID bater
-            if (comandaObj && comandaObj.id === idNum) {
-              this.comandaSelecionada = comandaObj;
+    this.comandaService
+      .getDetalhesComanda(idNum)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (det) => {
+          this.comandaSelecionada = det;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.warn(
+            'Erro ao obter detalhes da comanda visitante via API:',
+            err
+          );
+          // Tenta fallback local: se o JSON salvo existir, exibe-o como detalhes.
+          try {
+            const lastComandaStr = this.storageService.getItem('last_comanda');
+            if (lastComandaStr) {
+              const comandaObj = JSON.parse(lastComandaStr) as Comanda;
+              // Apenas usa o fallback se o ID bater
+              if (comandaObj && comandaObj.id === idNum) {
+                this.comandaSelecionada = comandaObj;
+              }
             }
+          } catch (ex) {
+            console.warn('Falha no fallback local da comanda visitante:', ex);
           }
-        } catch (ex) {
-          console.warn('Falha no fallback local da comanda visitante:', ex);
-        }
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      },
-    });
+          this.isLoading = false;
+        },
+      });
   }
 
   irParaCardapio(): void {

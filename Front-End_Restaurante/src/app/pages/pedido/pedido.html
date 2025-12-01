@@ -45,7 +45,10 @@
               <span class="total">R$ {{ c.total.toFixed(2) }}</span>
             </div>
             <div class="comanda-actions">
-              <button (click)="verDetalhes(c)">Ver detalhes</button>
+              <button (click)="verDetalhes(c)">
+                <span>Ver detalhes</span>
+                <img src="./svg/icons/details-icon.svg" alt="Detalhes-icon">
+              </button>
             </div>
           </li>
           }
@@ -63,17 +66,17 @@
             <span>Fechada: {{ comandaSelecionada.dataFechamento | date:'short' }}</span>
             }
 
-            <div>Status: {{ comandaSelecionada.status }}</div>
-            <div>Total: R$ {{ comandaSelecionada.total.toFixed(2) }}</div>
+            <span>Status: {{ comandaSelecionada.status }}</span>
+            <span>Total: R$ {{ comandaSelecionada.total.toFixed(2) }}</span>
           </div>
 
           <div class="pedidos-list">
-            <h4>Pedidos</h4>
+            <h3>Pedidos</h3>
 
             @for (p of comandaSelecionada.pedidos; track p.id) {
             <div class="pedido-bloco">
               <div class="pedido-head">
-                <strong>Pedido #{{ p.id }}</strong>
+                <span>Pedido #{{ p.id }}</span>
                 <span>{{ p.dataHora | date:'short' }}</span>
                 <span>{{ p.status }}</span>
                 <span class="total">R$ {{ p.total.toFixed(2) }}</span>

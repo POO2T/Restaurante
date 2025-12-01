@@ -328,6 +328,121 @@
   align-items: center;
 }
 
+.pedido-resumo {
+  width: 100%;
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.pedido-resumo h2 {
+  margin-bottom: 20px;
+  color: var(--primary-color);
+}
+
+.pedido-resumo .pedido-item {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 5px;
+  margin-bottom: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 16px;
+}
+
+.pedido-resumo .pedido-total {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-top: 15px;
+  text-align: right;
+  color: var(--success-gradient-start);
+}
+
+.pedido-resumo .btn-edit-comanda {
+  width: 100%;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: var(--btn-secondary-background);
+  color: var(--success-gradient-start);
+  border: none;
+  border-top: 1px solid var(--success-gradient-start);
+  border-bottom: 1px solid var(--success-gradient-start);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.pedido-resumo .btn-edit-comanda:hover {
+  background-color: var(--success-gradient-start);
+  color: var(--primary-color);
+}
+
+.form-comanda {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 15px;
+}
+
+.form-comanda .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-comanda label {
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+.form-comanda input,
+.form-comanda select,
+.form-comanda textarea {
+  width: 100%;
+  padding: var(--input-padding);
+  border: var(--input-border);
+  border-radius: var(--input-border-radius);
+  background: var(--input-bg);
+  font-size: var(--input-font-size);
+}
+
+.form-comanda input:focus,
+.form-comanda select:focus,
+.form-comanda textarea:focus {
+  border-color: var(--input-focus-border-color);
+  box-shadow: var(--input-focus-box-shadow);
+  outline: none;
+}
+
+.form-comanda .form-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.form-comanda .btn-confirmar {
+  flex: 1;
+  padding: 12px;
+  background-color: var(--btn-primary-background);
+  color: var(--btn-primary-color);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+.form-comanda .btn-confirmar:hover {
+  background-color: var(--btn-primary-hover-background);
+  color: var(--btn-color-hover);
+  border: 1px solid var(--btn-primary-background);
+}
+.form-comanda .btn-confirmar:disabled {
+  background-color: var(--btn-disabled-background);
+  cursor: not-allowed;
+}
+
 .overlay {
   display: none;
   position: fixed;

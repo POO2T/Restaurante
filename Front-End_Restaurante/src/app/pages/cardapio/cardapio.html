@@ -121,7 +121,7 @@
         <strong>Total: R$ {{ totalCarrinho.toFixed(2) }}</strong>
       </div>
 
-      <button class="btn btn-edit-comanda" (click)="toggleComanda(); toggleOverlay()">Adicionar mais itens</button>
+      <button class="btn btn-edit-comanda" (click)="toggleComanda(); toggleOverlay()">+Adicionar mais itens+</button>
     </div>
 
     <form class="form form-comanda" (ngSubmit)="onSubmitComanda()" [formGroup]="comandaForm">
