@@ -14,6 +14,17 @@ export class PedidoService {
   private readonly endpoint = '/pedidos';
   private apiService = inject(ApiService);
 
+  // Busca pedidos pendentes para a cozinha (DTO específico do backend)
+  getPedidosPendentes(): Observable<any[]> {
+    return this.apiService.get<any[]>(`/pedidos/pendentes`).pipe(
+      tap((arr) => console.debug('Pedidos pendentes recebidos:', arr)),
+      catchError((err) => {
+        console.error('Erro ao buscar pedidos pendentes:', err);
+        return throwError(() => err);
+      })
+    );
+  }
+
   postPedido(
     comanda: Comanda,
     pedidoRequest: PedidoRequest

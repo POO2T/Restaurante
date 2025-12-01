@@ -1,33 +1,46 @@
-.pedidos-container {
-  min-height: 100vh;
+.pedidos-section {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Dashboard Header */
-.dashboard-header {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 30px 20px;
+.pedidos-header {
+  background: var(--primary-color);
   color: white;
+  padding: 30px 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
 }
-
-.header-content {
-  max-width: 1200px;
-  margin: 0 auto;
+.pedidos-header .filtro-status {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
+  padding: 10px 15px;
+  gap: 10px;
 }
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+.filtro-status label {
+  color: white;
+  font-weight: 600;
+}
+.filtro-status select {
+  padding: 8px 12px;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  background: white;
+  cursor: pointer;
+}
+.filtro-status select:focus {
+  outline: none;
+  border-color: #1e3c72;
+}
+.filtro-status option {
+  font-size: 0.95rem;
 }
 
 .btn-nav {
@@ -134,13 +147,45 @@
   padding: 0 20px 40px;
 }
 
+.pedidos-container {
+  width: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 20px;
+  gap: 20px;
+}
+
+.card-comanda {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 20px;
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  width: 100%;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
 .card-pedido {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
   background: white;
   border-radius: 15px;
   padding: 25px;
   margin-bottom: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
+  border: 2px solid black;
 }
 
 .card-pedido:hover {
@@ -164,7 +209,8 @@
   font-weight: bold;
 }
 
-.cliente, .data-hora {
+.cliente,
+.data-hora {
   margin: 4px 0;
   color: #666;
   font-size: 0.95rem;
@@ -183,11 +229,26 @@
   margin-bottom: 10px;
 }
 
-.status-pendente { background: #fff3cd; color: #856404; }
-.status-preparando { background: #d1ecf1; color: #0c5460; }
-.status-pronto { background: #d4edda; color: #155724; }
-.status-entregue { background: #e2e3e5; color: #383d41; }
-.status-cancelado { background: #f8d7da; color: #721c24; }
+.status-pendente {
+  background: #fff3cd;
+  color: #856404;
+}
+.status-preparando {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+.status-pronto {
+  background: #d4edda;
+  color: #155724;
+}
+.status-entregue {
+  background: #e2e3e5;
+  color: #383d41;
+}
+.status-cancelado {
+  background: #f8d7da;
+  color: #721c24;
+}
 
 .total {
   font-size: 1.4rem;
@@ -313,28 +374,28 @@
     flex-direction: column;
     text-align: center;
   }
-  
+
   .stats-cards {
     justify-content: center;
   }
-  
+
   .pedido-header {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .pedido-status {
     text-align: left;
   }
-  
+
   .pedido-acoes {
     flex-direction: column;
   }
-  
+
   .header-info h1 {
     font-size: 2rem;
   }
-  
+
   .item {
     flex-direction: column;
     align-items: flex-start;
